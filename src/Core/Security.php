@@ -4,6 +4,7 @@ namespace Bedrox\Core;
 
 use Exception;
 use Bedrox\Skeleton;
+use RuntimeException;
 
 class Security extends Skeleton
 {
@@ -38,19 +39,21 @@ class Security extends Skeleton
             } else {
                 $encode = $this->parsing->parseAppFormat();
                 http_response_code(500);
-                exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                exit((new Response())->renderView($encode, null, array(
                     'code' => 'ERR_FILE_SECURITY',
                     'message' => 'Echec lors de l\'ouverture du fichier de sécurité. Veuillez vérifier votre fichier "' . $_SERVER['APP'][Env::FILE_SECURITY] . '".'
                 )));
             }
             if ( !is_array($this->core) && is_array($this->core[self::FIREWALL]) && !is_array($this->core[self::FIREWALL][self::ANONYMOUS][self::ROUTE]) && empty($this->core[self::FIREWALL][self::TOKEN]['@attributes']->secret) && empty($this->core[self::FIREWALL][self::TOKEN]['@attributes']->encode) && empty($this->core[self::FIREWALL]['@attributes'][self::TYPE]) ) {
-                throw new Exception();
+                throw new RuntimeException(
+                    'Les variables de configuration de sécurité n\'ont pas pu être définies correctement. Veuillez réessayer.'
+                );
             }
-        } catch (Exception $e) {
+        } catch (RuntimeException $e) {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_SECU_FIREWALL',
-                'message' => 'Les variables de configuration de sécurité n\'ont pas pu être définies correctement. Veuillez réessayer.'
+                'message' => $e
             )));
         }
     }

@@ -2,8 +2,8 @@
 
 namespace Bedrox\Core;
 
-use Exception;
 use Bedrox\Skeleton;
+use RuntimeException;
 
 class Env extends Skeleton
 {
@@ -40,7 +40,9 @@ class Env extends Skeleton
                 $this->outputFormat($this->content['format'], $this->content['encodage']);
                 $this->defineSGBD($this->content['database']);
             } else {
-                throw new Exception();
+                throw new RuntimeException(
+                    'Echec lors de la lecture du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".'
+                );
             }
             if (!is_array($_SERVER['APP'])) {
                 $encode = $this->parsing->parseAppFormat();
@@ -50,12 +52,12 @@ class Env extends Skeleton
                     'message' => 'Les variables de configuration de l\'application n\'ont pas pu être définies correctement. Veuillez réessayer.'
                 )));
             }
-        } catch (Exception $e) {
+        } catch (RuntimeException $e) {
             $encode = $this->parsing->parseAppFormat();
             http_response_code(500);
             exit((new Response)->renderView($encode, null, array(
                 'code' => 'ERR_FILE_ENV',
-                'message' => 'Echec lors de la lecture du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".'
+                'message' => $e
             )));
         }
     }

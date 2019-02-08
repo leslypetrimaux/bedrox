@@ -35,8 +35,7 @@ class EntityManager implements iEntityManager
                 'message' => 'Impossible de récupérer un Repository de l\'Application.'
             )));
         }
-        $entity = $this->getEntity($entity);
-        $table = $this->getTable($entity);
+        $table = $this->getTable($this->getEntity($entity));
         return new Repository($table);
     }
 
@@ -44,7 +43,7 @@ class EntityManager implements iEntityManager
      * Return an empty Entity from the name.
      *
      * @param string $entity
-     * @return Entity|mixed|null
+     * @return Entity|null
      */
     public function getEntity(?string $entity): ?Entity
     {
@@ -95,9 +94,7 @@ class EntityManager implements iEntityManager
      */
     public function getColumns(Entity $entity): array
     {
-        $columns = array();
         $properties = $this->phpParser->classProperties($entity);
-        $columns = $this->phpParser->getColumnsFromProperties($properties);
-        return $columns;
+        return $this->phpParser->getColumnsFromProperties($properties);
     }
 }

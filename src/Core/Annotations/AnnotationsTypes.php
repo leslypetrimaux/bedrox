@@ -37,15 +37,10 @@ class AnnotationsTypes
     public function __construct(?string $type)
     {
         if ($type !== null) {
-            switch ($type) {
-                case self::LABEL_DB:
-                    $this->dbTable = self::DB_TABLE;
-                    $this->dbPrimaryKey = self::DB_PRIMARY_KEY;
-                    $this->dbColumn = self::DB_COLUMN;
-                    break;
-                case self::LABEL_CTRL:
-                    $this->ctrlRoute = self::CTRL_ROUTE;
-                    break;
+            if ($type === self::LABEL_DB) {
+                $this->dbTable = self::DB_TABLE;
+                $this->dbPrimaryKey = self::DB_PRIMARY_KEY;
+                $this->dbColumn = self::DB_COLUMN;
             }
         } else {
             http_response_code(500);
@@ -54,7 +49,6 @@ class AnnotationsTypes
                 'message' => 'Impossible d\'écrire les types d\'annotations disponibles pour cette Application.'
             )));
         }
-        return $this;
     }
 
     /**

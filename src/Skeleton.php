@@ -2,8 +2,6 @@
 
 namespace Bedrox;
 
-use Bedrox\Core\Request;
-use Bedrox\Core\Response;
 use Bedrox\Core\Session;
 use Bedrox\Core\Functions\Parsing;
 

@@ -52,7 +52,7 @@ class Request implements iRequest
             )));
         }
         if ($request !== null) {
-            $response->request = new Request();
+            $response->request = new self();
             $response->request->get = !empty($request->get) ? $request->get : null;
             $response->request->post = !empty($request->post) ? $request->post : null;
             $response->request->files = !empty($request->files) ? $request->files : null;

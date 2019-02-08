@@ -10,6 +10,7 @@ use Bedrox\Core\EntityManager;
 use Bedrox\Core\Entity;
 use Bedrox\Core\Response;
 use Bedrox\Core\Interfaces\iSgbd;
+use RuntimeException;
 
 class MySQL extends PDO implements iSgbd
 {
@@ -41,9 +42,9 @@ class MySQL extends PDO implements iSgbd
             $pwd,
             array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE']))
         );
-        parent::setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        if (parent::getAttribute(PDO::ATTR_DRIVER_NAME) === Db::MYSQL) {
-            parent::setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+        $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        if ($this->getAttribute(PDO::ATTR_DRIVER_NAME) === Db::MYSQL) {
+            $this->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
         }
         $this->em = new EntityManager();
     }
@@ -62,7 +63,7 @@ class MySQL extends PDO implements iSgbd
                 $result = self::ENCODE . self::UTF8;
                 break;
         }
-        return $result ? $result : self::ENCODE . self::UTF8;
+        return !empty($result) ? $result : self::ENCODE . self::UTF8;
     }
 
     /**
@@ -113,7 +114,7 @@ class MySQL extends PDO implements iSgbd
             $result = $req->fetch(PDO::FETCH_ASSOC);
             $e = $req->errorInfo();
             if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
-                throw new Exception($e[2], $e[1]);
+                throw new RuntimeException($e[2], $e[1]);
             }
             if ($result) {
                 foreach ($result as $key => $value) {
@@ -124,7 +125,7 @@ class MySQL extends PDO implements iSgbd
                 $entity = null;
             }
             return $entity;
-        } catch (PDOException | Exception $e) {
+        } catch (PDOException | Exception | RuntimeException $e) {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_MYSQL_' . $e->getCode(),
@@ -149,12 +150,11 @@ class MySQL extends PDO implements iSgbd
             $cols .= empty($cols) ? $column : ',' . $column;
         }
         try {
-            $req = $this->prepare('SELECT ' . $cols . ' FROM ' . $table . ';');
-            $req->execute();
+            $req = $this->query('SELECT ' . $cols . ' FROM ' . $table . ';');
             $results = $req->fetchAll(PDO::FETCH_ASSOC);
             $e = $req->errorInfo();
             if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
-                throw new Exception($e[2], $e[1]);
+                throw new RuntimeException($e[2], $e[1]);
             }
             if ($results) {
                 foreach ($results as $result) {
@@ -167,7 +167,7 @@ class MySQL extends PDO implements iSgbd
                 }
             }
             return $entities;
-        } catch (PDOException | Exception $e) {
+        } catch (PDOException | Exception | RuntimeException $e) {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_MYSQL_' . $e->getCode(),
@@ -222,11 +222,11 @@ class MySQL extends PDO implements iSgbd
             $result = $req->execute();
             $e = $req->errorInfo();
             if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
-                throw new Exception($e[2], $e[1]);
+                throw new RuntimeException($e[2], $e[1]);
             }
             $this->con = $this->commit();
             return $result;
-        } catch (PDOException | Exception $e) {
+        } catch (PDOException | Exception | RuntimeException $e) {
             $this->con = $this->rollBack();
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
@@ -274,11 +274,11 @@ class MySQL extends PDO implements iSgbd
             $result = $req->execute();
             $e = $req->errorInfo();
             if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
-                throw new Exception($e[2], $e[1]);
+                throw new RuntimeException($e[2], $e[1]);
             }
             $this->con = $this->commit();
             return $result;
-        } catch (PDOException | Exception $e) {
+        } catch (PDOException | Exception | RuntimeException $e) {
             $this->con = $this->rollBack();
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
@@ -312,11 +312,11 @@ class MySQL extends PDO implements iSgbd
             $result = $req->execute();
             $e = $req->errorInfo();
             if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
-                throw new Exception($e[2], $e[1]);
+                throw new RuntimeException($e[2], $e[1]);
             }
             $this->con = $this->commit();
             return $result;
-        } catch (PDOException | Exception $e) {
+        } catch (PDOException | Exception | RuntimeException $e) {
             $this->con = $this->rollBack();
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(

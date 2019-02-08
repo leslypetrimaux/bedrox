@@ -70,7 +70,15 @@ class Router extends Skeleton implements iRouter
                             foreach ($keys as $keyKey => $keyValue) {
                                 $repo = str_replace('{' . $keyValue . '}', $keyValue, $aPath[$key]);
                             }
-                            $route->params = (new EntityManager())->getRepo($repo)->find($aCurrent[$key]);
+                            if ((new EntityManager())->getRepo($repo) !== null) {
+                                $route->params = (new EntityManager())->getRepo($repo)->find($aCurrent[$key]);
+                            } else {
+                                http_response_code(500);
+                                exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                                    'code' => 'ERR_URI_PARAMS',
+                                    'message' => 'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
+                                )));
+                            }
                             $current = str_replace($aCurrent[$key], $aPath[$key], $current);
                         }
                     }
