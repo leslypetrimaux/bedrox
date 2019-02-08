@@ -9,7 +9,14 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {},
+    "require": {
+        "php": ">=7.3",
+        "ext-pdo": "*",
+        "ext-simplexml": "*",
+        "ext-libxml": "*",
+        "ext-json": "*",
+        "ext-dom": "*"
+    },
     "autoload": {
         "psr-4": {
             "Bedrox\\": "Bedrox/"
