@@ -1,0 +1,13 @@
+{
+    "name": "bedrox/bedrox",
+    "description": "Framework PHP",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Leslie",
+            "email": "leslypetrimaux@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
