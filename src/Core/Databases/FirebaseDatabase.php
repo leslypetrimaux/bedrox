@@ -4,10 +4,11 @@ namespace Bedrox\Core\Databases;
 
 use Bedrox\Core\Entity;
 use Bedrox\Core\EntityManager;
+use Bedrox\Core\Functions\Parsing;
 use Bedrox\Core\Interfaces\iSgbd;
-use Bedrox\Google\Firebase\CloudFirestore;
+use Bedrox\Google\Firebase\Database;
 
-class Firestore extends CloudFirestore implements iSgbd
+class FirebaseDatabase extends Database implements iSgbd
 {
     public const UTF8 = 'utf-8';
 
@@ -60,7 +61,14 @@ class Firestore extends CloudFirestore implements iSgbd
     public function find(string $table, int $id): ?Entity
     {
         // TODO: Implement find() method.
-        return null;
+        $uri = $this->getUriPathWithId($table, $id);
+        $json = file_get_contents($uri);
+        $result = (new Parsing())->parseRecursiveToArray(json_decode($json));
+        $entity = $this->em->getEntity($table);
+        foreach ($result as $key => $value) {
+            $entity->$key = $value;
+        }
+        return $entity;
     }
 
     /**
@@ -69,8 +77,20 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function findAll(string $table): ?array
     {
-        // TODO: Implement findAll() method.
-        return null;
+        $uri = $this->getUriPath($table);
+        $json = file_get_contents($uri);
+        $content = (new Parsing())->parseRecursiveToArray(json_decode($json));
+        $result = array();
+        foreach ($content as $data) {
+            if (!empty($data)) {
+                $entity = $this->em->getEntity($table);
+                foreach ($data as $key => $value) {
+                    $entity->$key = $value;
+                }
+                $result[] = $entity;
+            }
+        }
+        return $result;
     }
 
     /**

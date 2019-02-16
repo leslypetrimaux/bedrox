@@ -2,14 +2,14 @@
 
 namespace Bedrox\Core\Databases;
 
+use Bedrox\Core\Db;
+use Bedrox\Core\Entity;
+use Bedrox\Core\EntityManager;
+use Bedrox\Core\Interfaces\iSgbd;
+use Bedrox\Core\Response;
+use Exception;
 use PDO;
 use PDOException;
-use Exception;
-use Bedrox\Core\Db;
-use Bedrox\Core\EntityManager;
-use Bedrox\Core\Entity;
-use Bedrox\Core\Response;
-use Bedrox\Core\Interfaces\iSgbd;
 use RuntimeException;
 
 class MySQL extends PDO implements iSgbd
@@ -57,7 +57,6 @@ class MySQL extends PDO implements iSgbd
      */
     public function getEncodage(string $encodage): ?string
     {
-        /** @noinspection DegradedSwitchInspection */
         switch ($encodage) {
             case self::UTF8:
             default:

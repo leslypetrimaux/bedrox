@@ -2,8 +2,8 @@
 
 namespace Bedrox\Core;
 
-use Bedrox\Core\Annotations\PhpParser;
 use Bedrox\Core\Annotations\AnnotationsTypes;
+use Bedrox\Core\Annotations\PhpParser;
 use Bedrox\Core\Interfaces\iEntityManager;
 
 class EntityManager implements iEntityManager
@@ -24,9 +24,9 @@ class EntityManager implements iEntityManager
      * Return Repository to query a table.
      *
      * @param string $entity
-     * @return Repository|null
+     * @return Repository
      */
-    public function getRepo(?string $entity): ?Repository
+    public function getRepo(?string $entity): Repository
     {
         if (!$entity) {
             http_response_code(500);

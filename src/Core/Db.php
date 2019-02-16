@@ -2,6 +2,7 @@
 
 namespace Bedrox\Core;
 
+use Bedrox\Core\Databases\FirebaseDatabase;
 use Bedrox\Core\Databases\Firestore;
 use Bedrox\Core\Databases\MySQL;
 
@@ -13,6 +14,7 @@ class Db
     public const MARIADB = 'mariadb';
     public const ORACLE = 'oracle';
     public const FIREBASE = 'firebase';
+    public const FIRESTORE = 'firestore';
 
     protected $con;
     protected $config;
@@ -66,10 +68,13 @@ class Db
      */
     public function setDriver(string $driver)
     {
-        // TODO: Make Firebase a Virtual SGBD
+        // TODO: Make FirebaseDatabase a Virtual SGBD
         $this->con = !empty($driver) ? null : false;
         switch ($driver) {
             case self::FIREBASE:
+                $this->con = new FirebaseDatabase($this->config);
+                break;
+            case self::FIRESTORE:
                 $this->con = new Firestore($this->config);
                 break;
             case self::MYSQL:
