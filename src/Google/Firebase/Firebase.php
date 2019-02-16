@@ -11,15 +11,12 @@ class Firebase
     protected $storageBucket;
     protected $messagingSenderId;
 
-    public $auth;
-    public $database;
-    public $storage;
-    public $messaging;
-
     /**
+     * Firebase constructor.
+     *
      * @param array $config
      */
-    public function initializeApp(array &$config): void
+    public function __construct(array &$config)
     {
         $this->apiKey = $config['apiKey'];
         $this->authDomain = $config['authDomain'];
