@@ -3,11 +3,24 @@
 namespace Bedrox\Core\Databases;
 
 use Bedrox\Core\Entity;
+use Bedrox\Core\EntityManager;
 use Bedrox\Core\Interfaces\iSgbd;
 use Bedrox\Google\Firebase\Firebase;
 
 class Firestore extends Firebase implements iSgbd
 {
+    protected $em;
+
+    /**
+     * Firestore constructor.
+     * @param array $config
+     */
+    public function __construct(array $config)
+    {
+        parent::__construct($config);
+        $this->em = new EntityManager();
+    }
+
     /**
      * @param string $encodage
      * @return string|null
