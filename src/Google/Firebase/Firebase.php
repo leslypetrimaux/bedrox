@@ -15,4 +15,14 @@ class Firebase
     {
         $this->config = $config;
     }
+
+    /**
+     * @param array $config
+     * @return bool
+     */
+    public function connect(array $config): bool
+    {
+        // TODO: implements connexion to firebase core
+        return false;
+    }
 }

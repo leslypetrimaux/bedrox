@@ -2,32 +2,43 @@
 
 namespace Bedrox\Google\Firebase;
 
+use Bedrox\Google\Firebase\Firestore\Collection;
+use Bedrox\Google\Firebase\Firestore\Collections;
+use Bedrox\Google\Firebase\Firestore\Document;
+use Bedrox\Google\Firebase\Firestore\Documents;
 
 class CloudFirestore extends Firebase
 {
-    protected const BASE = '/';
+    protected $con;
 
-    /**
-     * @return string|null
-     */
-    public function getBasePath(): ?string
+    public $collections;
+    public $collection;
+    public $documents;
+    public $document;
+
+    public function __construct(array $config)
     {
-        return self::BASE;
+        parent::__construct($config);
+        $this->collections = new Collections();
+        $this->collection = new Collection();
+        $this->documents = new Documents();
+        $this->document = new Document();
     }
 
     /**
-     * @param string $path
-     * @return string|null
+     * @return CloudFirestore
      */
-    public function getUriPath(string $path): ?string
+    public function getDatabase(): self
     {
         try {
-            if (!empty($path)) {
-                return self::BASE . $path;
+            if ($this->connect($this->config)) {
+                // TODO: implements database connexion
+            } else {
+                throw new FirebaseException('Impossible de se connecter à la base Firebase Cloud Firestore. Vérifier votre fichier "./firebase.conf.json".');
             }
-            throw new FirebaseException('Impossible de récupérer le chemin demandé. Veuillez vérifier votre requête Firestore.');
         } catch (FirebaseException $e) {
-            exit($e);
+            dd($e);
         }
+        return $this;
     }
 }

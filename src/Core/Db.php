@@ -3,7 +3,6 @@
 namespace Bedrox\Core;
 
 use Bedrox\Core\Databases\FirebaseDatabase;
-use Bedrox\Core\Databases\Firestore;
 use Bedrox\Core\Databases\MySQL;
 
 class Db
@@ -31,6 +30,7 @@ class Db
     {
         if (!empty($_SERVER['APP']['SGBD']['DRIVER'])) {
             switch ($_SERVER['APP']['SGBD']['DRIVER']) {
+                case self::FIRESTORE:
                 case self::FIREBASE:
                     $this->config = $_SERVER['APP']['SGBD']['CONF'];
                     break;
@@ -74,8 +74,11 @@ class Db
                 $this->con = new FirebaseDatabase($this->config);
                 break;
             case self::FIRESTORE:
-                $this->con = new Firestore($this->config);
-                break;
+                http_response_code(500);
+                exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                    'code' => 'ERR_FIREBASE_FIRESTORE',
+                    'message' => 'La connexion à Firebase Cloud Firestore. Merci de modifier votre fichier "./environnement.xml".'
+                )));
             case self::MYSQL:
             case self::MARIADB:
                 $this->con = new MySQL(

@@ -130,6 +130,7 @@ class Env extends Skeleton
             if (!empty($database) && is_array($database)) {
                 if (!empty($database['driver'])) {
                     switch ($database['driver']) {
+                        case Db::FIRESTORE:
                         case Db::FIREBASE:
                             // TODO: Replace library/project path for packagist
                             $json = file_get_contents(__DIR__ . '/../../firebase.conf.json'); // library path
