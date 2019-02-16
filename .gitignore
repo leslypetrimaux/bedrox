@@ -1,3 +1,12 @@
+###< Dev live testing ###
 /vendor/
+/public/
+/new/
+/environnement.xml
+/routes.xml
+/security.xml
+###</ Dev live testing ###
 
+###< Default phpStorm ###
 \.idea/
+###</ Default phpStorm ###
