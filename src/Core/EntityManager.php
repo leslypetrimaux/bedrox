@@ -43,9 +43,9 @@ class EntityManager implements iEntityManager
      * Return an empty Entity from the name.
      *
      * @param string $entity
-     * @return Entity|null
+     * @return Entity
      */
-    public function getEntity(?string $entity): ?Entity
+    public function getEntity(?string $entity): Entity
     {
         $entity = 'App\Entity\\' . ucwords($entity);
         if (!class_exists($entity)) {

@@ -15,9 +15,9 @@ interface iEntityManager
 
     /**
      * @param string $entity
-     * @return Entity|mixed|null
+     * @return Entity|mixed
      */
-    public function getEntity(?string $entity): ?Entity;
+    public function getEntity(?string $entity): Entity;
 
     /**
      * @param Entity $entity
