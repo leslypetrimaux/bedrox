@@ -2,7 +2,7 @@
 
 namespace Bedrox\Google\Firebase;
 
-class Database extends Firebase
+class RealtimeDatabase extends Firebase
 {
     protected const BASE = '/';
     protected const FB_EOL = '.json';

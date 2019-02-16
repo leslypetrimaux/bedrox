@@ -6,9 +6,9 @@ use Bedrox\Core\Entity;
 use Bedrox\Core\EntityManager;
 use Bedrox\Core\Functions\Parsing;
 use Bedrox\Core\Interfaces\iSgbd;
-use Bedrox\Google\Firebase\Database;
+use Bedrox\Google\Firebase\RealtimeDatabase;
 
-class FirebaseDatabase extends Database implements iSgbd
+class FirebaseDatabase extends RealtimeDatabase implements iSgbd
 {
     public const UTF8 = 'utf-8';
 
@@ -64,8 +64,10 @@ class FirebaseDatabase extends Database implements iSgbd
         $json = file_get_contents($uri);
         $result = (new Parsing())->parseRecursiveToArray(json_decode($json));
         $entity = $this->em->getEntity($table);
+        $columns = $this->em->getColumns($entity);
         foreach ($result as $key => $value) {
-            $entity->$key = $value;
+            $var = array_search($key, $columns, true);
+            $entity->$var = $value;
         }
         return $entity;
     }
