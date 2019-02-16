@@ -11,6 +11,7 @@ class Db
     public const MYSQL = 'mysql';
     public const MARIADB = 'mariadb';
     public const ORACLE = 'oracle';
+    public const FIREBASE = 'firebase';
 
     protected $con;
     protected $host;
@@ -24,6 +25,7 @@ class Db
      */
     public function __construct()
     {
+        // TODO: Construct Firebase
         $this->host = $_SERVER['APP']['SGBD']['HOST'];
         $this->user = $_SERVER['APP']['SGBD']['USER'];
         $this->pwd = $_SERVER['APP']['SGBD']['PWD'];
@@ -45,6 +47,7 @@ class Db
      */
     public function setDriver(string $driver)
     {
+        // TODO: Make Firebase a Virtual SGBD
         $this->con = !empty($driver) ? null : false;
         switch ($driver) {
             case self::MYSQL:

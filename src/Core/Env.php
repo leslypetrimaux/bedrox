@@ -124,6 +124,7 @@ class Env extends Skeleton
      */
     public function defineSGBD(array $database): void
     {
+        // TODO: Handle Google Firebase Database
         if (!empty($database) && is_array($database)) {
             if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) && !empty($database['driver']) && !empty($database['@attributes']['encode'])) {
                 $_SERVER['APP']['SGBD'] = array(
