@@ -2,6 +2,8 @@
 /vendor/
 /public/
 /new/
+/composer.json.dev
+/composer.json.prod
 /firebase.conf.json
 /environnement.xml
 /routes.xml
