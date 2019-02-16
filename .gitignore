@@ -2,6 +2,8 @@
 /vendor/
 /public/
 /new/
+/composer.json.dev
+/composer.json.prod
 /environnement.xml
 /routes.xml
 /security.xml

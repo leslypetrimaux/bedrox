@@ -9,11 +9,6 @@ class Skeleton
 {
     public const BASE = '/';
 
-    /** Format de secours */
-    public static const DEFAULT_FORMAT = 'json';
-    /** Encodage de secours */
-    public static const DEFAULT_ENCODE = 'utf-8';
-
     public $session;
     public $request;
     public $auth;
@@ -27,8 +22,7 @@ class Skeleton
      */
     public function __construct()
     {
-        $globals = (new Session())->globals;
-        $this->session = !empty($globals) ? $globals : false;
+        $this->session = (new Session())->globals;
         $this->parsing = new Parsing();
     }
 

@@ -2,12 +2,12 @@
 
 namespace Bedrox\Core\Functions;
 
-use Bedrox\Skeleton;
+use App\Kernel;
 use RuntimeException;
 use SimpleXMLElement;
 use Bedrox\Core\Response;
 
-class Parsing extends Skeleton
+class Parsing
 {
     /**
      * Parse recursive Arrays or Objects to convert every object in array.
@@ -104,7 +104,7 @@ class Parsing extends Skeleton
      */
     public function parseAppFormat(): ?string
     {
-        return $_SERVER['APP']['FORMAT'] ?? static::DEFAULT_FORMAT;
+        return $_SERVER['APP']['FORMAT'] ?? Kernel::DEFAULT_FORMAT;
     }
 
     /**
@@ -112,6 +112,6 @@ class Parsing extends Skeleton
      */
     public function parseAppEncode(): ?string
     {
-        return $_SERVER['APP']['ENCODAGE'] ?? static::DEFAULT_ENCODE;
+        return $_SERVER['APP']['ENCODAGE'] ?? Kernel::DEFAULT_ENCODE;
     }
 }
