@@ -2,6 +2,7 @@
 
 namespace Bedrox\Core;
 
+use Bedrox\Core\Databases\FirebaseDatabase;
 use Bedrox\Core\Databases\MySQL;
 
 class Db
@@ -11,8 +12,11 @@ class Db
     public const MYSQL = 'mysql';
     public const MARIADB = 'mariadb';
     public const ORACLE = 'oracle';
+    public const FIREBASE = 'firebase';
+    public const FIRESTORE = 'firestore';
 
     protected $con;
+    protected $config;
     protected $host;
     protected $user;
     protected $pwd;
@@ -24,10 +28,29 @@ class Db
      */
     public function __construct()
     {
-        $this->host = $_SERVER['APP']['SGBD']['HOST'];
-        $this->user = $_SERVER['APP']['SGBD']['USER'];
-        $this->pwd = $_SERVER['APP']['SGBD']['PWD'];
-        $this->schema = $_SERVER['APP']['SGBD']['SCHEMA'];
+        if (!empty($_SERVER['APP']['SGBD']['DRIVER'])) {
+            switch ($_SERVER['APP']['SGBD']['DRIVER']) {
+                case self::FIRESTORE:
+                case self::FIREBASE:
+                    $this->config = $_SERVER['APP']['SGBD']['CONF'];
+                    break;
+                case self::MYSQL:
+                case self::MARIADB:
+                case self::ORACLE:
+                default:
+                    $this->host = $_SERVER['APP']['SGBD']['HOST'];
+                    $this->user = $_SERVER['APP']['SGBD']['USER'];
+                    $this->pwd = $_SERVER['APP']['SGBD']['PWD'];
+                    $this->schema = $_SERVER['APP']['SGBD']['SCHEMA'];
+                    break;
+            }
+        } else {
+            http_response_code(500);
+            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_DB_CONSTRUCT',
+                'message' => 'Echec lors de création de la connexion à la base de données. Veuillez vérifier votre fichier "./environnement.xml".'
+            )));
+        }
     }
 
     /**
@@ -47,7 +70,17 @@ class Db
     {
         $this->con = !empty($driver) ? null : false;
         switch ($driver) {
+            case self::FIREBASE:
+                $this->con = new FirebaseDatabase($this->config);
+                break;
+            case self::FIRESTORE:
+                http_response_code(500);
+                exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                    'code' => 'ERR_FIREBASE_FIRESTORE',
+                    'message' => 'La connexion à Firebase Cloud Firestore. Merci de modifier votre fichier "./environnement.xml".'
+                )));
             case self::MYSQL:
+            case self::MARIADB:
                 $this->con = new MySQL(
                     !empty($this->host) ? $this->host : null,
                     !empty($this->user) ? $this->user : null,

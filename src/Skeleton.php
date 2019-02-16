@@ -22,8 +22,7 @@ class Skeleton
      */
     public function __construct()
     {
-        $globals = (new Session())->globals;
-        $this->session = !empty($globals) ? $globals : false;
+        $this->session = (new Session())->globals;
         $this->parsing = new Parsing();
     }
 

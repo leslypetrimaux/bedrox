@@ -93,7 +93,9 @@ class Env extends Skeleton
     public function defineFile(string $type, string $file): void
     {
         if (!empty($type) && !empty($file)) {
-            $_SERVER['APP'][$type] = __DIR__ . '/../../../../../' . $file;
+            // TODO: Replace library/project path for packagist
+            $_SERVER['APP'][$type] = __DIR__ . '/../../' . $file; // library path
+            // $_SERVER['APP'][$type] = __DIR__ . '/../../../../../' . $file; // project path
         }
         if (!file_exists($_SERVER['APP'][$type])) {
             $encode = $this->parsing->parseAppFormat();
@@ -124,24 +126,52 @@ class Env extends Skeleton
      */
     public function defineSGBD(array $database): void
     {
-        if (!empty($database) && is_array($database)) {
-            if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) && !empty($database['driver']) && !empty($database['@attributes']['encode'])) {
-                $_SERVER['APP']['SGBD'] = array(
-                    'ENCODE' => $database['@attributes']['encode'],
-                    'DRIVER' => $database['driver'],
-                    'HOST' => $database['host'],
-                    'USER' => $database['user'],
-                    'PWD' => $database['password'],
-                    'SCHEMA' => $database['schema']
-                );
+        try {
+            if (!empty($database) && is_array($database)) {
+                if (!empty($database['driver'])) {
+                    switch ($database['driver']) {
+                        case Db::FIRESTORE:
+                        case Db::FIREBASE:
+                            // TODO: Replace library/project path for packagist
+                            $json = file_get_contents(__DIR__ . '/../../firebase.conf.json'); // library path
+                            // $json = file_get_contents(__DIR__ . '/../../../../../firebase.conf.json'); // project path
+                            $config = $this->parsing->parseRecursiveToArray(json_decode($json));
+                            $_SERVER['APP']['SGBD'] = array(
+                                'DRIVER' => $database['driver'],
+                                'CONF' => $config
+                            );
+                            break;
+                        case Db::ORACLE:
+                        case Db::MYSQL:
+                        case Db::MARIADB:
+                        default:
+                        if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) && !empty($database['@attributes']['encode'])) {
+                            $_SERVER['APP']['SGBD'] = array(
+                                'ENCODE' => $database['@attributes']['encode'],
+                                'DRIVER' => $database['driver'],
+                                'HOST' => $database['host'],
+                                'USER' => $database['user'],
+                                'PWD' => $database['password'],
+                                'SCHEMA' => $database['schema']
+                            );
+                        } else {
+                            throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".');
+                        }
+                            break;
+                    }
+                } else {
+                    throw new RuntimeException('Impossible de récupérer le driver dans le fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".');
+                }
             } else {
-                $encode = $this->parsing->parseAppFormat();
-                http_response_code(500);
-                exit((new Response)->renderView($encode, null, array(
-                    'code' => 'ERR_FILE_ENV',
-                    'message' => 'Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".'
-                )));
+                throw new RuntimeException('Echec lors de récupérer les informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".');
             }
+        } catch (RuntimeException $e) {
+            $encode = $this->parsing->parseAppFormat();
+            http_response_code(500);
+            exit((new Response)->renderView($encode, null, array(
+                'code' => 'ERR_FILE_ENV_' . $e->getCode(),
+                'message' => $e->getMessage()
+            )));
         }
     }
 }

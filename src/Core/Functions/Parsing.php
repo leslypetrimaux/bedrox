@@ -2,10 +2,10 @@
 
 namespace Bedrox\Core\Functions;
 
+use App\Kernel;
 use RuntimeException;
 use SimpleXMLElement;
 use Bedrox\Core\Response;
-use App\Kernel;
 
 class Parsing
 {

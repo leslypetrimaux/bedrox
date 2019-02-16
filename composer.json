@@ -1,26 +1,26 @@
 {
-    "name": "bedrox/bedrox",
-    "description": "Framework indépendant développer pour une utilisation en tant qu'API. Le projet pourra renvoyer des retours dans différents langages : JSON, XML, HTML, etc...",
-    "version": "0.1.0",
-    "type": "library",
-    "authors": [
-        {
-            "name": "Leslie",
-            "email": "leslypetrimaux@gmail.com"
-        }
-    ],
-    "minimum-stability": "stable",
-    "require": {
-        "php": ">=7.3",
-        "ext-pdo": "*",
-        "ext-simplexml": "*",
-        "ext-libxml": "*",
-        "ext-json": "*",
-        "ext-dom": "*"
-    },
-    "autoload": {
-        "psr-4": {
-            "Bedrox\\": "src/"
-        }
+  "name": "bedrox/bedrox",
+  "description": "Framework indépendant développer pour une utilisation en tant qu'API. Le projet pourra renvoyer des retours dans différents langages : JSON, XML, HTML, etc...",
+  "version": "0.1.0",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Leslie",
+      "email": "leslypetrimaux@gmail.com"
     }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=7.3",
+    "ext-pdo": "*",
+    "ext-simplexml": "*",
+    "ext-libxml": "*",
+    "ext-json": "*",
+    "ext-dom": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bedrox\\": "src/"
+    }
+  }
 }
