@@ -60,7 +60,6 @@ class FirebaseDatabase extends Database implements iSgbd
      */
     public function find(string $table, int $id): ?Entity
     {
-        // TODO: Implement find() method.
         $uri = $this->getUriPathWithId($table, $id);
         $json = file_get_contents($uri);
         $result = (new Parsing())->parseRecursiveToArray(json_decode($json));

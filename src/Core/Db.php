@@ -68,7 +68,6 @@ class Db
      */
     public function setDriver(string $driver)
     {
-        // TODO: Make FirebaseDatabase a Virtual SGBD
         $this->con = !empty($driver) ? null : false;
         switch ($driver) {
             case self::FIREBASE:
