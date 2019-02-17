@@ -3,8 +3,8 @@
 namespace Bedrox\Core;
 
 use Bedrox\Core\Interfaces\iRouter;
-use Exception;
 use Bedrox\Skeleton;
+use Exception;
 
 class Router extends Skeleton implements iRouter
 {
@@ -58,14 +58,6 @@ class Router extends Skeleton implements iRouter
                 if (!empty($keys) && count($aCurrent)===count($aPath)) {
                     foreach ($aCurrent as $key => $value) {
                         if ($aCurrent[$key]!==$aPath[$key]) {
-                            $int = (int)$aCurrent[$key] !==0 ? (int)$aCurrent[$key] : $aCurrent[$key];
-                            if (!is_int($int)) {
-                                http_response_code(404);
-                                exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                                    'code' => 'ERR_URI_WRONG_PARAMS',
-                                    'message' => 'Le paramètre de cette route ne correspond pas à celui attendu. Veuillez vérifier votre requête.'
-                                )));
-                            }
                             $repo = null;
                             foreach ($keys as $keyKey => $keyValue) {
                                 $repo = str_replace('{' . $keyValue . '}', $keyValue, $aPath[$key]);

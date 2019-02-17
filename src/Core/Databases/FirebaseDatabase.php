@@ -70,6 +70,8 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
                 $var = array_search($key, $columns, true);
                 $entity->$var = $value;
             }
+        } else {
+            $entity = null;
         }
         return $entity;
     }
@@ -83,15 +85,17 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
         $json = $this->get($table);
         $content = (new Parsing())->parseRecursiveToArray(json_decode($json));
         $result = array();
-        foreach ($content as $data) {
-            if (!empty($data)) {
-                $entity = $this->em->getEntity($table);
-                $columns = $this->em->getColumns($entity);
-                foreach ($data as $key => $value) {
-                    $var = array_search($key, $columns, true);
-                    $entity->$var = $value;
+        if (!empty($content)) {
+            foreach ($content as $data) {
+                if (!empty($data)) {
+                    $entity = $this->em->getEntity($table);
+                    $columns = $this->em->getColumns($entity);
+                    foreach ($data as $key => $value) {
+                        $var = array_search($key, $columns, true);
+                        $entity->$var = $value;
+                    }
+                    $result[] = $entity;
                 }
-                $result[] = $entity;
             }
         }
         return $result;
