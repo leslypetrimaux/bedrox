@@ -9,7 +9,7 @@
       "email": "leslypetrimaux@gmail.com"
     }
   ],
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "require": {
     "php": ">=7.3",
     "ext-pdo": "*",
