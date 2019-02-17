@@ -65,9 +65,11 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
         $result = (new Parsing())->parseRecursiveToArray(json_decode($json));
         $entity = $this->em->getEntity($table);
         $columns = $this->em->getColumns($entity);
-        foreach ($result as $key => $value) {
-            $var = array_search($key, $columns, true);
-            $entity->$var = $value;
+        if ($result !== null) {
+            foreach ($result as $key => $value) {
+                $var = array_search($key, $columns, true);
+                $entity->$var = $value;
+            }
         }
         return $entity;
     }
@@ -110,9 +112,11 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
      */
     public function insert(Entity $entity): bool
     {
-        // TODO: Implement insert() method.
-        // dd(uniqid('', true));
-        return true;
+        $path = $this->em->getTable($entity);
+        $entity->setId(uniqid('', true));
+        $array = array($entity->getId() => $entity);
+        $data = json_encode($array);
+        return !empty($this->patch($path, $data)) ? true : false;
     }
 
     /**
@@ -121,8 +125,10 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
      */
     public function update(Entity $entity): bool
     {
-        // TODO: Implement update() method.
-        return false;
+        $path = $this->em->getTable($entity);
+        $array = array($entity->getId() => $entity);
+        $data = json_encode($array);
+        return !empty($this->patch($path, $data)) ? true : false;
     }
 
     /**
@@ -131,7 +137,11 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
      */
     public function delete(Entity $entity): bool
     {
-        // TODO: Implement delete() method.
+        if ($entity->getId() !== null) {
+            $table = $this->em->getTable($entity);
+            $path = $table . '/' . $entity->getId();
+            return !empty($this->del($path)) ? true : false;
+        }
         return false;
     }
 }

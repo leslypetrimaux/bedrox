@@ -13,7 +13,7 @@ class RealtimeDatabase extends Firebase
     private $sslConnection;
 
     /**
-     * Constructor
+     * RealtimeDatabase constructor.
      * @param array $config
      */
     public function __construct(array $config)
@@ -126,12 +126,56 @@ class RealtimeDatabase extends Firebase
 
     /**
      * @param string $path
+     * @param string $data
+     * @param string $method
+     * @return bool|string|null
+     */
+    private function writeData(string $path, string $data, string $method = 'PATCH')
+    {
+        $header = array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data)
+        );
+        try {
+            $ch = $this->getCurlHandler($path, $method);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            $return = curl_exec($ch);
+        } catch (Exception $e) {
+            $return = null;
+        }
+        return $return;
+    }
+
+    /**
+     * @param string $path
      * @return bool|string|null
      */
     public function get(string $path)
     {
         try {
             $ch = $this->getCurlHandler($path, 'GET');
+            $return = curl_exec($ch);
+        } catch (Exception $e) {
+            $return = null;
+        }
+        return $return;
+    }
+
+    /**
+     * @param string $path
+     * @param string $data
+     * @return bool|string|null
+     */
+    public function patch(string $path, string $data)
+    {
+        return $this->writeData($path, $data);
+    }
+
+    public function del(string $path)
+    {
+        try {
+            $ch = $this->getCurlHandler($path, 'DELETE');
             $return = curl_exec($ch);
         } catch (Exception $e) {
             $return = null;
