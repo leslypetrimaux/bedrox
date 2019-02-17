@@ -17,6 +17,9 @@ class MySQL extends PDO implements iSgbd
     public const ENCODE = 'SET NAMES ';
     public const UTF8 = 'utf8';
 
+    public const STRATEGY_UUID = 'uuid';
+    public const STRATEGY_AI = 'auto';
+
     protected $em;
     protected $con;
 
@@ -198,13 +201,26 @@ class MySQL extends PDO implements iSgbd
         $table = $this->em->getTable($entity);
         $primary = $this->em->getTableKey($entity);
         $columns = $this->em->getColumns($entity);
+        $primaryType = $this->em->getTableKeyStrategy($entity);
         $cols = $keys = '';
+        $uuid = false;
         foreach ($columns as $column) {
             $primary = $column === $primary;
-            if (!$primary) {
-                $cols .= empty($cols) ? $column : ',' . $column;
-                $keys .= empty($keys) ? '' : ',';
-                $keys .= ':' . $column;
+            switch ($primaryType[$column]) {
+                case self::STRATEGY_UUID:
+                    $cols .= empty($cols) ? $column : ',' . $column;
+                    $keys .= empty($keys) ? '' : ',';
+                    $keys .= ':' . $column;
+                    $uuid = true;
+                    break;
+                case self::STRATEGY_AI:
+                default:
+                    if (!$primary) {
+                        $cols .= empty($cols) ? $column : ',' . $column;
+                        $keys .= empty($keys) ? '' : ',';
+                        $keys .= ':' . $column;
+                    }
+                    break;
             }
         }
         try {
@@ -215,9 +231,11 @@ class MySQL extends PDO implements iSgbd
             foreach ($cols as $key => $value) {
                 $value = str_replace(':', '', $value);
                 $var = array_search($value, $columns, true);
-                if (!empty($entity->$var)) {
+                if ($uuid && $var === $this->em->getTableKey($entity)) {
+                    $entity->$var = uniqid('', true);
                     $req->bindParam($keys[$key], $entity->$var);
                 }
+                $req->bindParam($keys[$key], $entity->$var);
             }
             $result = $req->execute();
             $e = $req->errorInfo();

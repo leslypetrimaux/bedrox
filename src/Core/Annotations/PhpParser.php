@@ -2,11 +2,11 @@
 
 namespace Bedrox\Core\Annotations;
 
-use ReflectionClass;
-use ReflectionProperty;
-use ReflectionException;
 use Bedrox\Core\Entity;
 use Bedrox\Core\Response;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionProperty;
 
 class PhpParser
 {
@@ -99,6 +99,45 @@ class PhpParser
                     $document = $this->propertiesComment($property);
                     $matches = $this->matchesAnnotations($document);
                     $column = $this->getAnnotationValue(AnnotationsTypes::DB_COLUMN, $matches);
+                    $columns[$property->getName()] = $column;
+                }
+                if (empty($columns)) {
+                    throw new ReflectionException(
+                        'Impossible de charger les colonnes de la classe.',
+                        'REFLECTION_COLUMNS'
+                    );
+                }
+            } else {
+                throw new ReflectionException(
+                    'Impossible de charger les propriétés des colonnes de la classe.',
+                    'REFLECTION_PROPERTIES'
+                );
+            }
+        } catch (ReflectionException $e) {
+            http_response_code(500);
+            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
+                'message' => $e->getMessage()
+            )));
+        }
+        return $columns;
+    }
+
+    /**
+     * Return an array of columns from $properties.
+     *
+     * @param array|null $properties
+     * @return array|null
+     */
+    public function getStrategyFromProperties(?array $properties): ?array
+    {
+        $columns = array();
+        try {
+            if ($properties !== null) {
+                foreach ($properties as $property) {
+                    $document = $this->propertiesComment($property);
+                    $matches = $this->matchesAnnotations($document);
+                    $column = $this->getAnnotationValue(AnnotationsTypes::DB_STRATEGY, $matches);
                     $columns[$property->getName()] = $column;
                 }
                 if (empty($columns)) {

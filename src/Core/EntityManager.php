@@ -86,6 +86,12 @@ class EntityManager implements iEntityManager
         return $primary;
     }
 
+    public function getTableKeyStrategy(Entity $entity): array
+    {
+        $properties = $this->phpParser->classProperties($entity);
+        return $this->phpParser->getStrategyFromProperties($properties);
+    }
+
     /**
      * Return all columns used in the table/Entity.
      *

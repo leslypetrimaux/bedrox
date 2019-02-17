@@ -18,6 +18,7 @@ class AnnotationsTypes
     public const DB_TABLE = '@DB\\Table';
     public const DB_PRIMARY_KEY = '@DB\\Primary';
     public const DB_COLUMN = '@DB\\Column';
+    public const DB_STRATEGY = '@DB\\Strategy';
 
     /**
      * AnnotationsTypes usable by other classes
