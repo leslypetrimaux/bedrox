@@ -1,5 +1,6 @@
 {
   "name": "bedrox/bedrox",
+  "license": "PHP-3.01",
   "description": "Framework indépendant développer pour une utilisation en tant qu'API. Le projet pourra renvoyer des retours dans différents langages : JSON, XML, HTML, etc...",
   "version": "0.1.2",
   "type": "library",
