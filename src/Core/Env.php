@@ -95,8 +95,8 @@ class Env extends Skeleton
     {
         if (!empty($type) && !empty($file)) {
             // TODO: Replace library/project path for packagist
-            $_SERVER['APP'][$type] = __DIR__ . '/../../' . $file; // library path
-            // $_SERVER['APP'][$type] = __DIR__ . '/../../../../../' . $file; // project path
+            // $_SERVER['APP'][$type] = __DIR__ . '/../../' . $file; // library path
+            $_SERVER['APP'][$type] = __DIR__ . '/../../../../../' . $file; // project path
         }
         if (!file_exists($_SERVER['APP'][$type])) {
             $encode = $this->parsing->parseAppFormat();
@@ -134,8 +134,8 @@ class Env extends Skeleton
                         case Db::FIRESTORE:
                         case Db::FIREBASE:
                             // TODO: Replace library/project path for packagist
-                            $json = file_get_contents(__DIR__ . '/../../firebase.conf.json'); // library path
-                            // $json = file_get_contents(__DIR__ . '/../../../../../firebase.conf.json'); // project path
+                            // $json = file_get_contents(__DIR__ . '/../../firebase.conf.json'); // library path
+                            $json = file_get_contents(__DIR__ . '/../../../../../firebase.conf.json'); // project path
                             $config = $this->parsing->parseRecursiveToArray(json_decode($json));
                             $_SERVER['APP']['SGBD'] = array(
                                 'DRIVER' => $database['driver'],
