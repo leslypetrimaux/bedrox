@@ -60,8 +60,8 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
      */
     public function find(string $table, string $id): ?Entity
     {
-        $uri = $this->getUriPathWithId($table, $id);
-        $json = file_get_contents($uri);
+        $path = $table . '/' . $id;
+        $json = $this->get($path);
         $result = (new Parsing())->parseRecursiveToArray(json_decode($json));
         $entity = $this->em->getEntity($table);
         $columns = $this->em->getColumns($entity);
@@ -78,8 +78,7 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
      */
     public function findAll(string $table): ?array
     {
-        $uri = $this->getUriPath($table);
-        $json = file_get_contents($uri);
+        $json = $this->get($table);
         $content = (new Parsing())->parseRecursiveToArray(json_decode($json));
         $result = array();
         foreach ($content as $data) {
