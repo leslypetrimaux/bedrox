@@ -2,6 +2,7 @@
 
 namespace Bedrox\Core;
 
+use App\Kernel;
 use Bedrox\Skeleton;
 use RuntimeException;
 
@@ -145,18 +146,18 @@ class Env extends Skeleton
                         case Db::MYSQL:
                         case Db::MARIADB:
                         default:
-                        if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) && !empty($database['@attributes']['encode'])) {
-                            $_SERVER['APP']['SGBD'] = array(
-                                'ENCODE' => $database['@attributes']['encode'],
-                                'DRIVER' => $database['driver'],
-                                'HOST' => $database['host'],
-                                'USER' => $database['user'],
-                                'PWD' => $database['password'],
-                                'SCHEMA' => $database['schema']
-                            );
-                        } else {
-                            throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".');
-                        }
+                            if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) ) {
+                                $_SERVER['APP']['SGBD'] = array(
+                                    'ENCODE' => !empty($database['@attributes']['encode']) ? $database['@attributes']['encode'] : Kernel::DEFAULT_ENCODE,
+                                    'DRIVER' => $database['driver'],
+                                    'HOST' => $database['host'],
+                                    'USER' => $database['user'],
+                                    'PWD' => $database['password'],
+                                    'SCHEMA' => $database['schema']
+                                );
+                            } else {
+                                throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".');
+                            }
                             break;
                     }
                 } else {
