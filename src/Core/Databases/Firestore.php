@@ -69,8 +69,18 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function findAll(string $table): ?array
     {
-        // TODO: Implement findAll() method.
-        return null;
+        $content = $this->get($table);
+        $result = array();
+        foreach ($content as $col) {
+            $entity = $this->em->getEntity($table);
+            $columns = $this->em->getColumns($entity);
+            foreach ($col as $key => $value) {
+                $var = array_search($key, $columns, true);
+                $entity->$var = $value;
+            }
+            $result[] = $entity;
+        }
+        return $result;
     }
 
     /**

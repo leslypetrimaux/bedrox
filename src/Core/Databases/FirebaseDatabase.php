@@ -6,6 +6,7 @@ use Bedrox\Core\Entity;
 use Bedrox\Core\EntityManager;
 use Bedrox\Core\Functions\Parsing;
 use Bedrox\Core\Interfaces\iSgbd;
+use Bedrox\Core\Response;
 use Bedrox\Google\Firebase\RealtimeDatabase;
 
 class FirebaseDatabase extends RealtimeDatabase implements iSgbd
@@ -15,7 +16,7 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
     protected $em;
 
     /**
-     * Firestore constructor.
+     * FirebaseDatabase constructor.
      * @param array $config
      */
     public function __construct(array $config)
@@ -42,15 +43,18 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
     }
 
     /**
-     * A customized query builder for FirebaseDatabase Cloud Firestore
+     * A customized query builder for FirebaseDatabase
      *
      * @param string $query
      * @return array|null
      */
     public function buildQuery(string $query): ?array
     {
-        // TODO: Implement buildQuery() method.
-        return null;
+        http_response_code(500);
+        exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            'code' => 'ERR_FIREBASE_QUERYBUILDER',
+            'message' => 'Le "QueryBuilder" pour Firebase Realtime Database n\'est pas encore disponible.'
+        )));
     }
 
     /**

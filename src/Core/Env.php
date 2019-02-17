@@ -28,7 +28,7 @@ class Env extends Skeleton
             } else {
                 $encode = $this->parsing->parseAppFormat();
                 http_response_code(500);
-                exit((new Response)->renderView($encode, null,  array(
+                exit((new Response())->renderView($encode, null,  array(
                     'code' => 'ERR_FILE_ENV',
                     'message' => 'Echec lors de l\'ouverture du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".'
                 )));
@@ -48,7 +48,7 @@ class Env extends Skeleton
             if (!is_array($_SERVER['APP'])) {
                 $encode = $this->parsing->parseAppFormat();
                 http_response_code(500);
-                exit((new Response)->renderView($encode, null, array(
+                exit((new Response())->renderView($encode, null, array(
                     'code' => 'ERR_VAR_APP',
                     'message' => 'Les variables de configuration de l\'application n\'ont pas pu être définies correctement. Veuillez réessayer.'
                 )));
@@ -56,7 +56,7 @@ class Env extends Skeleton
         } catch (RuntimeException $e) {
             $encode = $this->parsing->parseAppFormat();
             http_response_code(500);
-            exit((new Response)->renderView($encode, null, array(
+            exit((new Response())->renderView($encode, null, array(
                 'code' => 'ERR_FILE_ENV',
                 'message' => $e
             )));
@@ -95,13 +95,13 @@ class Env extends Skeleton
     {
         if (!empty($type) && !empty($file)) {
             // TODO: Replace library/project path for packagist
-            // $_SERVER['APP'][$type] = __DIR__ . '/../../' . $file; // library path
-            $_SERVER['APP'][$type] = __DIR__ . '/../../../../../' . $file; // project path
+            $_SERVER['APP'][$type] = __DIR__ . '/../../' . $file; // library path
+            // $_SERVER['APP'][$type] = __DIR__ . '/../../../../../' . $file; // project path
         }
         if (!file_exists($_SERVER['APP'][$type])) {
             $encode = $this->parsing->parseAppFormat();
             http_response_code(500);
-            exit((new Response)->renderView($encode, null, array(
+            exit((new Response())->renderView($encode, null, array(
                 'code' => 'ERR_FILE_ENV',
                 'message' => 'Echec lors de la lecture du fichier "' . $file . '". Veuillez vérifier votre fichier "./environnement.xml".'
             )));
@@ -134,8 +134,8 @@ class Env extends Skeleton
                         case Db::FIRESTORE:
                         case Db::FIREBASE:
                             // TODO: Replace library/project path for packagist
-                            // $json = file_get_contents(__DIR__ . '/../../firebase.conf.json'); // library path
-                            $json = file_get_contents(__DIR__ . '/../../../../../firebase.conf.json'); // project path
+                            $json = file_get_contents(__DIR__ . '/../../firebase.conf.json'); // library path
+                            // $json = file_get_contents(__DIR__ . '/../../../../../firebase.conf.json'); // project path
                             $config = $this->parsing->parseRecursiveToArray(json_decode($json));
                             $_SERVER['APP']['SGBD'] = array(
                                 'DRIVER' => $database['driver'],
@@ -169,7 +169,7 @@ class Env extends Skeleton
         } catch (RuntimeException $e) {
             $encode = $this->parsing->parseAppFormat();
             http_response_code(500);
-            exit((new Response)->renderView($encode, null, array(
+            exit((new Response())->renderView($encode, null, array(
                 'code' => 'ERR_FILE_ENV_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
