@@ -55,10 +55,10 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
 
     /**
      * @param string $table
-     * @param int $id
+     * @param string $id
      * @return Entity|mixed|null
      */
-    public function find(string $table, int $id): ?Entity
+    public function find(string $table, string $id): ?Entity
     {
         $uri = $this->getUriPathWithId($table, $id);
         $json = file_get_contents($uri);
@@ -85,8 +85,10 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
         foreach ($content as $data) {
             if (!empty($data)) {
                 $entity = $this->em->getEntity($table);
+                $columns = $this->em->getColumns($entity);
                 foreach ($data as $key => $value) {
-                    $entity->$key = $value;
+                    $var = array_search($key, $columns, true);
+                    $entity->$var = $value;
                 }
                 $result[] = $entity;
             }
@@ -100,8 +102,7 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
      */
     public function persist(Entity $entity): bool
     {
-        // TODO: Implement persist() method.
-        return false;
+        return $entity->getId() !== null ? $this->update($entity) : $this->insert($entity);
     }
 
     /**
@@ -111,7 +112,8 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
     public function insert(Entity $entity): bool
     {
         // TODO: Implement insert() method.
-        return false;
+        // dd(uniqid('', true));
+        return true;
     }
 
     /**

@@ -93,10 +93,10 @@ class MySQL extends PDO implements iSgbd
      * Search the table to retrieve one field and convert it in Entity
      *
      * @param string $table
-     * @param int $id
+     * @param string $id
      * @return Entity|mixed|null
      */
-    public function find(string $table, int $id): ?Entity
+    public function find(string $table, string $id): ?Entity
     {
         $entity = $this->em->getEntity($table);
         $primary = $this->em->getTableKey($entity);

@@ -16,7 +16,8 @@
     "ext-simplexml": "*",
     "ext-libxml": "*",
     "ext-json": "*",
-    "ext-dom": "*"
+    "ext-dom": "*",
+    "ext-apache": "*"
   },
   "autoload": {
     "psr-4": {

@@ -46,10 +46,10 @@ class Repository implements iRepository
     /**
      * See the SGBD function for documentation.
      *
-     * @param int $id
+     * @param string $id
      * @return Entity|mixed|null
      */
-    public function find(int $id): ?Entity
+    public function find(string $id): ?Entity
     {
         return $this->con->find($this->table, $id);
     }

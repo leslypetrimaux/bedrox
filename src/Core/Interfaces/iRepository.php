@@ -17,10 +17,10 @@ interface iRepository
     public function findAll();
 
     /**
-     * @param int $id
+     * @param string $id
      * @return mixed
      */
-    public function find(int $id);
+    public function find(string $id);
 
     /**
      * @param Entity $entity
