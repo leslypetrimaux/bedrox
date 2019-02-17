@@ -2,6 +2,7 @@
 
 namespace Bedrox\Google\Firebase;
 
+use Bedrox\Core\Response;
 use Exception;
 
 class RealtimeDatabase extends Firebase
@@ -142,7 +143,11 @@ class RealtimeDatabase extends Firebase
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             $return = curl_exec($ch);
         } catch (Exception $e) {
-            $return = null;
+            http_response_code(500);
+            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_FIREBASE_PERSIST:' . $e->getCode(),
+                'message' => $e->getMessage()
+            )));
         }
         return $return;
     }
@@ -157,7 +162,11 @@ class RealtimeDatabase extends Firebase
             $ch = $this->getCurlHandler($path, 'GET');
             $return = curl_exec($ch);
         } catch (Exception $e) {
-            $return = null;
+            http_response_code(500);
+            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_FIREBASE_GET:' . $e->getCode(),
+                'message' => $e->getMessage()
+            )));
         }
         return $return;
     }
@@ -178,7 +187,11 @@ class RealtimeDatabase extends Firebase
             $ch = $this->getCurlHandler($path, 'DELETE');
             $return = curl_exec($ch);
         } catch (Exception $e) {
-            $return = null;
+            http_response_code(500);
+            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_FIREBASE_DELETE:' . $e->getCode(),
+                'message' => $e->getMessage()
+            )));
         }
         return $return;
     }
