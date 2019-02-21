@@ -36,14 +36,15 @@ class CloudFirestore extends Firebase
         parent::__construct($host, $apiKey, $oAuthToken, $type);
         $this->setBaseURI($this->host);
         $this->setTimeOut(10);
-        $this->setToken($this->apiKey);
+        if ($type !== 'public') {
+            $this->setToken($this->oAuthToken);
+        }
         $this->initCurlHandler();
         $this->setSSLConnection(false);
         $this->collections = new Collections();
         $this->collection = new Collection();
         $this->documents = new Documents();
         $this->document = new Document();
-        // https://firestore.googleapis.com/v1/projects/bedrox-php/databases/(default)/documents/users
     }
 
     /**

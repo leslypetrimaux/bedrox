@@ -26,10 +26,11 @@ class RealtimeDatabase extends Firebase
         parent::__construct($host, $apiKey, $oAuthToken, $type);
         $this->setBaseURI($this->host);
         $this->setTimeOut(10);
-        $this->setToken($this->apiKey);
+        if ($type !== 'public') {
+            $this->setToken($this->oAuthToken);
+        }
         $this->initCurlHandler();
-        $this->setSSLConnection(false);
-        dd($this);
+        $this->setSSLConnection(true);
     }
 
     /**
