@@ -25,14 +25,15 @@ class CloudFirestore extends Firebase
 
     /**
      * CloudFirestore constructor.
-     * @param array $config
+     * @param string $host
+     * @param string $apiKey
      */
-    public function __construct(array $config)
+    public function __construct(string $host, string $apiKey)
     {
-        parent::__construct($config);
-        $this->setBaseURI($this->config['projectId']);
+        parent::__construct($host, $apiKey);
+        $this->setBaseURI($this->host);
         $this->setTimeOut(10);
-        $this->setToken($this->config['apiKey']);
+        $this->setToken($this->apiKey);
         $this->initCurlHandler();
         $this->setSSLConnection(false);
         $this->collections = new Collections();

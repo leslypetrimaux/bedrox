@@ -15,14 +15,15 @@ class RealtimeDatabase extends Firebase
 
     /**
      * RealtimeDatabase constructor.
-     * @param array $config
+     * @param string $host
+     * @param string $apiKey
      */
-    public function __construct(array $config)
+    public function __construct(string $host, string $apiKey)
     {
-        parent::__construct($config);
-        $this->setBaseURI($this->config['databaseURL']);
+        parent::__construct($host, $apiKey);
+        $this->setBaseURI($this->host);
         $this->setTimeOut(10);
-        $this->setToken($this->config['apiKey']);
+        $this->setToken($this->apiKey);
         $this->initCurlHandler();
         $this->setSSLConnection(false);
     }
@@ -33,8 +34,7 @@ class RealtimeDatabase extends Firebase
      */
     public function setBaseURI(string $uri): self
     {
-        $uri .= (substr($uri, -1) === '/' ? '' : '/');
-        $this->baseURI = $uri;
+        $this->baseURI = 'https://' . $uri . '.firebaseio.com/';
         return $this;
     }
 

@@ -133,13 +133,10 @@ class Env extends Skeleton
                     switch ($database['driver']) {
                         case Db::FIRESTORE:
                         case Db::FIREBASE:
-                            // TODO: Replace library/project path for packagist
-                            $json = file_get_contents(__DIR__ . '/../../firebase.conf.json'); // library path
-                            // $json = file_get_contents(__DIR__ . '/../../../../../firebase.conf.json'); // project path
-                            $config = $this->parsing->parseRecursiveToArray(json_decode($json));
                             $_SERVER['APP']['SGBD'] = array(
                                 'DRIVER' => $database['driver'],
-                                'CONF' => $config
+                                'HOST' => $database['host'],
+                                'API_KEY' => $database['apiKey']
                             );
                             break;
                         case Db::ORACLE:

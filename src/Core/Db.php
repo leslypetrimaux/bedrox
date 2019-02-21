@@ -19,6 +19,7 @@ class Db
     protected $con;
     protected $config;
     protected $host;
+    protected $apiKey;
     protected $user;
     protected $pwd;
     protected $schema;
@@ -33,7 +34,8 @@ class Db
             switch ($_SERVER['APP']['SGBD']['DRIVER']) {
                 case self::FIRESTORE:
                 case self::FIREBASE:
-                    $this->config = $_SERVER['APP']['SGBD']['CONF'];
+                    $this->host = $_SERVER['APP']['SGBD']['HOST'];
+                    $this->apiKey = $_SERVER['APP']['SGBD']['API_KEY'];
                     break;
                 case self::MYSQL:
                 case self::MARIADB:
@@ -65,17 +67,17 @@ class Db
      * - JSON: (currently unavailable)
      *
      * @param string $driver
-     * @return bool|MySQL|null
+     * @return bool|MySQL|FirebaseDatabase|Firestore|null
      */
     public function setDriver(string $driver)
     {
         $this->con = !empty($driver) ? null : false;
         switch ($driver) {
             case self::FIREBASE:
-                $this->con = new FirebaseDatabase($this->config);
+                $this->con = new FirebaseDatabase($this->host, $this->apiKey);
                 break;
             case self::FIRESTORE:
-                $this->con = new Firestore($this->config);
+                $this->con = new Firestore($this->host, $this->apiKey);
                 break;
             case self::MYSQL:
             case self::MARIADB:

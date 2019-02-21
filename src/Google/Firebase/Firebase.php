@@ -4,15 +4,18 @@ namespace Bedrox\Google\Firebase;
 
 class Firebase
 {
-    public $config;
+    public $host;
+    public $apiKey;
 
     /**
      * FirebaseDatabase constructor.
      *
-     * @param array $config
+     * @param string $host
+     * @param string $apiKey
      */
-    public function __construct(array &$config)
+    public function __construct(string &$host, string $apiKey)
     {
-        $this->config = $config;
+        $this->host = $host;
+        $this->apiKey = $apiKey;
     }
 }
