@@ -15,12 +15,15 @@ class Firestore extends CloudFirestore implements iSgbd
 
     /**
      * Firestore constructor.
+     *
      * @param string $host
      * @param string $apiKey
+     * @param string $oAuthToken
+     * @param string $type
      */
-    public function __construct(string $host, string $apiKey)
+    public function __construct(string &$host, string $apiKey, string $oAuthToken, string $type = 'public')
     {
-        parent::__construct($host, $apiKey);
+        parent::__construct($host, $apiKey, $oAuthToken, $type);
         $this->em = new EntityManager();
     }
 

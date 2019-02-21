@@ -17,12 +17,15 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
 
     /**
      * FirebaseDatabase constructor.
-     * @param string $config
+     *
+     * @param string $host
      * @param string $apiKey
+     * @param string $oAuthToken
+     * @param string $type
      */
-    public function __construct(string $config, string $apiKey)
+    public function __construct(string &$host, string $apiKey, string $oAuthToken, string $type = 'public')
     {
-        parent::__construct($config, $apiKey);
+        parent::__construct($host, $apiKey, $oAuthToken, $type);
         $this->em = new EntityManager();
     }
 

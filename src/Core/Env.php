@@ -136,7 +136,9 @@ class Env extends Skeleton
                             $_SERVER['APP']['SGBD'] = array(
                                 'DRIVER' => $database['driver'],
                                 'HOST' => $database['host'],
-                                'API_KEY' => $database['apiKey']
+                                'API_KEY' => $database['apiKey'],
+                                'OAUTH_TOKEN' => $database['oAuthToken'],
+                                'TYPE' => $database['type']
                             );
                             break;
                         case Db::ORACLE:

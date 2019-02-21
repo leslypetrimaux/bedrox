@@ -17,12 +17,13 @@ class Db
     public const FIRESTORE = 'firestore';
 
     protected $con;
-    protected $config;
     protected $host;
-    protected $apiKey;
     protected $user;
     protected $pwd;
     protected $schema;
+    protected $apiKey;
+    protected $oAuthToken;
+    protected $type;
 
     /**
      * Db constructor
@@ -36,6 +37,8 @@ class Db
                 case self::FIREBASE:
                     $this->host = $_SERVER['APP']['SGBD']['HOST'];
                     $this->apiKey = $_SERVER['APP']['SGBD']['API_KEY'];
+                    $this->oAuthToken = $_SERVER['APP']['SGBD']['OAUTH_TOKEN'];
+                    $this->type = $_SERVER['APP']['SGBD']['TYPE'];
                     break;
                 case self::MYSQL:
                 case self::MARIADB:
@@ -74,10 +77,10 @@ class Db
         $this->con = !empty($driver) ? null : false;
         switch ($driver) {
             case self::FIREBASE:
-                $this->con = new FirebaseDatabase($this->host, $this->apiKey);
+                $this->con = new FirebaseDatabase($this->host, $this->apiKey, $this->oAuthToken, $this->type);
                 break;
             case self::FIRESTORE:
-                $this->con = new Firestore($this->host, $this->apiKey);
+                $this->con = new Firestore($this->host, $this->apiKey, $this->oAuthToken, $this->type);
                 break;
             case self::MYSQL:
             case self::MARIADB:
