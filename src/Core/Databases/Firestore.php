@@ -59,7 +59,7 @@ class Firestore extends CloudFirestore implements iSgbd
     /**
      * @param string $table
      * @param string $id
-     * @return Entity|mixed|null
+     * @return Entity|null
      */
     public function find(string $table, string $id): ?Entity
     {

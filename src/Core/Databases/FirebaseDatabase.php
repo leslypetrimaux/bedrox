@@ -152,7 +152,7 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
         if ($entity->getId() !== null) {
             $table = $this->em->getTable($entity);
             $path = $table . '/' . $entity->getId();
-            return !empty($this->del($path)) ? true : false;
+            return !empty($this->unset($path)) ? true : false;
         }
         return false;
     }

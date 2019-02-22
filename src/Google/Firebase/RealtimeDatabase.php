@@ -186,7 +186,11 @@ class RealtimeDatabase extends Firebase
         return $this->writeData($path, $data);
     }
 
-    public function del(string $path)
+    /**
+     * @param string $path
+     * @return bool|string
+     */
+    public function unset(string $path)
     {
         try {
             $ch = $this->getCurlHandler($path, 'DELETE');

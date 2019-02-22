@@ -138,31 +138,9 @@ class CloudFirestore extends Firebase
         return $ch;
     }
 
-    /**
-     * @param string $path
-     * @param string $data
-     * @param string $method
-     * @return bool|string|null
-     */
     private function writeData(string $path, string $data, string $method = 'PATCH')
     {
-        $header = array(
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($data)
-        );
-        try {
-            $ch = $this->getCurlHandler($path, $method);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            $return = curl_exec($ch);
-        } catch (Exception $e) {
-            http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_FIREBASE_PERSIST:' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
-        }
-        return $return;
+        // TODO: Implement writeData() method.
     }
 
     /**
@@ -200,28 +178,13 @@ class CloudFirestore extends Firebase
         return $docs ?? $doc;
     }
 
-    /**
-     * @param string $path
-     * @param string $data
-     * @return bool|string|null
-     */
     public function patch(string $path, string $data)
     {
         return $this->writeData($path, $data);
     }
 
-    public function del(string $path)
+    public function unset(string $path)
     {
-        try {
-            $ch = $this->getCurlHandler($path, 'DELETE');
-            $return = curl_exec($ch);
-        } catch (Exception $e) {
-            http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_FIREBASE_DELETE:' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
-        }
-        return $return;
+        // TODO: Implement del() method.
     }
 }
