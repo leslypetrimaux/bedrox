@@ -138,9 +138,38 @@ class CloudFirestore extends Firebase
         return $ch;
     }
 
+    /**
+     * @param string $path
+     * @param string $data
+     * @param string $method
+     * @return bool|string
+     */
     private function writeData(string $path, string $data, string $method = 'PATCH')
     {
-        // TODO: Implement writeData() method.
+        try {
+            $tmp = json_decode($data);
+            $doc = array();
+            $doc['name'] = $this->getJsonPath($path);
+            foreach ($tmp as $key => $value) {
+                $doc['fields'][$key]['stringValue'] = $value;
+            }
+            $data = json_encode($doc);
+            $header = array(
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($data)
+            );
+            $ch = $this->getCurlHandler($path, $method);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            $return = curl_exec($ch);
+        } catch (Exception $e) {
+            http_response_code(500);
+            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_FIREBASE_PERSIST:' . $e->getCode(),
+                'message' => $e->getMessage()
+            )));
+        }
+        return $return;
     }
 
     /**
@@ -178,6 +207,11 @@ class CloudFirestore extends Firebase
         return $docs ?? $doc;
     }
 
+    /**
+     * @param string $path
+     * @param string $data
+     * @return bool|string
+     */
     public function patch(string $path, string $data)
     {
         return $this->writeData($path, $data);

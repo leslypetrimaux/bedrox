@@ -104,8 +104,7 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function persist(Entity $entity): bool
     {
-        // TODO: Implement persist() method.
-        return false;
+        return $entity->getId() !== null ? $this->update($entity) : $this->insert($entity);
     }
 
     /**
@@ -114,8 +113,11 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function insert(Entity $entity): bool
     {
-        // TODO: Implement insert() method.
-        return false;
+        $entity->setId(uniqid('', true));
+        $data = json_encode($entity);
+        $path = $this->em->getTable($entity);
+        $path .= '/' . $entity->getId();
+        return !empty($this->patch($path, $data)) ? true : false;
     }
 
     /**
@@ -124,8 +126,10 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function update(Entity $entity): bool
     {
-        // TODO: Implement update() method.
-        return false;
+        $data = json_encode($entity);
+        $path = $this->em->getTable($entity);
+        $path .= '/' . $entity->getId();
+        return !empty($this->patch($path, $data)) ? true : false;
     }
 
     /**
