@@ -30,7 +30,7 @@ class RealtimeDatabase extends Firebase
             $this->setToken($this->oAuthToken);
         }
         $this->initCurlHandler();
-        $this->setSSLConnection(true);
+        $this->setSSLConnection(false);
     }
 
     /**
