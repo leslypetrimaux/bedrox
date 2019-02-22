@@ -3,10 +3,6 @@
 namespace Bedrox\Google\Firebase;
 
 use Bedrox\Core\Response;
-use Bedrox\Google\Firebase\Firestore\Collection;
-use Bedrox\Google\Firebase\Firestore\Collections;
-use Bedrox\Google\Firebase\Firestore\Document;
-use Bedrox\Google\Firebase\Firestore\Documents;
 use Exception;
 
 class CloudFirestore extends Firebase
@@ -41,10 +37,6 @@ class CloudFirestore extends Firebase
         }
         $this->initCurlHandler();
         $this->setSSLConnection(false);
-        $this->collections = new Collections();
-        $this->collection = new Collection();
-        $this->documents = new Documents();
-        $this->document = new Document();
     }
 
     /**
@@ -175,13 +167,14 @@ class CloudFirestore extends Firebase
 
     /**
      * @param string $path
-     * @return bool|array|null
+     * @return array|null
      */
-    public function get(string $path)
+    public function get(string $path): ?array
     {
         try {
             $ch = $this->getCurlHandler($path, 'GET');
             $db = json_decode(curl_exec($ch));
+            $docs = $doc = null;
         } catch (Exception $e) {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
@@ -189,15 +182,22 @@ class CloudFirestore extends Firebase
                 'message' => $e->getMessage()
             )));
         }
-        $return = array();
-        foreach ($db->documents as $document) {
+        if (!empty($db->documents)) {
+            $docs = array();
+            foreach ($db->documents as $document) {
+                $doc = array();
+                foreach ($document->fields as $key => $value) {
+                    $doc[$key] = $value->stringValue;
+                }
+                $docs[] = $doc;
+            }
+        } else {
             $doc = array();
-            foreach ($document->fields as $key => $value) {
+            foreach ($db->fields as $key => $value) {
                 $doc[$key] = $value->stringValue;
             }
-            $return[] = $doc;
         }
-        return $return;
+        return $docs ?? $doc;
     }
 
     /**

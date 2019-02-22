@@ -63,8 +63,19 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function find(string $table, string $id): ?Entity
     {
-        // TODO: Implement find() method.
-        return null;
+        $path = $table . '/' . $id;
+        $content = $this->get($path);
+        $entity = $this->em->getEntity($table);
+        $columns = $this->em->getColumns($entity);
+        if ($content !== null) {
+            foreach ($content as $key => $value) {
+                $var = array_search($key, $columns, true);
+                $entity->$var = $value;
+            }
+        } else {
+            $entity = null;
+        }
+        return $entity;
     }
 
     /**
