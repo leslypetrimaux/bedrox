@@ -18,7 +18,7 @@ class Dumper extends Skeleton
         foreach ($strings as $arrayString) {
             $response = array();
             foreach ($arrayString as $string) {
-                $response[$d->getClass($string)] = $string;
+                $response[$d->getClassOrType($string)] = $string;
             }
             $responses[] = $response;
         }
@@ -30,7 +30,7 @@ class Dumper extends Skeleton
      * @param mixed $object
      * @return string|null
      */
-    protected function getClass($object): ?string
+    protected function getClassOrType($object): ?string
     {
         return !empty(is_object($object)) ? get_class($object) : gettype($object);
     }
