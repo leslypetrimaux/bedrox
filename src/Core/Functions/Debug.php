@@ -8,9 +8,7 @@ if (!function_exists('dump')) {
      */
     function dump(...$strings)
     {
-        foreach ($strings as $string) {
-            Dumper::dump($string);
-        }
+        Dumper::dump($strings);
     }
 }
 
@@ -20,9 +18,7 @@ if (!function_exists('dd')) {
      */
     function dd(...$strings)
     {
-        foreach ($strings as $string) {
-            Dumper::dump($string);
-        }
+        Dumper::dump($strings);
         die;
     }
 }
