@@ -4,7 +4,7 @@ namespace Bedrox\Core;
 
 use Bedrox\Core\Interfaces\iRouter;
 use Bedrox\Skeleton;
-use Exception;
+use RuntimeException;
 
 class Router extends Skeleton implements iRouter
 {
@@ -25,13 +25,13 @@ class Router extends Skeleton implements iRouter
             if (file_exists($_SERVER['APP'][Env::FILE_ROUTER])) {
                 $this->routes = $this->parsing->parseXmlToArray($_SERVER['APP'][Env::FILE_ROUTER])['route']['route'];
             } else {
-                throw new Exception();
+                throw new RuntimeException('Echec lors de l\'ouverture du fichier des routes. Veuillez vérifier votre fichier "./environnement.xml".');
             }
-        } catch (Exception $e) {
+        } catch (RuntimeException $e) {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_FILE_ROUTER',
-                'message' => 'Echec lors de l\'ouverture du fichier des routes. Veuillez vérifier votre fichier "./environnement.xml".'
+                'message' => $e->getMessage()
             )));
         }
     }

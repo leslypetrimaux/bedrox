@@ -47,7 +47,6 @@ class Db
                     // TODO: handle Oracle SGBD (with options)
                 case self::MYSQL:
                 case self::MARIADB:
-                    // TODO: handle MariaDB as MySQL (listen to 3307)
                 default:
                     $this->host = $_SERVER['APP']['SGBD']['HOST'];
                     $this->port = $_SERVER['APP']['SGBD']['PORT'];

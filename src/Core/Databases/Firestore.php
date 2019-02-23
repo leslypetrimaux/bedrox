@@ -37,13 +37,7 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function getEncodage(string $encodage): ?string
     {
-        switch ($encodage) {
-            case self::UTF8:
-            default:
-                $result = self::UTF8;
-                break;
-        }
-        return !empty($result) ? $result : self::UTF8;
+        return !empty($encodage) ? $encodage : self::UTF8;
     }
 
     /**
