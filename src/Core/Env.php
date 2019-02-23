@@ -149,6 +149,7 @@ class Env extends Skeleton
                                     'ENCODE' => !empty($database['@attributes']['encode']) ? $database['@attributes']['encode'] : Kernel::DEFAULT_ENCODE,
                                     'DRIVER' => $database['driver'],
                                     'HOST' => $database['host'],
+                                    'PORT' => $database['port'],
                                     'USER' => $database['user'],
                                     'PWD' => $database['password'],
                                     'SCHEMA' => $database['schema']

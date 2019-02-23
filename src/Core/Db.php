@@ -18,6 +18,7 @@ class Db
 
     protected $con;
     protected $host;
+    protected $port;
     protected $user;
     protected $pwd;
     protected $schema;
@@ -49,6 +50,7 @@ class Db
                     // TODO: handle MariaDB as MySQL (listen to 3307)
                 default:
                     $this->host = $_SERVER['APP']['SGBD']['HOST'];
+                    $this->port = $_SERVER['APP']['SGBD']['PORT'];
                     $this->user = $_SERVER['APP']['SGBD']['USER'];
                     $this->pwd = $_SERVER['APP']['SGBD']['PWD'];
                     $this->schema = $_SERVER['APP']['SGBD']['SCHEMA'];
@@ -91,6 +93,7 @@ class Db
                 $this->con = new MySQL(
                     !empty($driver) ? $driver : null,
                     !empty($this->host) ? $this->host : null,
+                    !empty($this->port) ? (int)$this->port : null,
                     !empty($this->user) ? $this->user : null,
                     !empty($this->pwd) ? $this->pwd : null,
                     !empty($this->schema) ? $this->schema : null

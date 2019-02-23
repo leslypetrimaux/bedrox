@@ -35,23 +35,15 @@ class MySQL extends PDO implements iSgbd
      *
      * @param string $driver
      * @param string $host
+     * @param int $port
      * @param string $user
      * @param string $pwd
      * @param string $schema
      */
-    public function __construct(string $driver, string $host, string $user, string $pwd, string $schema)
+    public function __construct(string $driver, string $host, int $port, string $user, string $pwd, string $schema)
     {
         try {
             $this->driver = $driver;
-            switch ($driver) {
-                case Db::MARIADB:
-                    $port = 3307;
-                    break;
-                case Db::MYSQL:
-                default:
-                    $port = 3306;
-                    break;
-            }
             parent::__construct(
                 Db::MYSQL . ':dbname=' . $schema . ';port=' . $port . ';host=' . $host,
                 $user,
