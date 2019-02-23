@@ -94,6 +94,9 @@ class Router extends Skeleton implements iRouter
                     )));
                 }
             }
+            if ( $current === '/_phpinfo' ) {
+                phpinfo();
+            }
         }
         return $route;
     }
