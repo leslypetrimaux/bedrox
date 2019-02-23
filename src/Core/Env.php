@@ -137,6 +137,7 @@ class Env extends Skeleton
                                 'DRIVER' => $database['driver'],
                                 'HOST' => $database['host'],
                                 'API_KEY' => $database['apiKey'],
+                                'CLIENT_ID' => $database['clientId'],
                                 'OAUTH_TOKEN' => $database['oAuthToken'],
                                 'TYPE' => $database['type']
                             );

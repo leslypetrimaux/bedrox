@@ -7,29 +7,18 @@ use Exception;
 
 class CloudFirestore extends Firebase
 {
-    private $baseURI;
-    private $documentURI;
-    private $timeout;
-    private $token;
-    private $curlHandler;
-    private $sslConnection;
-
-    public $collections;
-    public $collection;
-    public $documents;
-    public $document;
-
     /**
      * CloudFirestore constructor.
      *
      * @param string $host
      * @param string $apiKey
+     * @param string $clientId
      * @param string $oAuthToken
      * @param string $type
      */
-    public function __construct(string &$host, string $apiKey, string $oAuthToken, string $type = 'public')
+    public function __construct(string &$host, string $apiKey, string $clientId, string $oAuthToken, string $type = 'public')
     {
-        parent::__construct($host, $apiKey, $oAuthToken, $type);
+        parent::__construct($host, $apiKey, $clientId, $oAuthToken, $type);
         $this->setBaseURI($this->host);
         $this->setTimeOut(10);
         if ($type !== 'public') {
@@ -115,7 +104,6 @@ class CloudFirestore extends Firebase
     {
         $url = $this->baseURI;
         $path .= (substr($path, -1) === '/' ? '' : '/');
-        $this->documentURI = str_replace('https://firestore.googleapis.com/v1/', '', $url . $path);
         return $url . $path;
     }
 

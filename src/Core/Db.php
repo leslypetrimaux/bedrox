@@ -22,6 +22,7 @@ class Db
     protected $pwd;
     protected $schema;
     protected $apiKey;
+    protected $clientId;
     protected $oAuthToken;
     protected $type;
 
@@ -37,6 +38,7 @@ class Db
                 case self::FIREBASE:
                     $this->host = $_SERVER['APP']['SGBD']['HOST'];
                     $this->apiKey = $_SERVER['APP']['SGBD']['API_KEY'];
+                    $this->clientId = $_SERVER['APP']['SGBD']['CLIENT_ID'];
                     $this->oAuthToken = $_SERVER['APP']['SGBD']['OAUTH_TOKEN'];
                     $this->type = $_SERVER['APP']['SGBD']['TYPE'];
                     break;
@@ -57,6 +59,7 @@ class Db
                 'message' => 'Echec lors de création de la connexion à la base de données. Veuillez vérifier votre fichier "./environnement.xml".'
             )));
         }
+        dd($this);
     }
 
     /**
@@ -77,10 +80,10 @@ class Db
         $this->con = !empty($driver) ? null : false;
         switch ($driver) {
             case self::FIREBASE:
-                $this->con = new FirebaseDatabase($this->host, $this->apiKey, $this->oAuthToken, $this->type);
+                $this->con = new FirebaseDatabase($this->host, $this->apiKey, $this->clientId, $this->oAuthToken, $this->type);
                 break;
             case self::FIRESTORE:
-                $this->con = new Firestore($this->host, $this->apiKey, $this->oAuthToken, $this->type);
+                $this->con = new Firestore($this->host, $this->apiKey, $this->clientId, $this->oAuthToken, $this->type);
                 break;
             case self::MYSQL:
             case self::MARIADB:
