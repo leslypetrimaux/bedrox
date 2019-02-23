@@ -9,6 +9,7 @@ class Dumper
      */
     public static function dump($var)
     {
+        // TODO: Get class/line source
         var_dump($var);
     }
 }

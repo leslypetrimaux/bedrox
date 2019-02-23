@@ -205,6 +205,10 @@ class CloudFirestore extends Firebase
         return $this->writeData($path, $data);
     }
 
+    /**
+     * @param string $path
+     * @return bool|string
+     */
     public function unset(string $path)
     {
         try {
