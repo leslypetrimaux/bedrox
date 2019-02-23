@@ -94,9 +94,7 @@ class Env extends Skeleton
     public function defineFile(string $type, string $file): void
     {
         if (!empty($type) && !empty($file)) {
-            // TODO: Replace library/project path for packagist
-            $_SERVER['APP'][$type] = __DIR__ . '/../../' . $file; // library path
-            // $_SERVER['APP'][$type] = __DIR__ . '/../../../../../' . $file; // project path
+            $_SERVER['APP'][$type] = $_SERVER['DOCUMENT_ROOT'] . '/../' . $file;
         }
         if (!file_exists($_SERVER['APP'][$type])) {
             $encode = $this->parsing->parseAppFormat();

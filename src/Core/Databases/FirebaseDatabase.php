@@ -55,6 +55,7 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
      */
     public function buildQuery(string $query): ?array
     {
+        // TODO: Implement buildQuery() method.
         http_response_code(500);
         exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
             'code' => 'ERR_FIREBASE_QUERYBUILDER',

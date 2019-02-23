@@ -31,25 +31,35 @@ class MySQL extends PDO implements iSgbd
      * Read all/one (select) Entity
      * Persists (insert/update) Entity
      * Remove (delete) Entity
-     * 
+     *
+     * @param string $driver
      * @param string $host
      * @param string $user
      * @param string $pwd
      * @param string $schema
      */
-    public function __construct(string $host, string $user, string $pwd, string $schema)
+    public function __construct(string $driver, string $host, string $user, string $pwd, string $schema)
     {
-        parent::__construct(
-            Db::MYSQL . ':dbname=' . $schema . ';host=' . $host,
-            $user,
-            $pwd,
-            array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE']))
-        );
-        $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        if ($this->getAttribute(PDO::ATTR_DRIVER_NAME) === Db::MYSQL) {
-            $this->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+        if ($driver === Db::MYSQL) {
+            $opt = array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE']));
+        } else {
+            $opt = null;
         }
-        $this->em = new EntityManager();
+        try {
+            parent::__construct(
+                Db::MYSQL . ':dbname=' . $schema . ';host=' . $host,
+                $user,
+                $pwd,
+                $opt
+            );
+            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            if ($this->getAttribute(PDO::ATTR_DRIVER_NAME) === Db::MYSQL) {
+                $this->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+            }
+            $this->em = new EntityManager();
+        } catch (PDOException $e) {
+            dd($e);
+        }
     }
 
     /**

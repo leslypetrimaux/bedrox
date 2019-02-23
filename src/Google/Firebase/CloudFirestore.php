@@ -153,7 +153,7 @@ class CloudFirestore extends Firebase
         } catch (Exception $e) {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_FIREBASE_PERSIST:' . $e->getCode(),
+                'code' => 'ERR_FIRESTORE_PERSIST:' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
         }
@@ -173,7 +173,7 @@ class CloudFirestore extends Firebase
         } catch (Exception $e) {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_FIREBASE_GET:' . $e->getCode(),
+                'code' => 'ERR_FIRESTORE_GET:' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
         }

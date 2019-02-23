@@ -42,9 +42,11 @@ class Db
                     $this->oAuthToken = $_SERVER['APP']['SGBD']['OAUTH_TOKEN'];
                     $this->type = $_SERVER['APP']['SGBD']['TYPE'];
                     break;
+                case self::ORACLE:
+                    // TODO: handle Oracle SGBD (with options)
                 case self::MYSQL:
                 case self::MARIADB:
-                case self::ORACLE:
+                    // TODO: handle MariaDB as MySQL (listen to 3307)
                 default:
                     $this->host = $_SERVER['APP']['SGBD']['HOST'];
                     $this->user = $_SERVER['APP']['SGBD']['USER'];
@@ -87,6 +89,7 @@ class Db
             case self::MYSQL:
             case self::MARIADB:
                 $this->con = new MySQL(
+                    !empty($driver) ? $driver : null,
                     !empty($this->host) ? $this->host : null,
                     !empty($this->user) ? $this->user : null,
                     !empty($this->pwd) ? $this->pwd : null,
