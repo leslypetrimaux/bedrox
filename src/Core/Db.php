@@ -59,7 +59,7 @@ class Db
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_DB_CONSTRUCT',
-                'message' => 'Echec lors de création de la connexion à la base de données. Veuillez vérifier votre fichier "./environnement.xml".'
+                'message' => 'Echec lors de création de la connexion à la base de données. Veuillez vérifier votre fichier "./config/env.yaml".'
             )));
         }
     }

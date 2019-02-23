@@ -20,6 +20,6 @@ if (!function_exists('dd')) {
     {
         !isset($_SESSION) ? session_start() : null;
         Dumper::dump($strings);
-        !$_SESSION['APP_DEBUG'] ? null : die;
+        !empty($_SESSION['APP_DEBUG']) ? null : die;
     }
 }

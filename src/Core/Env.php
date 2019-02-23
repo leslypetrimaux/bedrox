@@ -4,11 +4,12 @@ namespace Bedrox\Core;
 
 use App\Kernel;
 use Bedrox\Skeleton;
+use Bedrox\Yaml\YamlParser;
 use RuntimeException;
 
 class Env extends Skeleton
 {
-    public const FILE_ENV = '/../environnement.xml';
+    public const FILE_ENV = '/../config/env.yaml';
 
     public const FILE_ROUTER = 'ROUTER';
     public const FILE_SECURITY = 'SECURITY';
@@ -24,25 +25,27 @@ class Env extends Skeleton
     {
         try {
             if (file_exists($file)) {
-                $this->content = $this->parsing->parseXmlToArray($file);
+                $this->content = YamlParser::YAMLLoad($file);
+                $_SESSION['APP_DEBUG'] = $this->content['app']['env'];
+                $_SESSION['APP_FORMAT'] = $this->content['app']['format'];
             } else {
                 $encode = $this->parsing->parseAppFormat();
                 http_response_code(500);
                 exit((new Response())->renderView($encode, null,  array(
                     'code' => 'ERR_FILE_ENV',
-                    'message' => 'Echec lors de l\'ouverture du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".'
+                    'message' => 'Echec lors de l\'ouverture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".'
                 )));
             }
-            if ( is_array($this->content) && !empty($this->content['name']) && !empty($this->content['env']) && !empty($this->content['router']) && !empty($this->content['security']) && !empty($this->content['format']) && !empty($this->content['encodage']) && is_array($this->content['database']) ) {
-                $this->defineApp($this->content['name']);
-                $this->defineEnv($this->content['env']);
-                $this->defineFile(self::FILE_ROUTER, $this->content['router']);
-                $this->defineFile(self::FILE_SECURITY, $this->content['security']);
-                $this->outputFormat($this->content['format'], $this->content['encodage']);
-                $this->defineSGBD($this->content['database']);
+            if ( is_array($this->content['app']) && !empty($this->content['app']['name']) && !empty($this->content['app']['env']) && !empty($this->content['app']['router']) && !empty($this->content['app']['security']) && !empty($this->content['app']['format']) && !empty($this->content['app']['encodage']) && is_array($this->content['app']['database']) ) {
+                $this->defineApp($this->content['app']['name']);
+                $this->defineEnv($this->content['app']['env']);
+                $this->defineFile(self::FILE_ROUTER, $this->content['app']['router']);
+                $this->defineFile(self::FILE_SECURITY, $this->content['app']['security']);
+                $this->outputFormat($this->content['app']['format'], $this->content['app']['encodage']);
+                $this->defineSGBD($this->content['app']['database']);
             } else {
                 throw new RuntimeException(
-                    'Echec lors de la lecture du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".'
+                    'Echec lors de la lecture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".'
                 );
             }
             if (!is_array($_SERVER['APP'])) {
@@ -94,14 +97,14 @@ class Env extends Skeleton
     public function defineFile(string $type, string $file): void
     {
         if (!empty($type) && !empty($file)) {
-            $_SERVER['APP'][$type] = $_SERVER['DOCUMENT_ROOT'] . '/../' . $file;
+            $_SERVER['APP'][$type] = $_SERVER['DOCUMENT_ROOT'] . '/../' . $file . '.xml';
         }
         if (!file_exists($_SERVER['APP'][$type])) {
             $encode = $this->parsing->parseAppFormat();
             http_response_code(500);
             exit((new Response())->renderView($encode, null, array(
                 'code' => 'ERR_FILE_ENV',
-                'message' => 'Echec lors de la lecture du fichier "' . $file . '". Veuillez vérifier votre fichier "./environnement.xml".'
+                'message' => 'Echec lors de la lecture du fichier "' . $file . '". Veuillez vérifier votre fichier "./config/env.yaml".'
             )));
         }
     }
@@ -131,14 +134,18 @@ class Env extends Skeleton
                     switch ($database['driver']) {
                         case Db::FIRESTORE:
                         case Db::FIREBASE:
-                            $_SERVER['APP']['SGBD'] = array(
-                                'DRIVER' => $database['driver'],
-                                'HOST' => $database['host'],
-                                'API_KEY' => $database['apiKey'],
-                                'CLIENT_ID' => $database['clientId'],
-                                'OAUTH_TOKEN' => $database['oAuthToken'],
-                                'TYPE' => $database['type']
-                            );
+                            if ( !empty($database['host']) && !empty($database['apiKey']) && !empty($database['clientId']) && !empty($database['oAuthToken']) ) {
+                                $_SERVER['APP']['SGBD'] = array(
+                                    'DRIVER' => $database['driver'],
+                                    'HOST' => $database['host'],
+                                    'API_KEY' => $database['apiKey'],
+                                    'CLIENT_ID' => $database['clientId'],
+                                    'OAUTH_TOKEN' => $database['oAuthToken'],
+                                    'TYPE' => $database['type']
+                                );
+                            } else {
+                                throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                            }
                             break;
                         case Db::ORACLE:
                         case Db::MYSQL:
@@ -146,7 +153,7 @@ class Env extends Skeleton
                         default:
                             if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) ) {
                                 $_SERVER['APP']['SGBD'] = array(
-                                    'ENCODE' => !empty($database['@attributes']['encode']) ? $database['@attributes']['encode'] : Kernel::DEFAULT_ENCODE,
+                                    'ENCODE' => !empty($database['encode']) ? $database['encode'] : Kernel::DEFAULT_ENCODE,
                                     'DRIVER' => $database['driver'],
                                     'HOST' => $database['host'],
                                     'PORT' => $database['port'],
@@ -155,15 +162,15 @@ class Env extends Skeleton
                                     'SCHEMA' => $database['schema']
                                 );
                             } else {
-                                throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".');
+                                throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
                             }
                             break;
                     }
                 } else {
-                    throw new RuntimeException('Impossible de récupérer le driver dans le fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".');
+                    throw new RuntimeException('Impossible de récupérer le driver dans le fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
                 }
             } else {
-                throw new RuntimeException('Echec lors de récupérer les informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./environnement.xml".');
+                throw new RuntimeException('Echec lors de récupérer les informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
             }
         } catch (RuntimeException $e) {
             $encode = $this->parsing->parseAppFormat();

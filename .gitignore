@@ -1,5 +1,6 @@
 ###< Dev live testing ###
 /vendor/
+/config/
 /public/
 /new/
 /composer.json.dev

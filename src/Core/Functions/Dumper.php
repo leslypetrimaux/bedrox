@@ -12,17 +12,16 @@ class Dumper extends Skeleton
      */
     public static function dump(... $strings): void
     {
-        if ($_SERVER['APP']['DEBUG']) {
+        if ($_SESSION['APP_DEBUG']) {
             $d = new self();
             $dumps = $d->getData($strings);
             $debugTrace = $d->getMethod();
             http_response_code(200);
-            print_r((new Response())->renderView($_SERVER['APP']['FORMAT'], array(
+            print_r((new Response())->renderView($_SERVER['APP']['FORMAT'] ?? $_SESSION['APP_FORMAT'], array(
                 'file' => $debugTrace['file'],
                 'line' => $debugTrace['line'],
                 'dumps' => $dumps
             ), null));
-            $_SESSION['APP_DEBUG'] = true;
         } else {
             $_SESSION['APP_DEBUG'] = false;
         }

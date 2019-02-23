@@ -31,7 +31,7 @@ class Response extends Skeleton implements iResponse
             default:
                 return $this->renderJSON(null, array(
                     'code' => 'ERR_OUTPUT',
-                    'message' => 'Le format d\'écriture de l\'application n\'est pas spécifié. Veuillez vérifier votre fichier "./environnement.xml".'
+                    'message' => 'Le format d\'écriture de l\'application n\'est pas spécifié. Veuillez vérifier votre fichier "./config/env.yaml".'
                 ));
         }
     }
