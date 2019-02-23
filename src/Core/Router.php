@@ -4,6 +4,7 @@ namespace Bedrox\Core;
 
 use Bedrox\Core\Interfaces\iRouter;
 use Bedrox\Skeleton;
+use Bedrox\Yaml\YamlParser;
 use RuntimeException;
 
 class Router extends Skeleton implements iRouter
@@ -23,7 +24,8 @@ class Router extends Skeleton implements iRouter
             parent::__construct();
             $this->security = new Security();
             if (file_exists($_SERVER['APP'][Env::FILE_ROUTER])) {
-                $this->routes = $this->parsing->parseXmlToArray($_SERVER['APP'][Env::FILE_ROUTER])['route']['route'];
+                $content = YamlParser::YAMLLoad($_SERVER['APP'][Env::FILE_ROUTER]);
+                $this->routes = $content;
             } else {
                 throw new RuntimeException('Echec lors de l\'ouverture du fichier des routes. Veuillez vérifier votre fichier "./config/env.yaml".');
             }
@@ -46,8 +48,8 @@ class Router extends Skeleton implements iRouter
     {
         $route = new Route();
         $firewall = $this->security->getFirewall();
-        foreach ($this->routes as $routes) {
-            $path = $routes['@attributes']['path'];
+        foreach ($this->routes as $name => $routes) {
+            $path = $routes['path'];
             $keys = array();
             if (!empty($routes['params'])) {
                 $aCurrent = explode('/', $current);
@@ -77,13 +79,13 @@ class Router extends Skeleton implements iRouter
                     $route->paramsCount = count($keys);
                 }
             }
-            if ( $current === $path && !empty($routes['@attributes']['controller']) ) {
-                $controller = explode('::', $routes['@attributes']['controller']);
-                $route->name = $routes['@attributes']['name'];
+            if ( $current === $path && !empty($routes['controller']) ) {
+                $controller = explode('::', $routes['controller']);
+                $route->name = $name;
                 $route->url = $path;
                 $route->controller = $controller[0];
                 $route->function = $controller[1];
-                $route->render = !empty($routes['render']) ? $routes['@attributes']['render'] : $this->session['APP_FORMAT'];
+                $route->render = !empty($routes['render']) ? $routes['render'] : $this->session['APP_FORMAT'];
                 if ($this->security->isAuthorized($route->name, $firewall)) {
                     http_response_code(403);
                     exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(

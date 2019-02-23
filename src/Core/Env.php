@@ -97,7 +97,7 @@ class Env extends Skeleton
     public function defineFile(string $type, string $file): void
     {
         if (!empty($type) && !empty($file)) {
-            $_SERVER['APP'][$type] = $_SERVER['DOCUMENT_ROOT'] . '/../' . $file . '.xml';
+            $_SERVER['APP'][$type] = $_SERVER['DOCUMENT_ROOT'] . '/../config/' . $file;
         }
         if (!file_exists($_SERVER['APP'][$type])) {
             $encode = $this->parsing->parseAppFormat();

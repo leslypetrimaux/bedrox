@@ -122,7 +122,7 @@ class Response extends Skeleton implements iResponse
                         http_response_code(500);
                         exit($this->renderView($render, null, array(
                             'code' => 'ERR_URI_PARAMS',
-                            'message' => 'La route "' . $response->route->url . '" ne possède pas le bon nombre de paramètres. Veuillez vérifier votre fichier "./routes.xml".'
+                            'message' => 'La route "' . $response->route->url . '" ne possède pas le bon nombre de paramètres. Veuillez vérifier votre fichier "./routes.yaml".'
                         )));
                     }
                 } else {
@@ -141,7 +141,7 @@ class Response extends Skeleton implements iResponse
         http_response_code(404);
         exit($this->renderView($render, null, array(
             'code' => 'ERR_URI_NOTFOUND',
-            'message' => 'La route "' . $_SERVER['REQUEST_URI'] . '" n\'existe pas OU n\'est pas configurée correctement dans votre Application. Veuillez vérifier votre fichier "./routes.xml".'
+            'message' => 'La route "' . $_SERVER['REQUEST_URI'] . '" n\'existe pas OU n\'est pas configurée correctement dans votre Application. Veuillez vérifier votre fichier "./routes.yaml".'
         )));
     }
 }

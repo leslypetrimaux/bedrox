@@ -1096,35 +1096,6 @@ class YamlParser
     }
 
     /**
-     * @param $line
-     * @return bool|int
-     */
-    private function isHashElement ($line)
-    {
-        return strpos($line, ':');
-    }
-
-    /**
-     * @param $indent
-     * @return bool
-     */
-    private function clearBiggerPathValues ($indent): bool
-    {
-        if ($indent === 0) {
-            $this->path = array();
-        }
-        if (empty($this->path)) {
-            return true;
-        }
-        foreach ($this->path as $k => $_) {
-            if ($k > $indent) {
-                unset ($this->path[$k]);
-            }
-        }
-        return true;
-    }
-
-    /**
      * @param $value
      * @return string
      */

@@ -3,6 +3,7 @@
 namespace Bedrox\Core;
 
 use Bedrox\Skeleton;
+use Bedrox\Yaml\YamlParser;
 use RuntimeException;
 
 class Security extends Skeleton
@@ -34,7 +35,8 @@ class Security extends Skeleton
         try {
             parent::__construct();
             if (file_exists($_SERVER['APP'][Env::FILE_SECURITY])) {
-                $this->core = $this->parsing->parseXmlToArray($_SERVER['APP'][Env::FILE_SECURITY]);
+                $content = YamlParser::YAMLLoad($_SERVER['APP'][Env::FILE_SECURITY]);
+                $this->core = $content['security'];
             } else {
                 $encode = $this->parsing->parseAppFormat();
                 http_response_code(500);
@@ -73,7 +75,7 @@ class Security extends Skeleton
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_TOKEN',
-                'message' => 'Impossible de générer le token de l\'Application. Veuillez vérifier votre fichier "./security.xml".'
+                'message' => 'Impossible de générer le token de l\'Application. Veuillez vérifier votre fichier "./security.yaml".'
             )));
         }
     }
@@ -86,9 +88,9 @@ class Security extends Skeleton
     public function getFirewall(): ?array
     {
         $firewall = array(
-            self::SECRET => $this->core[self::FIREWALL][self::TOKEN]['@attributes']->secret,
-            self::ENCODE => $this->core[self::FIREWALL][self::TOKEN]['@attributes']->encode,
-            self::TYPE => $this->core[self::FIREWALL]['@attributes'][self::TYPE],
+            self::SECRET => $this->core[self::FIREWALL][self::TOKEN][self::SECRET],
+            self::ENCODE => $this->core[self::FIREWALL][self::TOKEN][self::ENCODE],
+            self::TYPE => $this->core[self::FIREWALL][self::TYPE],
             self::ANONYMOUS => array()
         );
         if ($firewall[self::TYPE] === self::AUTH) {
@@ -96,22 +98,22 @@ class Security extends Skeleton
                 http_response_code(500);
                 exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
                     'code' => 'ERR_FIREWALL_ANONYMOUS',
-                    'message' => 'Vous devez définir au moins une route pour informer de l\'accès privé de l\'Application. Veuillez vérifier votre fichier "./security.xml".'
+                    'message' => 'Vous devez définir au moins une route pour informer de l\'accès privé de l\'Application. Veuillez vérifier votre fichier "./security.yaml".'
                 )));
             }
-            if (!empty($this->core[self::FIREWALL][self::ANONYMOUS][self::ROUTE])) {
-                if (is_array($this->core[self::FIREWALL][self::ANONYMOUS][self::ROUTE])) {
-                    foreach ($this->core[self::FIREWALL][self::ANONYMOUS][self::ROUTE] as $key => $value) {
+            if (!empty($this->core[self::FIREWALL][self::ANONYMOUS])) {
+                if (is_array($this->core[self::FIREWALL][self::ANONYMOUS])) {
+                    foreach ($this->core[self::FIREWALL][self::ANONYMOUS] as $key => $value) {
                         $firewall[self::ANONYMOUS][] = $value;
                     }
                 } else {
-                    $firewall[self::ANONYMOUS][] = $this->core[self::FIREWALL][self::ANONYMOUS][self::ROUTE];
+                    $firewall[self::ANONYMOUS][] = $this->core[self::FIREWALL][self::ANONYMOUS];
                 }
             } else {
                 http_response_code(500);
                 exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
                     'code' => 'ERR_FIREWALL_PARSING',
-                    'message' => 'Impossible de configurer le firewall de l\'Application avec des routes anonymes. Veuillez vérifier votre fichier "./security.xml".'
+                    'message' => 'Impossible de configurer le firewall de l\'Application avec des routes anonymes. Veuillez vérifier votre fichier "./security.yaml".'
                 )));
             }
         }
