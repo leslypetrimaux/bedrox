@@ -43,12 +43,13 @@ class MySQL extends PDO implements iSgbd
     public function __construct(string $driver, string $host, int $port, string $user, string $pwd, string $schema)
     {
         try {
+            $opt = $driver === Db::MYSQL ? array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE'])) : null;
             $this->driver = $driver;
             parent::__construct(
                 Db::MYSQL . ':dbname=' . $schema . ';port=' . $port . ';host=' . $host,
                 $user,
                 $pwd,
-                array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE']))
+                $opt
             );
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             if ($this->getAttribute(PDO::ATTR_DRIVER_NAME) === Db::MYSQL) {
@@ -72,7 +73,7 @@ class MySQL extends PDO implements iSgbd
      */
     public function getEncodage(string $encodage): ?string
     {
-        return !empty($encodage) ? $encodage : self::UTF8;
+        return self::UTF8;
     }
 
     /**
