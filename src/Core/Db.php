@@ -59,7 +59,6 @@ class Db
                 'message' => 'Echec lors de création de la connexion à la base de données. Veuillez vérifier votre fichier "./environnement.xml".'
             )));
         }
-        dd($this);
     }
 
     /**

@@ -119,7 +119,6 @@ class MySQL extends PDO implements iSgbd
             if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
                 throw new RuntimeException($e[2], $e[1]);
             }
-            dd($result);
             if ($result) {
                 foreach ($result as $key => $value) {
                     $var = array_search($key, $columns, true);
