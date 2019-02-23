@@ -12,18 +12,41 @@ class Dumper extends Skeleton
      */
     public static function dump(... $strings): void
     {
-        // TODO: Get class/line source
         $d = new self();
+        $dumps = $d->getData($strings);
+        $debugTrace = $d->getMethod();
+        http_response_code(200);
+        print_r((new Response())->renderView($_SERVER['APP']['FORMAT'], array(
+            'file' => $debugTrace['file'],
+            'line' => $debugTrace['line'],
+            'dumps' => $dumps
+        ), null));
+    }
+
+    /**
+     * @return array|null
+     */
+    protected function getMethod(): ?array
+    {
+        $debug = debug_backtrace();
+        return $debug[2];
+    }
+
+    /**
+     * @param mixed ...$strings
+     * @return array|null
+     */
+    protected function getData(... $strings): ?array
+    {
         $responses = array();
         foreach ($strings as $arrayString) {
             $response = array();
             foreach ($arrayString as $string) {
-                $response[$d->getClassOrType($string)] = $string;
+                $response[$this->getClassOrType($string)] = $string;
             }
             $responses[] = $response;
         }
-        http_response_code(200);
-        print_r((new Response())->renderView($_SERVER['APP']['FORMAT'], $responses[0], null));
+        return $responses[0];
     }
 
     /**
