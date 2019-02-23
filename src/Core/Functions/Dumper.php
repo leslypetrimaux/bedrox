@@ -12,15 +12,20 @@ class Dumper extends Skeleton
      */
     public static function dump(... $strings): void
     {
-        $d = new self();
-        $dumps = $d->getData($strings);
-        $debugTrace = $d->getMethod();
-        http_response_code(200);
-        print_r((new Response())->renderView($_SERVER['APP']['FORMAT'], array(
-            'file' => $debugTrace['file'],
-            'line' => $debugTrace['line'],
-            'dumps' => $dumps
-        ), null));
+        if ($_SERVER['APP']['DEBUG']) {
+            $d = new self();
+            $dumps = $d->getData($strings);
+            $debugTrace = $d->getMethod();
+            http_response_code(200);
+            print_r((new Response())->renderView($_SERVER['APP']['FORMAT'], array(
+                'file' => $debugTrace['file'],
+                'line' => $debugTrace['line'],
+                'dumps' => $dumps
+            ), null));
+            $_SESSION['APP_DEBUG'] = true;
+        } else {
+            $_SESSION['APP_DEBUG'] = false;
+        }
     }
 
     /**
@@ -39,14 +44,12 @@ class Dumper extends Skeleton
     protected function getData(... $strings): ?array
     {
         $responses = array();
-        foreach ($strings as $arrayString) {
-            $response = array();
-            foreach ($arrayString as $string) {
-                $response[$this->getClassOrType($string)] = $string;
-            }
-            $responses[] = $response;
+        foreach ($strings[0][0] as $string) {
+            $responses[] = array(
+                $this->getClassOrType($string) => $string
+            );
         }
-        return $responses[0];
+        return $responses;
     }
 
     /**

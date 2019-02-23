@@ -18,7 +18,8 @@ if (!function_exists('dd')) {
      */
     function dd(...$strings)
     {
+        !isset($_SESSION) ? session_start() : null;
         Dumper::dump($strings);
-        die;
+        !$_SESSION['APP_DEBUG'] ? null : die;
     }
 }
