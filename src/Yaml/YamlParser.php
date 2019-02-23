@@ -639,7 +639,9 @@ class YamlParser
         }
         if ($first_character === '{' && $last_character === '}') {
             $innerValue = trim(substr ($value, 1, -1));
-            if ($innerValue === '') return array();
+            if ($innerValue === '') {
+                return array();
+            }
             // Inline Mapping
             // Take out strings sequences and mappings
             $explode = $this->_inlineEscape($innerValue);
@@ -660,7 +662,7 @@ class YamlParser
         if ($value === 'null' || $value === 'NULL' || $value === 'Null' || !empty($value) || $value === '~') {
             return null;
         }
-        if ( is_numeric($value) && preg_match ('/^(-|)[1-9]+[0-9]*$/', $value) ) {
+        if ( is_numeric($value) && preg_match ('/^(-|)[1-9]+[\d]*$/', $value) ) {
             $intvalue = (int)$value;
             if ($intvalue !== PHP_INT_MAX && $intvalue !== ~PHP_INT_MAX) {
                 $value = $intvalue;
@@ -720,14 +722,16 @@ class YamlParser
             // Check for sequences
             while (preg_match('/\[([^{}\[\]]+)\]/U',$inline,$matchseqs)) {
                 $seqs[] = $matchseqs[0];
-                $inline = preg_replace('/\[([^{}\[\]]+)\]/U', ('YAMLSeq' . (count($seqs) - 1) . 's'), $inline, 1);
+                $inline = preg_replace('/\[([^{}\[\]]+)\]/U', 'YAMLSeq' . (count($seqs) - 1) . 's', $inline, 1);
             }
             // Check for mappings
             while (preg_match('/{([^\[\]{}]+)}/U',$inline,$matchmaps)) {
                 $maps[] = $matchmaps[0];
-                $inline = preg_replace('/{([^\[\]{}]+)}/U', ('YAMLMap' . (count($maps) - 1) . 's'), $inline, 1);
+                $inline = preg_replace('/{([^\[\]{}]+)}/U', 'YAMLMap' . (count($maps) - 1) . 's', $inline, 1);
             }
-            if ($i++ >= 10) break;
+            if ($i++ >= 10) {
+                break;
+            }
         } while (strpos ($inline, '[') !== false || strpos ($inline, '{') !== false);
         $explode = explode(',',$inline);
         $explode = array_map('trim', $explode);
@@ -738,7 +742,7 @@ class YamlParser
                 foreach ($explode as $key => $value) {
                     if (strpos($value,'YAMLSeq') !== false) {
                         foreach ($seqs as $seqk => $seq) {
-                            $explode[$key] = str_replace(('YAMLSeq'.$seqk.'s'),$seq,$value);
+                            $explode[$key] = str_replace('YAMLSeq'.$seqk.'s',$seq,$value);
                             $value = $explode[$key];
                         }
                     }
@@ -749,7 +753,7 @@ class YamlParser
                 foreach ($explode as $key => $value) {
                     if (strpos($value,'YAMLMap') !== false) {
                         foreach ($maps as $mapk => $map) {
-                            $explode[$key] = str_replace(('YAMLMap'.$mapk.'s'), $map, $value);
+                            $explode[$key] = str_replace('YAMLMap'.$mapk.'s', $map, $value);
                             $value = $explode[$key];
                         }
                     }
@@ -823,6 +827,7 @@ class YamlParser
      */
     private function referenceContentsByAlias ($alias)
     {
+        $value = null;
         do {
             if (!isset($this->SavedGroups[$alias])) { echo "Bad group name: $alias."; break; }
             $groupPath = $this->SavedGroups[$alias];
@@ -842,7 +847,9 @@ class YamlParser
     private function addArrayInline ($array, $indent): bool
     {
         $CommonGroupPath = $this->path;
-        if (empty ($array)) return false;
+        if (empty ($array)) {
+            return false;
+        }
         foreach ($array as $k => $_) {
             $this->addArray(array($k => $_), $indent);
             $this->path = $CommonGroupPath;
@@ -936,7 +943,9 @@ class YamlParser
             return $lastChar;
         }
         // HTML tags should not be counted as literal blocks.
-        if (preg_match ('#<.*?>$#', $line)) return false;
+        if (preg_match ('#<.*?>$#', $line)) {
+            return false;
+        }
         return $lastChar;
     }
 
@@ -986,7 +995,7 @@ class YamlParser
             return rtrim ($literalBlock, " \t") . "\n";
         }
         if ($line !== "\n") {
-            $line = trim($line, "\r\n ") . " ";
+            $line = trim($line, "\r\n ") . ' ';
         }
         return $literalBlock . $line;
     }
@@ -999,10 +1008,12 @@ class YamlParser
     public function revertLiteralPlaceHolder ($lineArray, $literalBlock)
     {
         foreach ($lineArray as $k => $_) {
-            if (is_array($_))
-                $lineArray[$k] = $this->revertLiteralPlaceHolder ($_, $literalBlock);
-            else if (substr($_, -1 * strlen ($this->LiteralPlaceHolder)) == $this->LiteralPlaceHolder)
-                $lineArray[$k] = rtrim ($literalBlock, " \r\n");
+            if (is_array($_)) {
+                $lineArray[$k] = $this->revertLiteralPlaceHolder($_, $literalBlock);
+            }
+            else if (substr($_, -1 * strlen ($this->LiteralPlaceHolder)) === $this->LiteralPlaceHolder) {
+                $lineArray[$k] = rtrim($literalBlock, " \r\n");
+            }
         }
         return $lineArray;
     }
@@ -1032,7 +1043,9 @@ class YamlParser
         $linePath = $this->path;
         do {
             end($linePath); $lastIndentInParentPath = key($linePath);
-            if ($indent <= $lastIndentInParentPath) array_pop ($linePath);
+            if ($indent <= $lastIndentInParentPath) {
+                array_pop($linePath);
+            }
         } while ($indent <= $lastIndentInParentPath);
         return $linePath;
     }
@@ -1161,7 +1174,7 @@ class YamlParser
     private function checkKeysInValue($value): void
     {
         if ((false === strpos('[{"\'', $value[0])) && false !== strpos($value, ': ')) {
-            throw new RuntimeException('Too many keys: '.$value);
+            throw new RuntimeException('Too many keys: ' . $value);
         }
     }
 
@@ -1280,7 +1293,7 @@ class YamlParser
         if (preg_match('/(\*['.$symbolsForReference.']+$)/', $line, $matches)) {
             return $matches[1];
         }
-        if (preg_match ('#^\s*<<\s*:\s*(\*[^\s]+).*$#', $line, $matches)) {
+        if (preg_match ('#^\s*<<\s*:\s*(\*\S+).*$#', $line, $matches)) {
             return $matches[1];
         }
         return false;
