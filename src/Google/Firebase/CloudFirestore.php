@@ -219,6 +219,16 @@ class CloudFirestore extends Firebase
 
     public function unset(string $path)
     {
-        // TODO: Implement del() method.
+        try {
+            $ch = $this->getCurlHandler($path, 'DELETE');
+            $return = curl_exec($ch);
+        } catch (Exception $e) {
+            http_response_code(500);
+            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_FIRESTORE_DELETE:' . $e->getCode(),
+                'message' => $e->getMessage()
+            )));
+        }
+        return $return;
     }
 }

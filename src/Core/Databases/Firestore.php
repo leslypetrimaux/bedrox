@@ -115,8 +115,8 @@ class Firestore extends CloudFirestore implements iSgbd
     {
         $entity->setId(uniqid('', true));
         $data = json_encode($entity);
-        $path = $this->em->getTable($entity);
-        $path .= '/' . $entity->getId();
+        $table = $this->em->getTable($entity);
+        $path = $table . '/' . $entity->getId();
         return !empty($this->patch($path, $data)) ? true : false;
     }
 
@@ -127,8 +127,8 @@ class Firestore extends CloudFirestore implements iSgbd
     public function update(Entity $entity): bool
     {
         $data = json_encode($entity);
-        $path = $this->em->getTable($entity);
-        $path .= '/' . $entity->getId();
+        $table = $this->em->getTable($entity);
+        $path = $table . '/' . $entity->getId();
         return !empty($this->patch($path, $data)) ? true : false;
     }
 
@@ -138,7 +138,11 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function delete(Entity $entity): bool
     {
-        // TODO: Implement delete() method.
+        if ($entity->getId() !== null) {
+            $table = $this->em->getTable($entity);
+            $path = $table . '/' . $entity->getId();
+            return !empty($this->unset($path)) ? true : false;
+        }
         return false;
     }
 }
