@@ -22,6 +22,7 @@ class MySQL extends PDO implements iSgbd
 
     protected $em;
     protected $con;
+    protected $driver;
 
     /**
      * MySQL constructor.
@@ -31,25 +32,36 @@ class MySQL extends PDO implements iSgbd
      * Read all/one (select) Entity
      * Persists (insert/update) Entity
      * Remove (delete) Entity
-     * 
+     *
+     * @param string $driver
      * @param string $host
+     * @param int $port
      * @param string $user
      * @param string $pwd
      * @param string $schema
      */
-    public function __construct(string $host, string $user, string $pwd, string $schema)
+    public function __construct(string $driver, string $host, int $port, string $user, string $pwd, string $schema)
     {
-        parent::__construct(
-            Db::MYSQL . ':dbname=' . $schema . ';host=' . $host,
-            $user,
-            $pwd,
-            array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE']))
-        );
-        $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        if ($this->getAttribute(PDO::ATTR_DRIVER_NAME) === Db::MYSQL) {
-            $this->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+        try {
+            $this->driver = $driver;
+            parent::__construct(
+                Db::MYSQL . ':dbname=' . $schema . ';port=' . $port . ';host=' . $host,
+                $user,
+                $pwd,
+                array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE']))
+            );
+            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            if ($this->getAttribute(PDO::ATTR_DRIVER_NAME) === Db::MYSQL) {
+                $this->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+            }
+            $this->em = new EntityManager();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
+                'message' => $e->getMessage()
+            )));
         }
-        $this->em = new EntityManager();
     }
 
     /**
@@ -60,13 +72,7 @@ class MySQL extends PDO implements iSgbd
      */
     public function getEncodage(string $encodage): ?string
     {
-        switch ($encodage) {
-            case self::UTF8:
-            default:
-                $result = self::ENCODE . self::UTF8;
-                break;
-        }
-        return !empty($result) ? $result : self::ENCODE . self::UTF8;
+        return !empty($encodage) ? $encodage : self::UTF8;
     }
 
     /**
@@ -86,7 +92,7 @@ class MySQL extends PDO implements iSgbd
         } catch (PDOException | Exception $e) {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_MYSQL_' . $e->getCode(),
+                'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
         }
@@ -119,7 +125,6 @@ class MySQL extends PDO implements iSgbd
             if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
                 throw new RuntimeException($e[2], $e[1]);
             }
-            dd($result);
             if ($result) {
                 foreach ($result as $key => $value) {
                     $var = array_search($key, $columns, true);
@@ -132,7 +137,7 @@ class MySQL extends PDO implements iSgbd
         } catch (PDOException | Exception | RuntimeException $e) {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_MYSQL_' . $e->getCode(),
+                'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
         }
@@ -174,7 +179,7 @@ class MySQL extends PDO implements iSgbd
         } catch (PDOException | Exception | RuntimeException $e) {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_MYSQL_' . $e->getCode(),
+                'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
         }
@@ -249,7 +254,7 @@ class MySQL extends PDO implements iSgbd
             $this->con = $this->rollBack();
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_MYSQL_' . $e->getCode(),
+                'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
         }
@@ -301,7 +306,7 @@ class MySQL extends PDO implements iSgbd
             $this->con = $this->rollBack();
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_MYSQL_' . $e->getCode(),
+                'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
         }
@@ -339,7 +344,7 @@ class MySQL extends PDO implements iSgbd
             $this->con = $this->rollBack();
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_MYSQL_' . $e->getCode(),
+                'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
         }

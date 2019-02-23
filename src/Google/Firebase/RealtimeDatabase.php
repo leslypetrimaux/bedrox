@@ -7,22 +7,23 @@ use Exception;
 
 class RealtimeDatabase extends Firebase
 {
-    private $baseURI;
-    private $timeout;
-    private $token;
-    private $curlHandler;
-    private $sslConnection;
-
     /**
      * RealtimeDatabase constructor.
-     * @param array $config
+     *
+     * @param string $host
+     * @param string $apiKey
+     * @param string $clientId
+     * @param string $oAuthToken
+     * @param string $type
      */
-    public function __construct(array $config)
+    public function __construct(string &$host, string $apiKey, string $clientId, string $oAuthToken, string $type = 'public')
     {
-        parent::__construct($config);
-        $this->setBaseURI($this->config['databaseURL']);
+        parent::__construct($host, $apiKey, $clientId, $oAuthToken, $type);
+        $this->setBaseURI($this->host);
         $this->setTimeOut(10);
-        $this->setToken($this->config['apiKey']);
+        if ($type !== 'public') {
+            $this->setToken($this->oAuthToken);
+        }
         $this->initCurlHandler();
         $this->setSSLConnection(false);
     }
@@ -33,8 +34,7 @@ class RealtimeDatabase extends Firebase
      */
     public function setBaseURI(string $uri): self
     {
-        $uri .= (substr($uri, -1) === '/' ? '' : '/');
-        $this->baseURI = $uri;
+        $this->baseURI = 'https://' . $uri . '.firebaseio.com/';
         return $this;
     }
 
@@ -181,7 +181,11 @@ class RealtimeDatabase extends Firebase
         return $this->writeData($path, $data);
     }
 
-    public function del(string $path)
+    /**
+     * @param string $path
+     * @return bool|string
+     */
+    public function unset(string $path)
     {
         try {
             $ch = $this->getCurlHandler($path, 'DELETE');

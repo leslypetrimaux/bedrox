@@ -6,6 +6,7 @@ use Bedrox\Core\Entity;
 use Bedrox\Core\EntityManager;
 use Bedrox\Core\Functions\Parsing;
 use Bedrox\Core\Interfaces\iSgbd;
+use Bedrox\Core\Response;
 use Bedrox\Google\Firebase\RealtimeDatabase;
 
 class FirebaseDatabase extends RealtimeDatabase implements iSgbd
@@ -15,12 +16,17 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
     protected $em;
 
     /**
-     * Firestore constructor.
-     * @param array $config
+     * FirebaseDatabase constructor.
+     *
+     * @param string $host
+     * @param string $apiKey
+     * @param string $clientId
+     * @param string $oAuthToken
+     * @param string $type
      */
-    public function __construct(array $config)
+    public function __construct(string &$host, string $apiKey, string $clientId, string $oAuthToken, string $type = 'public')
     {
-        parent::__construct($config);
+        parent::__construct($host, $apiKey, $clientId, $oAuthToken, $type);
         $this->em = new EntityManager();
     }
 
@@ -32,17 +38,11 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
      */
     public function getEncodage(string $encodage): ?string
     {
-        switch ($encodage) {
-            case self::UTF8:
-            default:
-                $result = self::UTF8;
-                break;
-        }
-        return !empty($result) ? $result : self::UTF8;
+        return !empty($encodage) ? $encodage : self::UTF8;
     }
 
     /**
-     * A customized query builder for FirebaseDatabase Cloud Firestore
+     * A customized query builder for FirebaseDatabase
      *
      * @param string $query
      * @return array|null
@@ -50,7 +50,11 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
     public function buildQuery(string $query): ?array
     {
         // TODO: Implement buildQuery() method.
-        return null;
+        http_response_code(500);
+        exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            'code' => 'ERR_FIREBASE_QUERYBUILDER',
+            'message' => 'Le "QueryBuilder" pour Firebase Realtime Database n\'est pas encore disponible.'
+        )));
     }
 
     /**
@@ -144,7 +148,7 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
         if ($entity->getId() !== null) {
             $table = $this->em->getTable($entity);
             $path = $table . '/' . $entity->getId();
-            return !empty($this->del($path)) ? true : false;
+            return !empty($this->unset($path)) ? true : false;
         }
         return false;
     }

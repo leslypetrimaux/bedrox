@@ -2,7 +2,6 @@
 
 namespace Bedrox\Core;
 
-use Exception;
 use Bedrox\Skeleton;
 use RuntimeException;
 

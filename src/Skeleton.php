@@ -2,8 +2,8 @@
 
 namespace Bedrox;
 
-use Bedrox\Core\Session;
 use Bedrox\Core\Functions\Parsing;
+use Bedrox\Core\Session;
 
 class Skeleton
 {
@@ -24,6 +24,14 @@ class Skeleton
     {
         $this->session = (new Session())->globals;
         $this->parsing = new Parsing();
+    }
+
+    public function __debugInfo()
+    {
+        return array(
+            '_class' => static::class,
+            '_this' => $this
+        );
     }
 
     /**

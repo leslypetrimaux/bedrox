@@ -2,7 +2,6 @@
 
 namespace Bedrox\Core;
 
-
 class QueryBuilder extends Repository
 {
     /**

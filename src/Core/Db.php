@@ -3,6 +3,7 @@
 namespace Bedrox\Core;
 
 use Bedrox\Core\Databases\FirebaseDatabase;
+use Bedrox\Core\Databases\Firestore;
 use Bedrox\Core\Databases\MySQL;
 
 class Db
@@ -16,11 +17,15 @@ class Db
     public const FIRESTORE = 'firestore';
 
     protected $con;
-    protected $config;
     protected $host;
+    protected $port;
     protected $user;
     protected $pwd;
     protected $schema;
+    protected $apiKey;
+    protected $clientId;
+    protected $oAuthToken;
+    protected $type;
 
     /**
      * Db constructor
@@ -32,13 +37,19 @@ class Db
             switch ($_SERVER['APP']['SGBD']['DRIVER']) {
                 case self::FIRESTORE:
                 case self::FIREBASE:
-                    $this->config = $_SERVER['APP']['SGBD']['CONF'];
+                    $this->host = $_SERVER['APP']['SGBD']['HOST'];
+                    $this->apiKey = $_SERVER['APP']['SGBD']['API_KEY'];
+                    $this->clientId = $_SERVER['APP']['SGBD']['CLIENT_ID'];
+                    $this->oAuthToken = $_SERVER['APP']['SGBD']['OAUTH_TOKEN'];
+                    $this->type = $_SERVER['APP']['SGBD']['TYPE'];
                     break;
+                case self::ORACLE:
+                    // TODO: handle Oracle SGBD (with options)
                 case self::MYSQL:
                 case self::MARIADB:
-                case self::ORACLE:
                 default:
                     $this->host = $_SERVER['APP']['SGBD']['HOST'];
+                    $this->port = $_SERVER['APP']['SGBD']['PORT'];
                     $this->user = $_SERVER['APP']['SGBD']['USER'];
                     $this->pwd = $_SERVER['APP']['SGBD']['PWD'];
                     $this->schema = $_SERVER['APP']['SGBD']['SCHEMA'];
@@ -64,25 +75,24 @@ class Db
      * - JSON: (currently unavailable)
      *
      * @param string $driver
-     * @return bool|MySQL|null
+     * @return bool|MySQL|FirebaseDatabase|Firestore|null
      */
     public function setDriver(string $driver)
     {
         $this->con = !empty($driver) ? null : false;
         switch ($driver) {
             case self::FIREBASE:
-                $this->con = new FirebaseDatabase($this->config);
+                $this->con = new FirebaseDatabase($this->host, $this->apiKey, $this->clientId, $this->oAuthToken, $this->type);
                 break;
             case self::FIRESTORE:
-                http_response_code(500);
-                exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                    'code' => 'ERR_FIREBASE_FIRESTORE',
-                    'message' => 'La connexion à Firebase Cloud Firestore. Merci de modifier votre fichier "./environnement.xml".'
-                )));
+                $this->con = new Firestore($this->host, $this->apiKey, $this->clientId, $this->oAuthToken, $this->type);
+                break;
             case self::MYSQL:
             case self::MARIADB:
                 $this->con = new MySQL(
+                    !empty($driver) ? $driver : null,
                     !empty($this->host) ? $this->host : null,
+                    !empty($this->port) ? (int)$this->port : null,
                     !empty($this->user) ? $this->user : null,
                     !empty($this->pwd) ? $this->pwd : null,
                     !empty($this->schema) ? $this->schema : null

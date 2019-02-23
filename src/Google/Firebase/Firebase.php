@@ -4,25 +4,33 @@ namespace Bedrox\Google\Firebase;
 
 class Firebase
 {
-    public $config;
+    protected $host;
+    protected $apiKey;
+    protected $clientId;
+    protected $oAuthToken;
+    protected $type;
+
+    protected $baseURI;
+    protected $timeout;
+    protected $token;
+    protected $curlHandler;
+    protected $sslConnection;
 
     /**
      * FirebaseDatabase constructor.
      *
-     * @param array $config
+     * @param string $host
+     * @param string $apiKey
+     * @param string $clientId
+     * @param string $oAuthToken
+     * @param string $type
      */
-    public function __construct(array &$config)
+    public function __construct(string &$host, string $apiKey, string $clientId, string $oAuthToken, string $type = 'public')
     {
-        $this->config = $config;
-    }
-
-    /**
-     * @param array $config
-     * @return bool
-     */
-    public function connect(array $config): bool
-    {
-        // TODO: implements connexion to firebase core
-        return false;
+        $this->host = $host;
+        $this->apiKey = $apiKey;
+        $this->clientId = $clientId;
+        $this->oAuthToken = $oAuthToken;
+        $this->type = $type;
     }
 }

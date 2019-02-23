@@ -2,10 +2,10 @@
 
 namespace Bedrox\Core;
 
-use SimpleXMLElement;
-use DOMDocument;
-use Bedrox\Skeleton;
 use Bedrox\Core\Interfaces\iResponse;
+use Bedrox\Skeleton;
+use DOMDocument;
+use SimpleXMLElement;
 
 class Response extends Skeleton implements iResponse
 {
@@ -116,16 +116,14 @@ class Response extends Skeleton implements iResponse
             $functionStr = $response->route->function;
             if ($response->route->paramsCount > 0) {
                 if (!empty($response->route->params)) {
-                    switch ($response->route->paramsCount) {
-                        case 1:
-                            $function = $class->$functionStr($response->route->params);
-                            break;
-                        default:
-                            http_response_code(500);
-                            exit($this->renderView($render, null, array(
-                                'code' => 'ERR_URI_PARAMS',
-                                'message' => 'La route "' . $response->route->url . '" ne possède pas le bon nombre de paramètres. Veuillez vérifier votre fichier "./routes.xml".'
-                            )));
+                    if ($response->route->paramsCount === 1) {
+                        $function = $class->$functionStr($response->route->params);
+                    } else {
+                        http_response_code(500);
+                        exit($this->renderView($render, null, array(
+                            'code' => 'ERR_URI_PARAMS',
+                            'message' => 'La route "' . $response->route->url . '" ne possède pas le bon nombre de paramètres. Veuillez vérifier votre fichier "./routes.xml".'
+                        )));
                     }
                 } else {
                     http_response_code(500);

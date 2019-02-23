@@ -2,7 +2,7 @@
   "name": "bedrox/bedrox",
   "license": "PHP-3.01",
   "description": "Framework indépendant développer pour une utilisation en tant qu'API. Le projet pourra renvoyer des retours dans différents langages : JSON, XML, HTML, etc...",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "type": "library",
   "authors": [
     {
@@ -12,7 +12,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": "^7.1.3",
+    "php": ">=7.1.3",
     "ext-pdo": "*",
     "ext-simplexml": "*",
     "ext-libxml": "*",
