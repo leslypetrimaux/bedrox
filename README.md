@@ -1,6 +1,4 @@
-# Framework Bedrox
-
-## Installation d'un nouveau projet
+# Installation d'un nouveau projet
 Afin de pouvoir utiliser pleinement Bedrox, il faut commencer par créer un nouveau projet avec composer en tapant la commande suivante :
 ```bash
 composer create-project bedrox/bedrox-api mon_dossier
@@ -29,17 +27,17 @@ mon_dossier:
 ```
 Nous aborderons tous ces fichiers lors de la configuration du projet
 
-## Configuration d'un projet
+# Configuration d'un projet
 Notre projet étant installé, nous allons devoir le configurer afin qu'il fonctionne pour notre environnement. Dans cette partie, nous verrons comment modifier les fichiers de configuration et utiliser le framework.
 
-**L'installation d'un nouveau projet possède certains des exemples qui seront vu dans la documentation.**
+__L'installation d'un nouveau projet possède certains des exemples qui seront vu dans la documentation.__
 
 Pour correctement modifier ces fichiers, contenu dans le dossier `config/`, nous verrons des exemples concerts.
 ```diff
 - ATTENTION ! Actuellement, seul l'encodage en "utf-8" pour l'application et les databases est supporté.
 ```
 
-### Environnement
+## Environnement
 Pour configurer l'environnement de l'application, il faut remplir le fichier `./config/env.yaml` avec la synthaxe suivante :
 
 ```yaml
@@ -57,7 +55,7 @@ app:
 ```
 Vous pouvez retrouver le détails concernant ce fichier dans la documentation [ENV.md](./docs/ENV.md).
 
-### Routes
+## Routes
 Vous pouvez déclarer autant de route et de controller que vous le souhaitez. Afin de configurer une route, référencez le fichier `./config/routes.yaml` dans le fichier d'__environnement__. Vous pouvez le remplir de la manière suivante :
 
 ```yaml
@@ -73,7 +71,7 @@ Vous pouvez déclarer autant de route et de controller que vous le souhaitez. Af
 ```
 Vous pouvez retrouver le détails concernant ce fichier dans la documentation [ROUTES.md](./docs/ROUTES.md).
 
-### Sécurité
+## Sécurité
 Afin de configurer le firewall, il faut référencer le fichier `./config/security.yaml` dans le fichier d'__environnement__ et le remplir de la manière suivante :
 
 ```yaml
@@ -88,3 +86,34 @@ security:
       %ROUTE_NAME2%
 ```
 Vous pouvez retrouver le détails concernant ce fichier dans la documentation [SECURITY.md](./docs/SECURITY.md).
+
+# Utilisation du framework
+Nous verrons dans cette partie comment utiliser Bedrox.
+
+## Environnements
+Le framework possède deux modes de développement : `dev` & `prod`.
+
+### Développement
+L'environnement `dev` vous permet d'afficher toutes les exceptions et les dumps gérés par le framework.
+
+*(voir la section [debug](#debug))*
+
+### Production
+L'environnement `prod` est encore en cours de développement.
+
+Il permettra de gérer le comportement de l'application en fonction des types d'erreurs retournés.
+
+## Debug
+Bedrox fournit deux fonctions de *dump*. Celles-ci s'adaptent au format de votre application afin de printer dans un logiciel autre que votre navigateur internet.
+
+```text
+dump(...string: array|mixed[]);
+dd(...string: array|mixed[]);
+```
+Vous pouvez retrouver le détails concernant ce fichier dans la documentation [DEBUG.md](./docs/DEBUG.md).
+
+## Controllers
+Documentation en cours de rédaction.
+
+## Entités
+Documentation en cours de rédaction.
