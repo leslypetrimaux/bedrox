@@ -9,23 +9,23 @@ Vous pourrez ainsi démarrer votre nouveau projet avec une architecture complèt
 
 Les dossiers d'un projet se présentent de la manière suivante :
 ```yaml
-/
-config/ # configurations de l'application
-env.yaml
-routes.yaml
-security.yaml
-public/ # dossier web
-.htaccess
-index.php
-src/ # sources de l'application
-App/
-  Controllers/ # contient les controllers des routes
-    DefaultController.php
-  Entity/ # contient les entités pour les databases
-    Users.php
-  Kernel.php
-vendor/ # comporte toutes les dépendances de composer
-composer.json
+mon_dossier:
+  config: # configurations de l'application
+    env.yaml
+    routes.yaml
+    security.yaml
+  public: # dossier web
+    .htaccess
+    index.php
+  src: # sources de l'application
+    App:
+      Controllers: # contient les controllers des routes
+        DefaultController.php
+      Entity: # contient les entités pour les databases
+        Users.php
+      Kernel.php
+  vendor: # comporte toutes les dépendances de composer
+  composer.json
 ```
 Nous aborderons tous ces fichiers lors de la configuration du projet
 
