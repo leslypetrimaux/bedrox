@@ -32,13 +32,14 @@ Nous aborderons tous ces fichiers lors de la configuration du projet
 ## Configuration d'un projet
 Notre projet étant installé, nous allons devoir le configurer afin qu'il fonctionne pour notre environnement. Dans cette partie, nous verrons comment modifier les fichiers de configuration et utiliser le framework.
 
-### Configurations
+**L'installation d'un nouveau projet possède certains des exemples qui seront vu dans la documentation.**
+
 Pour correctement modifier ces fichiers, contenu dans le dossier `config/`, nous verrons des exemples concerts.
 ```diff
 - ATTENTION ! Actuellement, seul l'encodage en "utf-8" pour l'application et les databases est supporté.
 ```
 
-#### Environnement
+### Environnement
 Pour configurer l'environnement de l'application, il faut remplir le fichier `./config/env.yaml` avec la synthaxe suivante :
 
 ```yaml
@@ -54,8 +55,36 @@ app:
   router: '%RELATIVE_PATH_TO_ROUTER_FILE_FROM_ROOT_PROJECT%'
   security: '%RELATIVE_PATH_TO_SECURITY_FILE_FROM_ROOT_PROJECT%'
 ```
-Vous pouvez retrouver le détails concernant ce fichier dans la documentation [ENV.md](./docs/ENV.md)
+Vous pouvez retrouver le détails concernant ce fichier dans la documentation [ENV.md](./docs/ENV.md).
 
-#### Routes
+### Routes
+Vous pouvez déclarer autant de route et de controller que vous le souhaitez. Afin de configurer une route, référencez le fichier `./config/routes.yaml` dans le fichier d'__environnement__. Vous pouvez le remplir de la manière suivante :
 
-#### Sécurité
+```yaml
+%ROUTE_NAME1%:
+  path: '%ROUTE_PATH%'
+  controller: '%NAMESPACE\CLASSNAME%::%FUNCTION_NAME%'
+
+%ROUTE_NAME2%:
+  path: '%ROUTE_PATH%{%ENTITY%}'
+  controller: '%NAMESPACE\CLASSNAME%::%FUNCTION_NAME%'
+  params:
+    %ENTITY%
+```
+Vous pouvez retrouver le détails concernant ce fichier dans la documentation [ROUTES.md](./docs/ROUTES.md).
+
+### Sécurité
+Afin de configurer le firewall, il faut référencer le fichier `./config/security.yaml` dans le fichier d'__environnement__ et le remplir de la manière suivante :
+
+```yaml
+security:
+  firewall:
+    type: 'app_auth()'
+    token:
+      encode: 'token_algos()'
+      secret: '%APP_SECRET%'
+    anonymous:
+      %ROUTE_NAME1%
+      %ROUTE_NAME2%
+```
+Vous pouvez retrouver le détails concernant ce fichier dans la documentation [SECURITY.md](./docs/SECURITY.md).
