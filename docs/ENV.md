@@ -72,5 +72,6 @@ app:
 
 ---
 ```diff
-- ATTENTION ! Pour le moment, seuls les bases accessibles en lecture/écriture public sur Firebase fonctionnent. L'authentification Firebase n'est pas encore supportée.
+- ATTENTION ! Pour le moment, seuls les bases accessibles en lecture/écriture public sur Firebase fonctionnent.
+- L'authentification Firebase n'est pas encore supportée.
 ```
