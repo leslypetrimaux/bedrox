@@ -1,5 +1,5 @@
 # Framework Bedrox
 
-Aucune documentation n'est disponible.
+La documentation est en cours de construction.
 
-Merci de vous rendre sur le github [Bedrox-API](https://github.com/leslypetrimaux/bedrox-api) pour installer un nouveau projet.
+Pour l'instant, merci de vous rendre sur le github [Bedrox-API](https://github.com/leslypetrimaux/bedrox-api) pour installer un nouveau projet.
