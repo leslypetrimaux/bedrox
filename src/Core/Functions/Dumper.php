@@ -11,7 +11,7 @@ class Dumper extends Skeleton
      * @param bool $die
      * @param mixed ...$strings
      */
-    public static function dump(bool $die, ... $strings): void
+    public static function dump(... $strings): void
     {
         if ($_SESSION['APP_DEBUG']) {
             $d = new self();
@@ -32,8 +32,7 @@ class Dumper extends Skeleton
      */
     public static function printAndDie(): void
     {
-        print_r((new Response())->renderView($_SERVER['APP']['FORMAT'] ?? $_SESSION['APP_FORMAT'], null, null));
-        die;
+        exit((new Response())->renderView($_SERVER['APP']['FORMAT'] ?? $_SESSION['APP_FORMAT'], null, null));
     }
 
     /**
