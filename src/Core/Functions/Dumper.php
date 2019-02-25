@@ -8,23 +8,40 @@ use Bedrox\Skeleton;
 class Dumper extends Skeleton
 {
     /**
+     * @param bool $die
      * @param mixed ...$strings
      */
-    public static function dump(... $strings): void
+    public static function dump(bool $die, ... $strings): void
     {
         if ($_SESSION['APP_DEBUG']) {
             $d = new self();
             $dumps = $d->getData($strings);
             $debugTrace = $d->getMethod();
-            http_response_code(200);
-            print_r((new Response())->renderView($_SERVER['APP']['FORMAT'] ?? $_SESSION['APP_FORMAT'], array(
+            $d->setDumpResult(array(
                 'file' => $debugTrace['file'],
                 'line' => $debugTrace['line'],
-                'dumps' => $dumps
-            ), null));
+                'outputs' => $dumps
+            ));
         } else {
             $_SESSION['APP_DEBUG'] = false;
         }
+    }
+
+    /**
+     * Print dd() results
+     */
+    public static function printAndDie(): void
+    {
+        print_r((new Response())->renderView($_SERVER['APP']['FORMAT'] ?? $_SESSION['APP_FORMAT'], null, null));
+        die;
+    }
+
+    /**
+     * @param array $dump
+     */
+    public function setDumpResult(array $dump): void
+    {
+        $_SESSION['DUMPS'][] = $dump;
     }
 
     /**
