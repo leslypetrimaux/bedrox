@@ -99,7 +99,7 @@ class Response extends Skeleton implements iResponse
         if ($error) {
             $result['error'] = $error;
         }
-//        var_dump($this->getDumps());die;
+        unset($_SESSION['DUMPS']);
         return $result;
     }
 
