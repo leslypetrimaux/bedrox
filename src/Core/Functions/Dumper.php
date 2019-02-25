@@ -13,6 +13,11 @@ class Dumper extends Skeleton
      */
     public static function dump(... $strings): void
     {
+        if (!isset($_SESSION['DUMPS_COUNT'])) {
+            $_SESSION['DUMPS_COUNT'] = 0;
+        } else {
+            $_SESSION['DUMPS_COUNT']++;
+        }
         if ($_SESSION['APP_DEBUG']) {
             $d = new self();
             $dumps = $d->getData($strings);
@@ -40,7 +45,7 @@ class Dumper extends Skeleton
      */
     public function setDumpResult(array $dump): void
     {
-        $_SESSION['DUMPS'][] = $dump;
+        $_SESSION['DUMPS'][$_SESSION['DUMPS_COUNT']] = $dump;
     }
 
     /**
