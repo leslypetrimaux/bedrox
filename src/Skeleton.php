@@ -55,6 +55,16 @@ class Skeleton
         $this->auth = $auth ?: false;
         return $this;
     }
+
+    /**
+     * Get dumps to display
+     *
+     * @return array|null
+     */
+    public function getDumps(): ?array
+    {
+        return isset($_SESSION['DUMPS']) ? $_SESSION['DUMPS']: null;
+    }
 }
 
 require_once __DIR__ . '/Core/Functions/Globals.php';

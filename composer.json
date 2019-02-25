@@ -24,8 +24,7 @@
   "autoload": {
     "exclude-from-classmap": ["/docs/", "/tests/"],
     "psr-4": {
-      "Bedrox\\": ""
-    },
-    "target-dir": "Bedrox"
+      "Bedrox\\": "src/"
+    }
   }
 }

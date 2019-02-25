@@ -8,7 +8,7 @@ if (!function_exists('dump')) {
      */
     function dump(...$strings)
     {
-        Dumper::dump($strings);
+        Dumper::dump(false, $strings);
     }
 }
 
@@ -19,7 +19,7 @@ if (!function_exists('dd')) {
     function dd(...$strings)
     {
         !isset($_SESSION) ? session_start() : null;
-        Dumper::dump($strings);
-        !empty($_SESSION['APP_DEBUG']) ? null : die;
+        Dumper::dump(true, $strings);
+        Dumper::printAndDie();
     }
 }

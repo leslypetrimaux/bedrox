@@ -85,13 +85,22 @@ class Response extends Skeleton implements iResponse
      */
     public function renderResult(?array $data, ?array $error): ?array
     {
-        return array(
+        $result = array(
             'status' => !is_array($error) ? 'success' : 'error',
             'statusCode' => http_response_code(),
-            'execTime' => round((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2),
-            'data' => $data,
-            'error' => $error
+            'execTime' => round((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2)
         );
+        if ($this->getDumps()) {
+            $result['dumps'] = $this->getDumps();
+        }
+        if ($data) {
+            $result['data'] = $data;
+        }
+        if ($error) {
+            $result['error'] = $error;
+        }
+        var_dump($this->getDumps());die;
+        return $result;
     }
 
     /**
