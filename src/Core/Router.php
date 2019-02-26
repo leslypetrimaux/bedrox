@@ -46,6 +46,15 @@ class Router extends Skeleton implements iRouter
      */
     public function getCurrentRoute(string $current): ?Route
     {
+        $cRoute = explode('.', $current);
+        $current = $cRoute[0];
+        if (!empty($cRoute[1]) && !in_array($cRoute[1], array(Response::FORMAT_JSON, Response::FORMAT_XML), true)) {
+            http_response_code(500);
+            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_URI_FORMAT',
+                'message' => 'Erreur lors de la récupération de l\'encodage de la page. Vérifiez votre route ou la configuration de votre application.'
+            )));
+        }
         $route = new Route();
         $firewall = $this->security->getFirewall();
         foreach ($this->routes as $name => $routes) {
@@ -85,7 +94,7 @@ class Router extends Skeleton implements iRouter
                 $route->url = $path;
                 $route->controller = $controller[0];
                 $route->function = $controller[1];
-                $route->render = !empty($routes['render']) ? $routes['render'] : $this->session['APP_FORMAT'];
+                $route->render = !empty($cRoute[1]) ? $cRoute[1] : $_SERVER['APP']['FORMAT'];
                 if ($this->security->isAuthorized($route->name, $firewall)) {
                     http_response_code(403);
                     exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
@@ -93,9 +102,6 @@ class Router extends Skeleton implements iRouter
                         'message' => 'Vous n\'avez pas accès à cette page. Veuillez vérifier votre token ou l\'adresse de votre page.'
                     )));
                 }
-            }
-            if ( $current === '/_phpinfo' ) {
-                phpinfo();
             }
         }
         return $route;
