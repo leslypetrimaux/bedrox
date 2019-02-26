@@ -92,6 +92,10 @@ class Response extends Skeleton implements iResponse
         );
         if ($this->getDumps()) {
             $result['dumps'] = $this->getDumps();
+            $result['error'] = array(
+                'code' => 'WARN_DUMPS',
+                'message' => 'Des dumps sont encore présent dans votre code !'
+            );
         }
         if ($data) {
             $result['data'] = $data;
