@@ -25,15 +25,6 @@ class Response extends Skeleton implements iResponse
     public $route;
 
     /**
-     * Response constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->route = new Route();
-    }
-
-    /**
      * @param string $format
      * @param array $data
      * @param array $error
@@ -141,15 +132,14 @@ class Response extends Skeleton implements iResponse
      */
     public function terminate(Response $response): void
     {
-        $render = empty($response->route->getRender()) ? $this->session['APP_FORMAT'] : $response->route->getRender();
-        if ( !empty($response->route) && !empty($response->route->getUrl()) && !empty($response->route->getController()) && !empty($response->route->getFunction()) ) {
-            $className = $response->route->getController();
-            $class = new $className($response);
-            $functionStr = $response->route->getFunction();
-            if ($response->route->getParamsCount() > 0) {
-                if (!empty($response->route->getParams())) {
-                    if ($response->route->getParamsCount() === 1) {
-                        $function = $class->$functionStr($response->route->getParams());
+        $render = empty($response->route->render) ? $this->session['APP_FORMAT'] : $response->route->render;
+        if ( !empty($response->route) && !empty($response->route->url) && !empty($response->route->controller) && !empty($response->route->function) && !empty($render) ) {
+            $class = new $response->route->controller($response);
+            $functionStr = $response->route->function;
+            if ($response->route->paramsCount > 0) {
+                if (!empty($response->route->params)) {
+                    if ($response->route->paramsCount === 1) {
+                        $function = $class->$functionStr($response->route->params);
                     } else {
                         http_response_code(500);
                         exit($this->renderView($render, null, array(

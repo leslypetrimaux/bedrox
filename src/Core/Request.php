@@ -17,11 +17,6 @@ class Request implements iRequest
     public $post;
     public $files;
 
-    public function __construct()
-    {
-        $this->route = new Route();
-    }
-
     /**
      * Create the Application request from PHP globals.
      *
