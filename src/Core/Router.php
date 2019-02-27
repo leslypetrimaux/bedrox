@@ -42,13 +42,17 @@ class Router extends Skeleton implements iRouter
      * Return the requested route (if exists).
      *
      * @param string $current
+     * @param string|null $format
      * @return Route|null
      */
-    public function getCurrentRoute(string $current): ?Route
+    public function getCurrentRoute(string $current, ?string $format = null): ?Route
     {
         $cRoute = explode('.', $current);
         $current = $cRoute[0];
-        if (!empty($cRoute[1]) && !in_array($cRoute[1], array(Response::FORMAT_JSON, Response::FORMAT_XML), true)) {
+        if (!empty($format) && !empty($cRoute[1])) {
+            $format = $cRoute[1];
+        }
+        if (!empty($format) && !(new Request())->getResponseType($format)) {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_URI_FORMAT',
@@ -94,7 +98,7 @@ class Router extends Skeleton implements iRouter
                 $route->url = $path;
                 $route->controller = $controller[0];
                 $route->function = $controller[1];
-                $route->render = !empty($cRoute[1]) ? $cRoute[1] : $_SERVER['APP']['FORMAT'];
+                $route->render = !empty($format) ? $format : $_SERVER['APP']['FORMAT'];
                 if ($this->security->isAuthorized($route->name, $firewall)) {
                     http_response_code(403);
                     exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(

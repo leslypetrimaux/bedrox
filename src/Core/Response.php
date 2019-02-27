@@ -9,6 +9,15 @@ use SimpleXMLElement;
 
 class Response extends Skeleton implements iResponse
 {
+    public const TYPE_JSON = array(
+        'application/json',
+        'text/json'
+    );
+    public const TYPE_XML = array(
+        'application/xml',
+        'text/xml'
+    );
+
     public const FORMAT_JSON = 'json';
     public const FORMAT_XML = 'xml';
 
