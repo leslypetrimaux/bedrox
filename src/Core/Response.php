@@ -20,6 +20,10 @@ class Response extends Skeleton implements iResponse
 
     public const FORMAT_JSON = 'json';
     public const FORMAT_XML = 'xml';
+    public const FORMAT_CSV = 'csv';
+    public const FORMAT_HTML = 'html';
+    public const FORMAT_XLS = 'xls';
+    public const FORMAT_XLSX = 'xlsx';
 
     public $request;
     public $route;
