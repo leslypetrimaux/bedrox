@@ -78,7 +78,7 @@ class Router extends Skeleton implements iRouter
                                 $repo = str_replace('{' . $keyValue . '}', $keyValue, $aPath[$key]);
                             }
                             if ((new EntityManager())->getRepo($repo) !== null) {
-                                $route->params = (new EntityManager())->getRepo($repo)->find($aCurrent[$key]);
+                                $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
                             } else {
                                 http_response_code(500);
                                 exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
@@ -89,17 +89,17 @@ class Router extends Skeleton implements iRouter
                             $current = str_replace($aCurrent[$key], $aPath[$key], $current);
                         }
                     }
-                    $route->paramsCount = count($keys);
+                    $route->setParamsCount(count($keys));
                 }
             }
             if ( $current === $path && !empty($routes['controller']) ) {
                 $controller = explode('::', $routes['controller']);
-                $route->name = $name;
-                $route->url = $path;
-                $route->controller = $controller[0];
-                $route->function = $controller[1];
-                $route->render = !empty($format) ? $format : $_SERVER['APP']['FORMAT'];
-                if ($this->security->isAuthorized($route->name, $firewall)) {
+                $route->setName($name);
+                $route->setUrl($path);
+                $route->setController($controller[0]);
+                $route->setFunction($controller[1]);
+                $route->setRender(!empty($format) ? $format : $_SERVER['APP']['FORMAT']);
+                if ($this->security->isAuthorized($route->getName(), $firewall)) {
                     http_response_code(403);
                     exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
                         'code' => 'ERR_URI_DENIED_ACCESS',
