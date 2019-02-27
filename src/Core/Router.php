@@ -49,7 +49,7 @@ class Router extends Skeleton implements iRouter
     {
         $cRoute = explode('.', $current);
         $current = $cRoute[0];
-        if (!empty($format) && !empty($cRoute[1])) {
+        if (empty($format) && !empty($cRoute[1])) {
             $format = $cRoute[1];
         }
         if (!empty($format) && !(new Request())->getResponseType($format)) {
