@@ -68,9 +68,9 @@ class Security extends Skeleton
     public function defineToken(string $encode, string $token): void
     {
         if ((!empty($encode) || !empty($token)) && in_array($encode, hash_algos(), true)) {
-            $app = str_replace(' ', '', ucwords($_SESSION['APP_NAME']));
+            $app = str_replace(' ', '', ucwords($this->session->get('APP_NAME')));
             $token = $app . '-' . $token;
-            $this->session['APP_TOKEN'] = $_SESSION['APP_TOKEN'] = hash($encode, $token);
+            $this->session->set('APP_TOKEN', hash($encode, $token));
         } else {
             http_response_code(500);
             exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
@@ -118,6 +118,13 @@ class Security extends Skeleton
             }
         }
         $this->defineToken($firewall[self::ENCODE], $firewall[self::SECRET]);
+        if (empty($_SESSION['APP_TOKEN'])) {
+            http_response_code(500);
+            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_SESSION',
+                'message' => 'Une erreur s\'est produite lors de la lecture/écriture de la session courante. Merci de supprimer le cache de l\'Application.'
+            )));
+        }
         return $firewall;
     }
 
@@ -136,7 +143,7 @@ class Security extends Skeleton
      * @param array $firewall
      * @return bool
      */
-    public function isAuthorized(string $route, array $firewall): bool
+    public function isNotAuthorized(string $route, array $firewall): bool
     {
         $redirect = true;
         switch ($firewall[self::TYPE]) {
@@ -144,9 +151,9 @@ class Security extends Skeleton
                 $auth = new Auth();
                 $token = $auth->tokenVerification();
                 if ($token) {
-                    $redirect = !$auth;
+                    $redirect = !$token;
                 } else {
-                    $this->session['APP_TOKEN'] = $_SESSION['APP_TOKEN'] = 'hidden';
+                    $this->session->set('APP_TOKEN', 'hidden');
                     foreach ($firewall[self::ANONYMOUS] as $anonymous) {
                         $redirect = $route !== $anonymous;
                         if (!$redirect) {

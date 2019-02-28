@@ -116,7 +116,7 @@ class Response extends Skeleton implements iResponse
         if ($error) {
             $result['error'] = $error;
         }
-        unset($_SESSION['DUMPS']);
+        $this->session->unset('DUMPS');
         return $result;
     }
 
@@ -136,7 +136,7 @@ class Response extends Skeleton implements iResponse
      */
     public function terminate(Response $response): void
     {
-        $render = empty($response->route->render) ? $this->session['APP_FORMAT'] : $response->route->render;
+        $render = empty($response->route->render) ? $this->session->get('APP_FORMAT') : $response->route->render;
         if ( !empty($response->route) && !empty($response->route->url) && !empty($response->route->controller) && !empty($response->route->function) && !empty($render) ) {
             $class = new $response->route->controller($response);
             $functionStr = $response->route->function;

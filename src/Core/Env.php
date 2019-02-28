@@ -17,14 +17,13 @@ class Env extends Skeleton
     protected $content;
 
     /**
-     * Load "environnements.xml" configuration file.
+     * Load environments configuration file.
      *
      * @param string $file
      */
     public function load(string $file): void
     {
         try {
-            !isset($_SESSION) ? session_start() : null;
             if (file_exists($file)) {
                 $this->content = YamlParser::YAMLLoad($file);
                 $_SESSION['APP_DEBUG'] = $this->content['app']['env'];
@@ -74,8 +73,9 @@ class Env extends Skeleton
      */
     public function defineApp(string $app): void
     {
-        $_SERVER['APP']['NAME'] = $_SESSION['APP_NAME'] = $app;
-        $_SESSION['APP_TOKEN'] = null;
+        $_SERVER['APP']['NAME'] = $app;
+        $this->session->set('APP_NAME', $app);
+        $this->session->set('APP_TOKEN', null);
     }
 
     /**
@@ -85,8 +85,10 @@ class Env extends Skeleton
      */
     public function defineEnv(string $env): void
     {
-        $_SERVER['APP']['ENV'] = $_SESSION['APP_ENV'] = $env;
-        $_SERVER['APP']['DEBUG'] = $_SESSION['APP_DEBUG'] = $env !== 'prod';
+        $_SERVER['APP']['ENV'] = $env;
+        $_SERVER['APP']['DEBUG'] = $env !== 'prod';
+        $this->session->set('APP_ENV', $env);
+        $this->session->set('APP_DEBUG', $env !== 'prod');
     }
 
     /**
@@ -118,8 +120,10 @@ class Env extends Skeleton
      */
     public function outputFormat(string $format, string $encode): void
     {
-        $_SERVER['APP']['ENCODAGE'] = $_SESSION['APP_ENCODAGE'] = $encode;
-        $_SERVER['APP']['FORMAT'] = $_SESSION['APP_FORMAT'] = $format;
+        $_SERVER['APP']['ENCODAGE'] = $encode;
+        $_SERVER['APP']['FORMAT'] = $format;
+        $this->session->set('APP_ENCODAGE', $encode);
+        $this->session->set('APP_FORMAT', $format);
     }
 
     /**

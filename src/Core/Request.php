@@ -13,9 +13,9 @@ class Request implements iRequest
 {
     protected const X_RESPONSE_TYPE = 'X-Response-Type';
 
+    public $files;
     public $get;
     public $post;
-    public $files;
 
     /**
      * Create the Application request from PHP globals.
@@ -24,7 +24,6 @@ class Request implements iRequest
      */
     public static function createFromGlobals(): self
     {
-        $_SESSION['APP_AUTH'] = false;
         $request = new self();
         $request->get = !empty($_GET) ? $_GET : null;
         $request->post = !empty($_POST) ? $_POST : null;
@@ -80,17 +79,6 @@ class Request implements iRequest
     public function handle(Request $request): Response
     {
         $response = new Response();
-        $session = (new Session())->globals;
-        if ($session) {
-            $session['APP_TOKEN'] = $_SESSION['APP_TOKEN'];
-            $response->session = $session;
-        } else {
-            http_response_code(500);
-            exit($response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_SESSION',
-                'message' => 'Une erreur s\'est produite lors de la lecture/écriture de la session courante. Merci de supprimer le cache de l\'Application.'
-            )));
-        }
         if ($request !== null) {
             $response->request = new self();
             $response->request->get = !empty($request->get) ? $request->get : null;

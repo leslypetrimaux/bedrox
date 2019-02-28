@@ -6,7 +6,6 @@ use Bedrox\Skeleton;
 
 class Controller extends Skeleton
 {
-    public $session;
     public $request;
 
     /**
@@ -18,7 +17,6 @@ class Controller extends Skeleton
     public function __construct(Response $response)
     {
         parent::__construct();
-        $this->session = $response->session;
         $this->request = $response->request;
         $this->setAuth($_SESSION['APP_AUTH']);
     }
@@ -31,15 +29,5 @@ class Controller extends Skeleton
     public function getEntityManager(): EntityManager
     {
         return new EntityManager();
-    }
-
-    /**
-     * Return Session to be usable in the current controller.
-     *
-     * @return Session
-     */
-    public function getSession(): Session
-    {
-        return new Session();
     }
 }

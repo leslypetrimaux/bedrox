@@ -27,6 +27,8 @@ class Auth extends Skeleton
      */
     public function tokenVerification(): bool
     {
-        return !empty($this->request['token']) ? $this->session['APP_AUTH'] = $_SESSION['APP_AUTH'] = $this->request['token'] === $this->session['APP_TOKEN'] : false;
+        $verification = !empty($this->request['token']) ? $this->request['token'] === $this->session->get('APP_TOKEN') : false;
+        $this->session->set('APP_AUTH', $verification);
+        return $verification;
     }
 }

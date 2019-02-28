@@ -9,7 +9,7 @@ class Skeleton
 {
     public const BASE = '/';
 
-    public $session;
+    protected $session;
     public $request;
     public $auth;
 
@@ -22,7 +22,7 @@ class Skeleton
      */
     public function __construct()
     {
-        $this->session = (new Session())->globals;
+        $this->session = new Session();
         $this->parsing = new Parsing();
     }
 
@@ -63,7 +63,7 @@ class Skeleton
      */
     public function getDumps(): ?array
     {
-        return $_SESSION['DUMPS'] ?? null;
+        return $this->session->get('DUMPS') ?? null;
     }
 }
 

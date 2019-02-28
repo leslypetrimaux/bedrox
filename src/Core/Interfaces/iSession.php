@@ -12,10 +12,10 @@ interface iSession
 
     /**
      * @param string $key
-     * @param string $value
+     * @param mixed  $value
      * @return mixed
      */
-    public function set(string $key, string $value);
+    public function set(string $key, $value);
 
     /**
      * @param string $key

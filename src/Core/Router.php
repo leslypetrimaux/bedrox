@@ -99,7 +99,7 @@ class Router extends Skeleton implements iRouter
                 $route->setController($controller[0]);
                 $route->setFunction($controller[1]);
                 $route->setRender(!empty($format) ? $format : $_SERVER['APP']['FORMAT']);
-                if ($this->security->isAuthorized($route->getName(), $firewall)) {
+                if ($this->security->isNotAuthorized($route->getName(), $firewall)) {
                     http_response_code(403);
                     exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
                         'code' => 'ERR_URI_DENIED_ACCESS',

@@ -16,7 +16,7 @@ class Route
     /** @var string $function */
     public $function;
 
-    /** @var string $params */
+    /** @var Entity $params */
     public $params;
 
     /** @var int $paramsCount */
@@ -98,18 +98,18 @@ class Route
     }
 
     /**
-     * @return string|null
+     * @return Entity|null
      */
-    public function getParams(): ?string
+    public function getParams(): ?Entity
     {
         return $this->params;
     }
 
     /**
-     * @param string $params
+     * @param Entity $params
      * @return Route
      */
-    public function setParams(string $params): self
+    public function setParams(Entity $params): self
     {
         $this->params = $params;
         return $this;
