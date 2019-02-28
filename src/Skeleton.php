@@ -63,7 +63,7 @@ class Skeleton
      */
     public function getDumps(): ?array
     {
-        return isset($_SESSION['DUMPS']) ? $_SESSION['DUMPS']: null;
+        return $_SESSION['DUMPS'] ?? null;
     }
 }
 

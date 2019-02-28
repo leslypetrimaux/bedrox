@@ -24,6 +24,7 @@ class Env extends Skeleton
     public function load(string $file): void
     {
         try {
+            !isset($_SESSION) ? session_start() : null;
             if (file_exists($file)) {
                 $this->content = YamlParser::YAMLLoad($file);
                 $_SESSION['APP_DEBUG'] = $this->content['app']['env'];
