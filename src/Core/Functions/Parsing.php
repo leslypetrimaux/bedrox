@@ -3,9 +3,9 @@
 namespace Bedrox\Core\Functions;
 
 use App\Kernel;
+use Bedrox\Core\Response;
 use RuntimeException;
 use SimpleXMLElement;
-use Bedrox\Core\Response;
 
 class Parsing
 {

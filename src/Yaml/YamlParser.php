@@ -2,6 +2,7 @@
 
 namespace Bedrox\Yaml;
 
+use Bedrox\Core\Response;
 use Exception;
 use RuntimeException;
 
@@ -573,9 +574,12 @@ class YamlParser
             }
             return $this->returnKeyValuePair($line);
         } catch (Exception $e) {
-            // TODO: handle Exception
+            http_response_code(500);
+            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_SESSION',
+                'message' => 'Une erreur s\'est produite lors de la lecture/écriture de la session courante. Merci de supprimer le cache de l\'Application.'
+            )));
         }
-        return array();
     }
 
     /**
