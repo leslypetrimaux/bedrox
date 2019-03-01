@@ -1,11 +1,6 @@
 # dump()
 La fonction `dump()` permet de printer un ou plusieurs éléments (string, int, array, object, etc...) sans stopper l'exécution d'un script.
 
-Cette fonction est actuellement en cours de développement afin de regrouper tous les dumps pour les printer une seule fois (non disponible).
-```diff
-- CETTE FONCTION EST INSTABLE ! UTILISEZ LA FONCTION dd()
-```
-
 # dd()
 La fonction `dd()` permet de printer un ou plusieurs éléments (string, int, array, object, etc...) et stopper l'exécution du script.
 
@@ -42,10 +37,10 @@ Retour de la fonction en JSON :
   "status": "success",
   "statusCode": 200,
   "execTime": 24.9,
-  "data": {
+  "dumps": {
     "file": "./mon_dossier/src/App/Controllers/DefaultController.php",
     "line": 18,
-    "dumps": [
+    "outputs": [
       {
         "array": {
           "test": "valeur test"
@@ -53,7 +48,10 @@ Retour de la fonction en JSON :
       }
     ]
   },
-  "error": null
+  "error": {
+    "code": "WARN_DUMPS",
+    "message": "Des dumps sont encore présent dans votre code !"
+  }
 }
 ```
 
@@ -63,17 +61,20 @@ Retour de la fonction en XML :
     <status>success</status>
     <statusCode>200</statusCode>
     <execTime>9.52</execTime>
-    <data>
+    <dumps>
         <file>./mon_dossier/src/App/Controllers/DefaultController.php</file>
         <line>18</line>
-        <dumps>
+        <outputs>
             <item-0>
                 <array>
                     <test>valeur test</test>
                 </array>
             </item-0>
-        </dumps>
-    </data>
-    <error/>
+        </outputs>
+    </dumps>
+    <error>
+        <code>WARN_DUMPS</code>
+        <message>Des dumps sont encore présent dans votre code !</message>
+    </error>
 </Response>
 ```
