@@ -23,6 +23,7 @@ class MySQL extends PDO implements iSgbd
     protected $em;
     protected $con;
     protected $driver;
+    protected $response;
 
     /**
      * MySQL constructor.
@@ -42,6 +43,7 @@ class MySQL extends PDO implements iSgbd
      */
     public function __construct(string $driver, string $host, int $port, string $user, string $pwd, string $schema)
     {
+        $this->response = new Response();
         try {
             $opt = $driver === Db::MYSQL ? array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE'])) : null;
             $this->driver = $driver;
@@ -58,7 +60,7 @@ class MySQL extends PDO implements iSgbd
             $this->em = new EntityManager();
         } catch (PDOException $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -92,7 +94,7 @@ class MySQL extends PDO implements iSgbd
             return $results;
         } catch (PDOException | Exception $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -137,7 +139,7 @@ class MySQL extends PDO implements iSgbd
             return $entity;
         } catch (PDOException | Exception | RuntimeException $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -179,7 +181,7 @@ class MySQL extends PDO implements iSgbd
             return $entities;
         } catch (PDOException | Exception | RuntimeException $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -254,7 +256,7 @@ class MySQL extends PDO implements iSgbd
         } catch (PDOException | Exception | RuntimeException $e) {
             $this->con = $this->rollBack();
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -306,7 +308,7 @@ class MySQL extends PDO implements iSgbd
         } catch (PDOException | Exception | RuntimeException $e) {
             $this->con = $this->rollBack();
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -344,7 +346,7 @@ class MySQL extends PDO implements iSgbd
         } catch (PDOException | Exception | RuntimeException $e) {
             $this->con = $this->rollBack();
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));

@@ -52,6 +52,17 @@ class YamlParser
      */
     public $_nodeId;
 
+    /** @var Response */
+    protected $response;
+
+    /**
+     * YamlParser constructor.
+     */
+    public function __construct()
+    {
+        $this->response = new Response();
+    }
+
     /**
      * Load a valid YAML string to YamlParser.
      * @param string $input
@@ -575,7 +586,7 @@ class YamlParser
             return $this->returnKeyValuePair($line);
         } catch (Exception $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_SESSION',
                 'message' => 'Une erreur s\'est produite lors de la lecture/écriture de la session courante. Merci de supprimer le cache de l\'Application.'
             )));

@@ -29,6 +29,8 @@ class AnnotationsTypes
 
     public $ctrlRoute;
 
+    protected $response;
+
     /**
      * AnnotationsTypes public constructor
      * Create object depending on $type.
@@ -37,6 +39,7 @@ class AnnotationsTypes
      */
     public function __construct(?string $type)
     {
+        $this->response = new Response();
         if ($type !== null) {
             if ($type === self::LABEL_DB) {
                 $this->dbTable = self::DB_TABLE;
@@ -45,7 +48,7 @@ class AnnotationsTypes
             }
         } else {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_ANNOTATIONS_TYPE',
                 'message' => 'Impossible d\'écrire les types d\'annotations disponibles pour cette Application.'
             )));
@@ -75,7 +78,7 @@ class AnnotationsTypes
             }
         } else {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_ANNOTATIONS_TYPE',
                 'message' => 'Impossible de lire les types d\'annotations disponibles pour cette Application.'
             )));

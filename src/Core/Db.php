@@ -26,6 +26,7 @@ class Db
     protected $clientId;
     protected $oAuthToken;
     protected $type;
+    protected $response;
 
     /**
      * Db constructor
@@ -33,6 +34,7 @@ class Db
      */
     public function __construct()
     {
+        $this->response = new Response();
         if (!empty($_SERVER['APP']['SGBD']['DRIVER'])) {
             switch ($_SERVER['APP']['SGBD']['DRIVER']) {
                 case self::FIRESTORE:
@@ -57,7 +59,7 @@ class Db
             }
         } else {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_DB_CONSTRUCT',
                 'message' => 'Echec lors de création de la connexion à la base de données. Veuillez vérifier votre fichier "./config/env.yaml".'
             )));
@@ -101,7 +103,7 @@ class Db
         }
         if (empty($this->con)) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_DB_CONNECT',
                 'message' => 'Impossible de créer une connexion "' . $driver . '".'
             )));

@@ -7,6 +7,8 @@ use Exception;
 
 class RealtimeDatabase extends Firebase
 {
+    protected $response;
+
     /**
      * RealtimeDatabase constructor.
      *
@@ -19,6 +21,7 @@ class RealtimeDatabase extends Firebase
     public function __construct(string &$host, string $apiKey, string $clientId, string $oAuthToken, string $type = 'public')
     {
         parent::__construct($host, $apiKey, $clientId, $oAuthToken, $type);
+        $this->response = new Response();
         $this->setBaseURI($this->host);
         $this->setTimeOut(10);
         if ($type !== 'public') {
@@ -144,7 +147,7 @@ class RealtimeDatabase extends Firebase
             $return = curl_exec($ch);
         } catch (Exception $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_FIREBASE_PERSIST:' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -163,7 +166,7 @@ class RealtimeDatabase extends Firebase
             $return = curl_exec($ch);
         } catch (Exception $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_FIREBASE_GET:' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -192,7 +195,7 @@ class RealtimeDatabase extends Firebase
             $return = curl_exec($ch);
         } catch (Exception $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_FIREBASE_DELETE:' . $e->getCode(),
                 'message' => $e->getMessage()
             )));

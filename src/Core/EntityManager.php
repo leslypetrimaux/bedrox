@@ -10,6 +10,7 @@ class EntityManager implements iEntityManager
 {
     protected $phpParser;
     protected $annotationsTypes;
+    protected $response;
 
     /**
      * EntityManager Constructor
@@ -18,6 +19,7 @@ class EntityManager implements iEntityManager
     {
         $this->phpParser = new PhpParser();
         $this->annotationsTypes = new AnnotationsTypes('@Database');
+        $this->response = new Response();
     }
 
     /**
@@ -30,7 +32,7 @@ class EntityManager implements iEntityManager
     {
         if (!$entity) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_EM_REPO',
                 'message' => 'Impossible de récupérer un Repository de l\'Application.'
             )));
@@ -50,7 +52,7 @@ class EntityManager implements iEntityManager
         $entity = 'App\Entity\\' . ucwords($entity);
         if (!class_exists($entity)) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_EM_ENTITY',
                 'message' => 'La classe "' . $entity . '" n\'existe pas.'
             )));

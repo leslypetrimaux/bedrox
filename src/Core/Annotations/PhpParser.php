@@ -10,6 +10,16 @@ use ReflectionProperty;
 
 class PhpParser
 {
+    protected $response;
+
+    /**
+     * PhpParser constructor.
+     */
+    public function __construct()
+    {
+        $this->response = new Response();
+    }
+
     /**
      * Return the class comment from $class into a string.
      * 
@@ -23,7 +33,7 @@ class PhpParser
             $document = (new ReflectionClass($class))->getDocComment();
         } catch (ReflectionException $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -48,7 +58,7 @@ class PhpParser
             );
         } catch (ReflectionException $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -76,7 +86,7 @@ class PhpParser
             }
         } catch (ReflectionException $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -115,7 +125,7 @@ class PhpParser
             }
         } catch (ReflectionException $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -154,7 +164,7 @@ class PhpParser
             }
         } catch (ReflectionException $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -192,7 +202,7 @@ class PhpParser
             }
         } else {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_ANNOTATIONS_VALUE',
                 'message' => 'Impossible de récupérer la value pour l\'annotation de type "' . $annotation . '".'
             )));

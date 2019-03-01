@@ -13,6 +13,7 @@ class Firestore extends CloudFirestore implements iSgbd
     public const UTF8 = 'utf-8';
 
     protected $em;
+    protected $response;
 
     /**
      * Firestore constructor.
@@ -27,6 +28,7 @@ class Firestore extends CloudFirestore implements iSgbd
     {
         parent::__construct($host, $apiKey, $clientId, $oAuthToken, $type);
         $this->em = new EntityManager();
+        $this->response = new Response();
     }
 
     /**
@@ -50,7 +52,7 @@ class Firestore extends CloudFirestore implements iSgbd
     {
         // TODO: Implement buildQuery() method.
         http_response_code(500);
-        exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+        exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
             'code' => 'ERR_FIRESTORE_QUERYBUILDER',
             'message' => 'Le "QueryBuilder" pour Firebase Cloud Firestore n\'est pas encore disponible.'
         )));

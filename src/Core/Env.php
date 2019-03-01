@@ -15,6 +15,13 @@ class Env extends Skeleton
     public const FILE_SECURITY = 'SECURITY';
 
     protected $content;
+    protected $response;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->response = new Response();
+    }
 
     /**
      * Load environments configuration file.
@@ -31,7 +38,7 @@ class Env extends Skeleton
             } else {
                 $encode = $this->parsing->parseAppFormat();
                 http_response_code(500);
-                exit((new Response())->renderView($encode, null,  array(
+                exit($this->response->renderView($encode, null,  array(
                     'code' => 'ERR_FILE_ENV',
                     'message' => 'Echec lors de l\'ouverture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".'
                 )));
@@ -51,7 +58,7 @@ class Env extends Skeleton
             if (!is_array($_SERVER['APP'])) {
                 $encode = $this->parsing->parseAppFormat();
                 http_response_code(500);
-                exit((new Response())->renderView($encode, null, array(
+                exit($this->response->renderView($encode, null, array(
                     'code' => 'ERR_VAR_APP',
                     'message' => 'Les variables de configuration de l\'application n\'ont pas pu être définies correctement. Veuillez réessayer.'
                 )));
@@ -59,7 +66,7 @@ class Env extends Skeleton
         } catch (RuntimeException $e) {
             $encode = $this->parsing->parseAppFormat();
             http_response_code(500);
-            exit((new Response())->renderView($encode, null, array(
+            exit($this->response->renderView($encode, null, array(
                 'code' => 'ERR_FILE_ENV',
                 'message' => $e
             )));
@@ -105,7 +112,7 @@ class Env extends Skeleton
         if (!file_exists($_SERVER['APP'][$type])) {
             $encode = $this->parsing->parseAppFormat();
             http_response_code(500);
-            exit((new Response())->renderView($encode, null, array(
+            exit($this->response->renderView($encode, null, array(
                 'code' => 'ERR_FILE_ENV',
                 'message' => 'Echec lors de la lecture du fichier "' . $file . '". Veuillez vérifier votre fichier "./config/env.yaml".'
             )));
@@ -180,7 +187,7 @@ class Env extends Skeleton
         } catch (RuntimeException $e) {
             $encode = $this->parsing->parseAppFormat();
             http_response_code(500);
-            exit((new Response())->renderView($encode, null, array(
+            exit($this->response->renderView($encode, null, array(
                 'code' => 'ERR_FILE_ENV_' . $e->getCode(),
                 'message' => $e->getMessage()
             )));

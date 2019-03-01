@@ -7,6 +7,8 @@ use Exception;
 
 class CloudFirestore extends Firebase
 {
+    protected $response;
+
     /**
      * CloudFirestore constructor.
      *
@@ -19,6 +21,7 @@ class CloudFirestore extends Firebase
     public function __construct(string &$host, string $apiKey, string $clientId, string $oAuthToken, string $type = 'public')
     {
         parent::__construct($host, $apiKey, $clientId, $oAuthToken, $type);
+        $this->response = new Response();
         $this->setBaseURI($this->host);
         $this->setTimeOut(10);
         if ($type !== 'public') {
@@ -152,7 +155,7 @@ class CloudFirestore extends Firebase
             $return = curl_exec($ch);
         } catch (Exception $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_FIRESTORE_PERSIST:' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -172,7 +175,7 @@ class CloudFirestore extends Firebase
             $docs = $doc = null;
         } catch (Exception $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_FIRESTORE_GET:' . $e->getCode(),
                 'message' => $e->getMessage()
             )));
@@ -216,7 +219,7 @@ class CloudFirestore extends Firebase
             $return = curl_exec($ch);
         } catch (Exception $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_FIRESTORE_DELETE:' . $e->getCode(),
                 'message' => $e->getMessage()
             )));

@@ -25,6 +25,7 @@ class Security extends Skeleton
     public const ANONYMOUS = 'anonymous';
 
     protected $core;
+    protected $response;
 
     /**
      * Security constructor.
@@ -32,6 +33,7 @@ class Security extends Skeleton
      */
     public function __construct()
     {
+        $this->response = new Response();
         try {
             parent::__construct();
             if (file_exists($_SERVER['APP'][Env::FILE_SECURITY])) {
@@ -40,7 +42,7 @@ class Security extends Skeleton
             } else {
                 $encode = $this->parsing->parseAppFormat();
                 http_response_code(500);
-                exit((new Response())->renderView($encode, null, array(
+                exit($this->response->renderView($encode, null, array(
                     'code' => 'ERR_FILE_SECURITY',
                     'message' => 'Echec lors de l\'ouverture du fichier de sécurité. Veuillez vérifier votre fichier "' . $_SERVER['APP'][Env::FILE_SECURITY] . '".'
                 )));
@@ -52,7 +54,7 @@ class Security extends Skeleton
             }
         } catch (RuntimeException $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_SECU_FIREWALL',
                 'message' => $e
             )));
@@ -73,7 +75,7 @@ class Security extends Skeleton
             $this->session->set('APP_TOKEN', hash($encode, $token));
         } else {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_TOKEN',
                 'message' => 'Impossible de générer le token de l\'Application. Veuillez vérifier votre fichier "./security.yaml".'
             )));
@@ -96,7 +98,7 @@ class Security extends Skeleton
         if ($firewall[self::TYPE] === self::AUTH) {
             if (empty($this->core[self::FIREWALL][self::ANONYMOUS])) {
                 http_response_code(500);
-                exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                     'code' => 'ERR_FIREWALL_ANONYMOUS',
                     'message' => 'Vous devez définir au moins une route pour informer de l\'accès privé de l\'Application. Veuillez vérifier votre fichier "./security.yaml".'
                 )));
@@ -111,7 +113,7 @@ class Security extends Skeleton
                 }
             } else {
                 http_response_code(500);
-                exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                     'code' => 'ERR_FIREWALL_PARSING',
                     'message' => 'Impossible de configurer le firewall de l\'Application avec des routes anonymes. Veuillez vérifier votre fichier "./security.yaml".'
                 )));
@@ -120,7 +122,7 @@ class Security extends Skeleton
         $this->defineToken($firewall[self::ENCODE], $firewall[self::SECRET]);
         if (empty($_SESSION['APP_TOKEN'])) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_SESSION',
                 'message' => 'Une erreur s\'est produite lors de la lecture/écriture de la session courante. Merci de supprimer le cache de l\'Application.'
             )));

@@ -9,10 +9,10 @@ class Skeleton
 {
     public const BASE = '/';
 
-    protected $session;
     public $request;
     public $auth;
 
+    protected $session;
     protected $parsing;
 
     /**

@@ -9,6 +9,16 @@ use SimpleXMLElement;
 
 class Parsing
 {
+    protected $response;
+
+    /**
+     * Parsing constructor.
+     */
+    public function __construct()
+    {
+        $this->response = new Response();
+    }
+
     /**
      * Parse recursive Arrays or Objects to convert every object in array.
      * 
@@ -92,7 +102,7 @@ class Parsing
         } catch (RuntimeException $e) {
             $encode = $this->parseAppFormat();
             http_response_code(500);
-            exit((new Response())->renderView($encode, null, array(
+            exit($this->response->renderView($encode, null, array(
                 'code' => 'ERR_XML_FILE',
                 'message' => 'La classe "libXMLError" ressort l\'erreur n° ' . $e['code'] . '. Echec lors de la lecture du fichier XML "' . $file . '". Veuillez vérifier la configuration de l\'application.'
             )));

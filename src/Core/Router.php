@@ -11,6 +11,7 @@ class Router extends Skeleton implements iRouter
 {
     protected $security;
     protected $routes;
+    protected $response;
 
     public $route;
 
@@ -20,6 +21,7 @@ class Router extends Skeleton implements iRouter
      */
     public function __construct()
     {
+        $this->response = new Response();
         try {
             parent::__construct();
             $this->security = new Security();
@@ -31,7 +33,7 @@ class Router extends Skeleton implements iRouter
             }
         } catch (RuntimeException $e) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_FILE_ROUTER',
                 'message' => $e->getMessage()
             )));
@@ -54,7 +56,7 @@ class Router extends Skeleton implements iRouter
         }
         if (!empty($format) && !(new Request())->getResponseType($format)) {
             http_response_code(500);
-            exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                 'code' => 'ERR_URI_FORMAT',
                 'message' => 'Erreur lors de la récupération de l\'encodage de la page. Vérifiez votre route ou la configuration de votre application.'
             )));
@@ -81,7 +83,7 @@ class Router extends Skeleton implements iRouter
                                 $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
                             } else {
                                 http_response_code(500);
-                                exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                                exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                                     'code' => 'ERR_URI_PARAMS',
                                     'message' => 'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
                                 )));
@@ -101,7 +103,7 @@ class Router extends Skeleton implements iRouter
                 $route->setRender(!empty($format) ? $format : $_SERVER['APP']['FORMAT']);
                 if ($this->security->isNotAuthorized($route->getName(), $firewall)) {
                     http_response_code(403);
-                    exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
+                    exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
                         'code' => 'ERR_URI_DENIED_ACCESS',
                         'message' => 'Vous n\'avez pas accès à cette page. Veuillez vérifier votre token ou l\'adresse de votre page.'
                     )));
