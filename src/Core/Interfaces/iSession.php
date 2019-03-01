@@ -5,21 +5,23 @@ namespace Bedrox\Core\Interfaces;
 interface iSession
 {
     /**
+     * @return mixed|null
+     */
+    public function getAll();
+    /**
      * @param string $key
-     * @return mixed
+     * @return mixed|null
      */
     public function get(string $key);
 
     /**
      * @param string $key
      * @param mixed  $value
-     * @return mixed
      */
     public function set(string $key, $value);
 
     /**
      * @param string $key
-     * @return mixed
      */
     public function unset(string $key);
 }

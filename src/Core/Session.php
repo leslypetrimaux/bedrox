@@ -16,10 +16,18 @@ class Session implements iSession
     }
 
     /**
+     * @return mixed|null
+     */
+    public function getAll()
+    {
+        return !empty($_SESSION) ? $_SESSION : null;
+    }
+
+    /**
      * Return the wanted PHP _SESSION value.
      *
      * @param string $key
-     * @return mixed
+     * @return mixed|null
      */
     public function get(string $key)
     {
