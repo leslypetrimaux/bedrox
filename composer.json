@@ -19,8 +19,7 @@
     "ext-libxml": "*",
     "ext-json": "*",
     "ext-dom": "*",
-    "ext-curl": "*",
-    "ext-apache": "*"
+    "ext-curl": "*"
   },
   "autoload": {
     "exclude-from-classmap": ["/docs/", "/tests/"],
