@@ -109,7 +109,8 @@ class PhpParser
                     $document = $this->propertiesComment($property);
                     $matches = $this->matchesAnnotations($document);
                     $column = $this->getAnnotationValue(AnnotationsTypes::DB_COLUMN, $matches);
-                    $columns[$property->getName()] = $column;
+                    $cols = explode('", ', $column);
+                    $columns[$property->getName()] = str_replace('{name="', '', $cols[0]);
                 }
                 if (empty($columns)) {
                     throw new ReflectionException(
