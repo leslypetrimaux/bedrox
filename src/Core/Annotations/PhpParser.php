@@ -110,10 +110,21 @@ class PhpParser
                     $matches = $this->matchesAnnotations($document);
                     $column = $this->getAnnotationValue(AnnotationsTypes::DB_COLUMN, $matches);
                     $propName = $property->getName();
-                    preg_match_all('#name=\"([a-z0-9]*)\"#', $column, $cols);
+                    preg_match_all('#name=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"#', $column, $cols);
                     foreach ($cols as $col) {
                         if (is_array($col)) {
                             foreach ($col as $item) {
+                                if (strpos($item, '_')) {
+                                    $itemTmp = '';
+                                    foreach (explode('_', $item) as $key => $value) {
+                                        if ($key !== 0) {
+                                            $itemTmp .= ucwords($value);
+                                        } else {
+                                            $itemTmp .= $value;
+                                        }
+                                    }
+                                    $item = $itemTmp;
+                                }
                                 if ($propName === $item) {
                                     $columns[$propName] = $item;
                                 }
