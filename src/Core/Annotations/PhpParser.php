@@ -109,18 +109,27 @@ class PhpParser
                     $document = $this->propertiesComment($property);
                     $matches = $this->matchesAnnotations($document);
                     $column = $this->getAnnotationValue(AnnotationsTypes::DB_COLUMN, $matches);
-                    $cols = explode('", ', $column);
-                    $columns[$property->getName()] = str_replace('{name="', '', $cols[0]);
+                    $propName = $property->getName();
+                    preg_match_all('#name=\"([a-z0-9]*)\"#', $column, $cols);
+                    foreach ($cols as $col) {
+                        if (is_array($col)) {
+                            foreach ($col as $item) {
+                                if ($propName === $item) {
+                                    $columns[$propName] = $item;
+                                }
+                            }
+                        }
+                    }
                 }
                 if (empty($columns)) {
                     throw new ReflectionException(
-                        'Impossible de charger les colonnes de la classe.',
+                        'Impossible de charger les colonnes de la classe. Merci de vérifier vos Entités.',
                         'REFLECTION_COLUMNS'
                     );
                 }
             } else {
                 throw new ReflectionException(
-                    'Impossible de charger les propriétés des colonnes de la classe.',
+                    'Impossible de charger les propriétés des colonnes de la classe. Vérifier votre configuration.',
                     'REFLECTION_PROPERTIES'
                 );
             }
