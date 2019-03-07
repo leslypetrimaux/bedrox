@@ -289,7 +289,7 @@ class MySQL extends PDO implements iSgbd
         }
         try {
             $this->con = $this->beginTransaction();
-            $req = $this->prepare('UPDATE ' . $table . ' SET ' . $cols . ' WHERE ' . $pColumn . ' = ' . $pValue . ';');
+            $req = $this->prepare('UPDATE ' . $table . ' SET ' . $cols . ' WHERE ' . $pColumn . ' = "' . $pValue . '";');
             $keys = explode(',', $keys);
             foreach ($keys as $key => $value) {
                 $value = str_replace(':', '', $value);
