@@ -115,13 +115,13 @@ class PhpParser
                 }
                 if (empty($columns)) {
                     throw new ReflectionException(
-                        'Impossible de charger les colonnes de la classe. Merci de vérifier vos Entités.',
+                        'Impossible de charger les colonnes de la classe. Merci de vérifier votre Entité.',
                         'REFLECTION_COLUMNS'
                     );
                 }
             } else {
                 throw new ReflectionException(
-                    'Impossible de charger les propriétés des colonnes de la classe. Vérifier votre configuration.',
+                    'Impossible de charger les propriétés des colonnes de la classe. Merci de vérifier votre Entité.',
                     'REFLECTION_PROPERTIES'
                 );
             }
