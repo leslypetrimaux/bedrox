@@ -111,12 +111,15 @@ class MySQL extends PDO implements iSgbd
      */
     public function find(string $table, string $id): ?Entity
     {
+        $vars = array();
         $entity = $this->em->getEntity($table);
         $primary = $this->em->getTableKey($entity);
         $columns = $this->em->getColumns($entity);
         $cols = '';
-        foreach ($columns as $column) {
-            $cols .= empty($cols) ? $column : ',' . $column;
+        foreach ($columns as $key => $column) {
+            /** @var Column $column */
+            $cols .= empty($cols) ? $column->getName() : ',' . $column->getName();
+            $vars[$column->getName()] = $key;
         }
         try {
             $req = $this->prepare('SELECT ' . $cols . ' FROM ' . $table . ' WHERE ' . $primary . ' = :primary;');
@@ -131,7 +134,7 @@ class MySQL extends PDO implements iSgbd
             }
             if ($result) {
                 foreach ($result as $key => $value) {
-                    $var = array_search($key, $columns, true);
+                    $var = $vars[$key];
                     $entity->$var = $value;
                 }
             } else {

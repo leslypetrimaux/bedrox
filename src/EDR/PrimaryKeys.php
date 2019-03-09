@@ -17,9 +17,9 @@ class PrimaryKeys
     }
 
     /**
-     * @return string[]
+     * @return string|null
      */
-    public function getKeys(): array
+    public function getKeys(): ?string
     {
         return $this->keys;
     }
