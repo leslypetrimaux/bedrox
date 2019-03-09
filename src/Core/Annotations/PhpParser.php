@@ -103,6 +103,7 @@ class PhpParser
     public function getColumnsFromProperties(?array $properties): ?array
     {
         $columns = array();
+        $name = $type = $length = null;
         try {
             if ($properties !== null) {
                 foreach ($properties as $property) {
@@ -111,8 +112,22 @@ class PhpParser
                     $column = $this->getAnnotationValue(AnnotationsTypes::DB_COLUMN, $matches);
                     $match = str_replace(AnnotationsTypes::DB_COLUMN, '', $column);
                     $propName = $property->getName();
-                    $col = preg_replace('# {(.*)?name=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?}#', '$2', $match);
-                    $columns[$propName] = $col;
+                    if (strpos($match, 'name')) {
+                        $name  = preg_replace('/\(\{(.*)?name=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?\}\)/', '$2', $match);
+                    } else {
+                        $name = null;
+                    }
+                    if (strpos($match, 'type')) {
+                        $type  = preg_replace('/\(\{(.*)?type=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?\}\)/', '$2', $match);
+                    } else {
+                        $type = null;
+                    }
+                    if (strpos($match, 'length')) {
+                        $length  = preg_replace('/\(\{(.*)?length=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?\}\)/', '$2', $match);
+                    } else {
+                        $length = null;
+                    }
+                    $columns[$propName] = array($name, $type, $length);
                 }
                 if (empty($columns)) {
                     throw new ReflectionException(

@@ -73,7 +73,7 @@ class EntityManager implements iEntityManager
         $matches = $this->phpParser->matchesAnnotations($document);
         $result = $this->phpParser->getAnnotationValue($this->annotationsTypes->dbTable, $matches);
         $table  = preg_replace('/\(\"|\"\)/', '', str_replace(AnnotationsTypes::DB_TABLE, '', $result));
-        return (new EDR\Table($table))->table;
+        return (new EDR\Table($table))->getTable();
     }
 
     /**
@@ -88,7 +88,7 @@ class EntityManager implements iEntityManager
         $matches = $this->phpParser->matchesAnnotations($document);
         $result = $this->phpParser->getAnnotationValue($this->annotationsTypes->dbPrimaryKey, $matches);
         $values  = preg_replace('/\(\"|\"\)/', '', str_replace(AnnotationsTypes::DB_PRIMARY_KEY, '', $result));
-        return (new EDR\PrimaryKeys($values))->keys;
+        return (new EDR\PrimaryKeys($values))->getKeys();
     }
 
     public function getTableKeyStrategy(Entity $entity): array
@@ -106,6 +106,11 @@ class EntityManager implements iEntityManager
     public function getColumns(Entity $entity): array
     {
         $properties = $this->phpParser->classProperties($entity);
-        return $this->phpParser->getColumnsFromProperties($properties);
+        $results = $this->phpParser->getColumnsFromProperties($properties);
+        $columns = array();
+        foreach ($results as $key => $value) {
+            $columns[$key] = new EDR\Column($value[0], $value[1], $value[2]);
+        }
+        return $columns;
     }
 }

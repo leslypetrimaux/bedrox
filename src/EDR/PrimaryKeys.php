@@ -13,7 +13,7 @@ class PrimaryKeys
      */
     public function __construct(string ...$keys)
     {
-        $this->keys = implode(',', $keys);
+        $this->keys = trim(implode(',', $keys));
     }
 
     /**

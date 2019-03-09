@@ -7,6 +7,7 @@ use Bedrox\Core\Entity;
 use Bedrox\Core\EntityManager;
 use Bedrox\Core\Interfaces\iSgbd;
 use Bedrox\Core\Response;
+use Bedrox\EDR\Column;
 use Exception;
 use PDO;
 use PDOException;
@@ -154,12 +155,14 @@ class MySQL extends PDO implements iSgbd
      */
     public function findAll(string $table): ?array
     {
-        $entities = array();
+        $entities = $vars = array();
         $entity = $this->em->getEntity($table);
         $columns = $this->em->getColumns($entity);
         $cols = '';
-        foreach ($columns as $column) {
-            $cols .= empty($cols) ? $column : ',' . $column;
+        foreach ($columns as $key => $column) {
+            /** @var Column $column */
+            $cols .= empty($cols) ? $column->getName() : ',' . $column->getName();
+            $vars[$column->getName()] = $key;
         }
         try {
             $req = $this->query('SELECT ' . $cols . ' FROM ' . $table . ';');
@@ -172,7 +175,7 @@ class MySQL extends PDO implements iSgbd
                 foreach ($results as $result) {
                     $entity = $this->em->getEntity($table);
                     foreach ($result as $key => $value) {
-                        $var = array_search($key, $columns, true);
+                        $var = $vars[$key];
                         $entity->$var = $value;
                     }
                     $entities[] = $entity;
