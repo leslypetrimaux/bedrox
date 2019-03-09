@@ -5,6 +5,7 @@ namespace Bedrox\Core;
 use Bedrox\Core\Annotations\AnnotationsTypes;
 use Bedrox\Core\Annotations\PhpParser;
 use Bedrox\Core\Interfaces\iEntityManager;
+use Bedrox\EDR;
 
 class EntityManager implements iEntityManager
 {
@@ -70,8 +71,9 @@ class EntityManager implements iEntityManager
     {
         $document = $this->phpParser->classComment($entity);
         $matches = $this->phpParser->matchesAnnotations($document);
-        $table = $this->phpParser->getAnnotationValue($this->annotationsTypes->dbTable, $matches);
-        return $table;
+        $result = $this->phpParser->getAnnotationValue($this->annotationsTypes->dbTable, $matches);
+        $table  = preg_replace('/\(\"|\"\)/', '', str_replace(AnnotationsTypes::DB_TABLE, '', $result));
+        return (new EDR\Table($table))->table;
     }
 
     /**
@@ -84,8 +86,9 @@ class EntityManager implements iEntityManager
     {
         $document = $this->phpParser->classComment($entity);
         $matches = $this->phpParser->matchesAnnotations($document);
-        $primary = $this->phpParser->getAnnotationValue($this->annotationsTypes->dbPrimaryKey, $matches);
-        return $primary;
+        $result = $this->phpParser->getAnnotationValue($this->annotationsTypes->dbPrimaryKey, $matches);
+        $values  = preg_replace('/\(\"|\"\)/', '', str_replace(AnnotationsTypes::DB_PRIMARY_KEY, '', $result));
+        return (new EDR\PrimaryKeys($values))->keys;
     }
 
     public function getTableKeyStrategy(Entity $entity): array

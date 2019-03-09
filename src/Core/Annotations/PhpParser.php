@@ -109,8 +109,9 @@ class PhpParser
                     $document = $this->propertiesComment($property);
                     $matches = $this->matchesAnnotations($document);
                     $column = $this->getAnnotationValue(AnnotationsTypes::DB_COLUMN, $matches);
+                    $match = str_replace(AnnotationsTypes::DB_COLUMN, '', $column);
                     $propName = $property->getName();
-                    $col = preg_replace('#{(.*)?name=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?}#', '$2', $column);
+                    $col = preg_replace('# {(.*)?name=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?}#', '$2', $match);
                     $columns[$propName] = $col;
                 }
                 if (empty($columns)) {
@@ -199,7 +200,7 @@ class PhpParser
         if (is_array($annotations) && $annotation !== null) {
             foreach ($annotations as $line) {
                 if (strpos($line, $annotation) !== false) {
-                    $value = trim(str_replace($annotation . ' ', '', $line));
+                    $value = str_replace('@', '', trim($line));
                 }
             }
         } else {

@@ -15,10 +15,10 @@ class AnnotationsTypes
     public const LABEL_DB_PRIMARY_KEY = 'primary';
     public const LABEL_DB_COLUMN = 'column';
 
-    public const DB_TABLE = '@DB\\Table';
-    public const DB_PRIMARY_KEY = '@DB\\Primary';
-    public const DB_COLUMN = '@DB\\Column';
-    public const DB_STRATEGY = '@DB\\Strategy';
+    public const DB_TABLE = 'EDR\\Table';
+    public const DB_PRIMARY_KEY = 'EDR\\PrimaryKeys';
+    public const DB_COLUMN = 'DB\\Column';
+    public const DB_STRATEGY = 'DB\\Strategy';
 
     /**
      * AnnotationsTypes usable by other classes
