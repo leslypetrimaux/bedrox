@@ -33,6 +33,18 @@ interface iEntityManager
 
     /**
      * @param Entity $entity
+     * @return array
+     */
+    public function getForeignKey(Entity $entity): array;
+
+    /**
+     * @param Entity $entity
+     * @return array|null
+     */
+    public function getTableKeyStrategy(Entity $entity): ?array;
+
+    /**
+     * @param Entity $entity
      * @return array|null
      */
     public function getColumns(Entity $entity): array;

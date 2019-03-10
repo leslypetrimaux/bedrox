@@ -23,6 +23,12 @@ interface iRepository
     public function find(string $id);
 
     /**
+     * @param array $criteria
+     * @return Entity|null
+     */
+    public function findOneBy(array $criteria): ?Entity;
+
+    /**
      * @param Entity $entity
      * @return mixed
      */

@@ -84,6 +84,17 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
 
     /**
      * @param string $table
+     * @param array $criteria
+     * @return Entity|null
+     */
+    public function findOneBy(string $table, array $criteria): ?Entity
+    {
+        // TODO: Implement findOneBy() method.
+        return null;
+    }
+
+    /**
+     * @param string $table
      * @return array|null
      */
     public function findAll(string $table): ?array
