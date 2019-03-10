@@ -58,11 +58,10 @@ class Response extends Skeleton implements iResponse
      */
     public function renderJSON(?array $data, ?array $error): ?string
     {
-        $result = $this->renderResult($data, $error);
         header('Content-Type: application/json; charset=' . $this->parsing->parseAppEncode());
         $this->clear();
         return json_encode(
-            $result,
+            $this->renderResult($data, $error),
             JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         );
     }
