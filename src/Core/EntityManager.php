@@ -91,10 +91,18 @@ class EntityManager implements iEntityManager
         return (new EDR\PrimaryKeys($values))->getKeys();
     }
 
-    public function getTableKeyStrategy(Entity $entity): array
+    /**
+     * Returns PK strategy
+     *
+     * @param Entity $entity
+     * @return array|null
+     */
+    public function getTableKeyStrategy(Entity $entity): ?array
     {
         $properties = $this->phpParser->classProperties($entity);
-        return $this->phpParser->getStrategyFromProperties($properties);
+        $result = $this->phpParser->getStrategyFromProperties($properties);
+        $value  = preg_replace('/\(\"|\"\)/', '', str_replace(AnnotationsTypes::DB_STRATEGY, '', $result));
+        return (new EDR\PKStrategy($value))->getStrategy();
     }
 
     /**

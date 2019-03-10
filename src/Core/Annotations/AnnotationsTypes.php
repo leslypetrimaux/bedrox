@@ -18,7 +18,7 @@ class AnnotationsTypes
     public const DB_TABLE = 'EDR\\Table';
     public const DB_PRIMARY_KEY = 'EDR\\PrimaryKeys';
     public const DB_COLUMN = 'EDR\\Column';
-    public const DB_STRATEGY = 'DB\\Strategy';
+    public const DB_STRATEGY = 'EDR\\PKStrategy';
 
     /**
      * AnnotationsTypes usable by other classes

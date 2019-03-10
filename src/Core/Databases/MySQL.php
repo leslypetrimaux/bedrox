@@ -213,27 +213,30 @@ class MySQL extends PDO implements iSgbd
      */
     public function insert(Entity $entity): bool
     {
+        $vars = array();
         $table = $this->em->getTable($entity);
         $primary = $this->em->getTableKey($entity);
         $columns = $this->em->getColumns($entity);
         $primaryType = $this->em->getTableKeyStrategy($entity);
         $cols = $keys = '';
         $uuid = false;
-        foreach ($columns as $column) {
-            $primary = $column === $primary;
-            switch ($primaryType[$column]) {
+        foreach ($columns as $key => $column) {
+            /** @var Column $column */
+            $primary = $column->getName() === $primary;
+            $vars[$column->getName()] = $key;
+            switch ($primaryType[$column->getName()]) {
                 case self::STRATEGY_UUID:
-                    $cols .= empty($cols) ? $column : ',' . $column;
+                    $cols .= empty($cols) ? $column->getName() : ',' . $column->getName();
                     $keys .= empty($keys) ? '' : ',';
-                    $keys .= ':' . $column;
+                    $keys .= ':' . $column->getName();
                     $uuid = true;
                     break;
                 case self::STRATEGY_AI:
                 default:
                     if (!$primary) {
-                        $cols .= empty($cols) ? $column : ',' . $column;
+                        $cols .= empty($cols) ? $column->getName() : ',' . $column->getName();
                         $keys .= empty($keys) ? '' : ',';
-                        $keys .= ':' . $column;
+                        $keys .= ':' . $column->getName();
                     }
                     break;
             }
@@ -245,7 +248,7 @@ class MySQL extends PDO implements iSgbd
             $keys = explode(',', $keys);
             foreach ($cols as $key => $value) {
                 $value = str_replace(':', '', $value);
-                $var = array_search($value, $columns, true);
+                $var = $vars[$value];
                 if ($uuid && $var === $this->em->getTableKey($entity)) {
                     $entity->$var = uniqid('', true);
                     $req->bindParam($keys[$key], $entity->$var);
@@ -277,20 +280,23 @@ class MySQL extends PDO implements iSgbd
      */
     public function update(Entity $entity): bool
     {
+        $vars = array();
         $table = $this->em->getTable($entity);
         $primary = $this->em->getTableKey($entity);
         $columns = $this->em->getColumns($entity);
         $pColumn = $pValue = $cols = $keys = '';
-        foreach ($columns as $column) {
-            $primary = $column === $primary;
+        foreach ($columns as $key => $column) {
+            /** @var Column $column */
+            $vars[$column->getName()] = $key;
+            $primary = $column->getName() === $primary;
             if (!$primary) {
-                $cols .= empty($cols) ? $column : ',' . $column;
-                $cols .= '=:' . $column;
+                $cols .= empty($cols) ? $column->getName() : ',' . $column->getName();
+                $cols .= '=:' . $column->getName();
                 $keys .= empty($keys) ? '' : ',';
-                $keys .= ':' . $column;
+                $keys .= ':' . $column->getName();
             } else {
-                $pColumn = $column;
-                $pValue = $entity->$column;
+                $pColumn = $column->getName();
+                $pValue = $entity->$pColumn;
             }
         }
         try {
@@ -299,7 +305,7 @@ class MySQL extends PDO implements iSgbd
             $keys = explode(',', $keys);
             foreach ($keys as $key => $value) {
                 $value = str_replace(':', '', $value);
-                $var = array_search($value, $columns, true);
+                $var = $vars[$value];
                 if (!empty($entity->$var)) {
                     $req->bindParam($keys[$key], $entity->$var);
                 }
