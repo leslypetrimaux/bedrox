@@ -156,6 +156,63 @@ class MySQL extends PDO implements iSgbd
     }
 
     /**
+     * Search the table to retrieve one field and convert it in Entity
+     *
+     * @param string $table
+     * @param array $criteria
+     * @return Entity|null
+     */
+    public function findOneBy(string $table, array $criteria): ?Entity
+    {
+        if (empty($criteria)) {
+            throw new RuntimeException('Aucun critère n\'a été trouvé dans votre requête. Vérifiez votre fonction.');
+        }
+        $vars = array();
+        $entity = $this->em->getEntity($table);
+        $foreign = $this->em->getForeignKey($entity);
+        $columns = $this->em->getColumns($entity);
+        $cols = $clauses = '';
+        foreach ($criteria as $key => $value) {
+            $clauses .= empty($clauses) ? $key . '="' . $value . '"' : ' AND ' . $key . '"' . $value . '"';
+        }
+        foreach ($columns as $key => $column) {
+            /** @var Column $column */
+            $cols .= empty($cols) ? $column->getName() : ',' . $column->getName();
+            $vars[$column->getName()] = $key;
+        }
+        if (empty($clauses)) {
+            throw new RuntimeException('Aucun critère n\'a été trouvé dans votre requête. Vérifiez votre fonction.');
+        }
+        try {
+            $req = $this->query('SELECT ' . $cols . ' FROM ' . $table . ' WHERE ' . $clauses);
+            $result = $req->fetch(PDO::FETCH_ASSOC);
+            $e = $req->errorInfo();
+            if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
+                throw new RuntimeException($e[2], $e[1]);
+            }
+            if ($result) {
+                foreach ($result as $key => $value) {
+                    $var = $vars[$key];
+                    if (is_object($foreign[$var])) {
+                        $fTable = $this->em->getTable($foreign[$var]);
+                        $value = $this->find($fTable, $value);
+                    }
+                    $entity->$var = $value;
+                }
+            } else {
+                $entity = null;
+            }
+            return $entity;
+        } catch (PDOException | Exception | RuntimeException $e) {
+            http_response_code(500);
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_' . strtoupper($this->driver) . '_' . $e->getCode(),
+                'message' => $e->getMessage()
+            )));
+        }
+    }
+
+    /**
      * Search the table to retrieve all field and convert it in Entity
      *
      * @param string $table
@@ -263,7 +320,12 @@ class MySQL extends PDO implements iSgbd
                     $entity->$var = uniqid('', true);
                     $req->bindParam($keys[$key], $entity->$var);
                 }
-                $req->bindParam($keys[$key], $entity->$var);
+                if (is_object($entity->$var)) {
+                    $fKey = $this->em->getTableKey($entity->$var);
+                    $req->bindParam($value, $entity->$var->$fKey);
+                } else {
+                    $req->bindParam($value, $entity->$var);
+                }
             }
             $result = $req->execute();
             $e = $req->errorInfo();

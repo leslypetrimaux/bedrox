@@ -57,6 +57,17 @@ class Repository implements iRepository
     /**
      * See the SGBD function for documentation.
      *
+     * @param array $criteria
+     * @return Entity|null
+     */
+    public function findOneBy(array $criteria): ?Entity
+    {
+        return $this->con->findOneBy($this->table, $criteria);
+    }
+
+    /**
+     * See the SGBD function for documentation.
+     *
      * @param Entity $entity
      * @return bool
      */
