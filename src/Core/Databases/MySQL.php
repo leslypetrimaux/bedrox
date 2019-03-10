@@ -313,11 +313,14 @@ class MySQL extends PDO implements iSgbd
             $this->con = $this->beginTransaction();
             $req = $this->prepare('UPDATE ' . $table . ' SET ' . $cols . ' WHERE ' . $pColumn . ' = "' . $pValue . '";');
             $keys = explode(',', $keys);
-            foreach ($keys as $key => $value) {
+            foreach ($keys as $value) {
                 $value = str_replace(':', '', $value);
                 $var = $vars[$value];
-                if (!empty($entity->$var)) {
-                    $req->bindParam($keys[$key], $entity->$var);
+                if (is_object($entity->$var)) {
+                    $fKey = $this->em->getTableKey($entity->$var);
+                    $req->bindParam($value, $entity->$var->$fKey);
+                } else {
+                    $req->bindParam($value, $entity->$var);
                 }
             }
             $result = $req->execute();
