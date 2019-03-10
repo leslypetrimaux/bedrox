@@ -8,6 +8,13 @@ class Column
     public $type;
     public $length;
 
+    /**
+     * Column constructor.
+     *
+     * @param string $name
+     * @param string $type
+     * @param string|null $length
+     */
     public function __construct(string &$name, string &$type, ?string $length = null)
     {
         $this->name = $name;

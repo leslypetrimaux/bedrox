@@ -114,6 +114,7 @@ class MySQL extends PDO implements iSgbd
         $vars = array();
         $entity = $this->em->getEntity($table);
         $primary = $this->em->getTableKey($entity);
+        $foreign = $this->em->getForeignKey($entity);
         $columns = $this->em->getColumns($entity);
         $cols = '';
         foreach ($columns as $key => $column) {
@@ -135,6 +136,10 @@ class MySQL extends PDO implements iSgbd
             if ($result) {
                 foreach ($result as $key => $value) {
                     $var = $vars[$key];
+                    if (is_object($foreign[$var])) {
+                        $fTable = $this->em->getTable($foreign[$var]);
+                        $value = $this->find($fTable, $value);
+                    }
                     $entity->$var = $value;
                 }
             } else {
@@ -161,6 +166,7 @@ class MySQL extends PDO implements iSgbd
         $entities = $vars = array();
         $entity = $this->em->getEntity($table);
         $columns = $this->em->getColumns($entity);
+        $foreign = $this->em->getForeignKey($entity);
         $cols = '';
         foreach ($columns as $key => $column) {
             /** @var Column $column */
@@ -179,6 +185,10 @@ class MySQL extends PDO implements iSgbd
                     $entity = $this->em->getEntity($table);
                     foreach ($result as $key => $value) {
                         $var = $vars[$key];
+                        if (is_object($foreign[$var])) {
+                            $fTable = $this->em->getTable($foreign[$var]);
+                            $value = $this->find($fTable, $value);
+                        }
                         $entity->$var = $value;
                     }
                     $entities[] = $entity;

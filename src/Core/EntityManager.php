@@ -92,6 +92,26 @@ class EntityManager implements iEntityManager
     }
 
     /**
+     * Return the foreign key of an Entity.
+     *
+     * @param Entity $entity
+     * @return array
+     */
+    public function getForeignKey(Entity $entity): array
+    {
+        $properties = $this->phpParser->classProperties($entity);
+        $results = $this->phpParser->getFKeysFromProperties($properties);
+        $columns = array();
+        foreach ($results as $key => $value) {
+            if (!empty($value)) {
+                $value  = preg_replace('/\(\"|\"\)/', '', $value);
+                $columns[$key] = $this->getEntity((new EDR\ForeignKeys($value))->getEntity());
+            }
+        }
+        return $columns;
+    }
+
+    /**
      * Returns PK strategy
      *
      * @param Entity $entity
@@ -109,7 +129,7 @@ class EntityManager implements iEntityManager
      * Return all columns used in the table/Entity.
      *
      * @param Entity $entity
-     * @return array|null
+     * @return array
      */
     public function getColumns(Entity $entity): array
     {

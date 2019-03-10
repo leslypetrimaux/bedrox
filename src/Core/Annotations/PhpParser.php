@@ -103,7 +103,6 @@ class PhpParser
     public function getColumnsFromProperties(?array $properties): ?array
     {
         $columns = array();
-        $name = $type = $length = null;
         try {
             if ($properties !== null) {
                 foreach ($properties as $property) {
@@ -128,6 +127,41 @@ class PhpParser
                         $length = null;
                     }
                     $columns[$propName] = array($name, $type, $length);
+                }
+                if (empty($columns)) {
+                    throw new ReflectionException(
+                        'Impossible de charger les colonnes de la classe. Merci de vérifier votre Entité.',
+                        'REFLECTION_COLUMNS'
+                    );
+                }
+            } else {
+                throw new ReflectionException(
+                    'Impossible de charger les propriétés des colonnes de la classe. Merci de vérifier votre Entité.',
+                    'REFLECTION_PROPERTIES'
+                );
+            }
+        } catch (ReflectionException $e) {
+            http_response_code(500);
+            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
+                'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
+                'message' => $e->getMessage()
+            )));
+        }
+        return $columns;
+    }
+
+    public function getFKeysFromProperties(?array $properties): ?array
+    {
+        $columns = array();
+        try {
+            if ($properties !== null) {
+                foreach ($properties as $property) {
+                    $document = $this->propertiesComment($property);
+                    $matches = $this->matchesAnnotations($document);
+                    $column = $this->getAnnotationValue(AnnotationsTypes::DB_FOREIGN_KEY, $matches);
+                    $match = str_replace(AnnotationsTypes::DB_FOREIGN_KEY, '', $column);
+                    $propName = $property->getName();
+                    $columns[$propName] = $match;
                 }
                 if (empty($columns)) {
                     throw new ReflectionException(
