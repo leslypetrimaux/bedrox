@@ -50,9 +50,13 @@ class Router extends Skeleton implements iRouter
     public function getCurrentRoute(string $current, ?string $format = null): ?Route
     {
         $cRoute = explode('.', $current);
-        $current = $cRoute[0];
-        if (empty($format) && !empty($cRoute[1])) {
-            $format = $cRoute[1];
+        if (empty($format) && !empty(end($cRoute)) && (new Request())->getResponseType(end($cRoute))) {
+            $format = end($cRoute);
+            $current = str_replace(
+                array('.' . Response::FORMAT_XML, '.' . Response::FORMAT_JSON),
+                '',
+                $current
+            );
         }
         if (!empty($format) && !(new Request())->getResponseType($format)) {
             http_response_code(500);
