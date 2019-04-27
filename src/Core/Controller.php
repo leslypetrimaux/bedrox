@@ -18,7 +18,7 @@ class Controller extends Skeleton
     {
         parent::__construct();
         $this->request = $response->request;
-        $this->setAuth($_SESSION['APP_AUTH']);
+        $this->setAuth($this->session->get('APP_AUTH'));
     }
 
     /**
