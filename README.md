@@ -46,6 +46,7 @@ app:
   version: '%APP_VERSION%'
   env: 'dev|prod'
   database:
+    type: 'native|doctrine'
     driver: 'app_sgbd()'
     ### Voir les exemples pour les différentes databases supportées
   encodage: 'app_encode()'
