@@ -14,6 +14,9 @@ class Env extends Skeleton
     public const FILE_ROUTER = 'ROUTER';
     public const FILE_SECURITY = 'SECURITY';
 
+    public const DB_NATIVE = 'native';
+    public const DB_DOCTRINE = 'doctrine';
+
     protected $content;
     protected $response;
 
@@ -35,6 +38,7 @@ class Env extends Skeleton
                 $this->content = YamlParser::YAMLLoad($file);
                 $_SESSION['APP_DEBUG'] = $this->content['app']['env'];
                 $_SESSION['APP_FORMAT'] = $this->content['app']['format'];
+                $_SESSION['DUMPS_COUNT'] = 0;
             } else {
                 $encode = $this->parsing->parseAppFormat();
                 http_response_code(500);
@@ -142,44 +146,55 @@ class Env extends Skeleton
     {
         try {
             if (!empty($database) && is_array($database)) {
-                if (!empty($database['driver'])) {
-                    switch ($database['driver']) {
-                        case Db::FIRESTORE:
-                        case Db::FIREBASE:
-                            if ( !empty($database['host']) && !empty($database['apiKey']) && !empty($database['clientId']) && !empty($database['oAuthToken']) ) {
-                                $_SERVER['APP']['SGBD'] = array(
-                                    'DRIVER' => $database['driver'],
-                                    'HOST' => $database['host'],
-                                    'API_KEY' => $database['apiKey'],
-                                    'CLIENT_ID' => $database['clientId'],
-                                    'OAUTH_TOKEN' => $database['oAuthToken'],
-                                    'TYPE' => $database['type']
-                                );
-                            } else {
-                                throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
-                            }
+                if (!empty($database['type'])) {
+                    switch ($database['type']) {
+                        case self::DB_DOCTRINE:
+                            // TODO: connexion & entité avec doctrine
                             break;
-                        case Db::ORACLE:
-                        case Db::MYSQL:
-                        case Db::MARIADB:
-                        default:
-                            if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) ) {
-                                $_SERVER['APP']['SGBD'] = array(
-                                    'ENCODE' => !empty($database['encode']) ? $database['encode'] : Kernel::DEFAULT_ENCODE,
-                                    'DRIVER' => $database['driver'],
-                                    'HOST' => $database['host'],
-                                    'PORT' => $database['port'],
-                                    'USER' => $database['user'],
-                                    'PWD' => $database['password'],
-                                    'SCHEMA' => $database['schema']
-                                );
+                        case self::DB_NATIVE:
+                            if (!empty($database['driver'])) {
+                                switch ($database['driver']) {
+                                    case Db::FIRESTORE:
+                                    case Db::FIREBASE:
+                                        if ( !empty($database['host']) && !empty($database['apiKey']) && !empty($database['clientId']) && !empty($database['oAuthToken']) ) {
+                                            $_SERVER['APP']['SGBD'] = array(
+                                                'DRIVER' => $database['driver'],
+                                                'HOST' => $database['host'],
+                                                'API_KEY' => $database['apiKey'],
+                                                'CLIENT_ID' => $database['clientId'],
+                                                'OAUTH_TOKEN' => $database['oAuthToken'],
+                                                'TYPE' => $database['type']
+                                            );
+                                        } else {
+                                            throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                                        }
+                                        break;
+                                    case Db::ORACLE:
+                                    case Db::MYSQL:
+                                    case Db::MARIADB:
+                                    default:
+                                        if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) ) {
+                                            $_SERVER['APP']['SGBD'] = array(
+                                                'ENCODE' => !empty($database['encode']) ? $database['encode'] : Kernel::DEFAULT_ENCODE,
+                                                'DRIVER' => $database['driver'],
+                                                'HOST' => $database['host'],
+                                                'PORT' => $database['port'],
+                                                'USER' => $database['user'],
+                                                'PWD' => $database['password'],
+                                                'SCHEMA' => $database['schema']
+                                            );
+                                        } else {
+                                            throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                                        }
+                                        break;
+                                }
                             } else {
-                                throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                                throw new RuntimeException('Impossible de récupérer le driver dans le fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
                             }
                             break;
                     }
                 } else {
-                    throw new RuntimeException('Impossible de récupérer le driver dans le fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                    throw new RuntimeException('Impossible de récupérer le type de connexion de base de données dans le fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
                 }
             } else {
                 throw new RuntimeException('Echec lors de récupérer les informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
