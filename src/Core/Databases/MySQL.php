@@ -242,7 +242,7 @@ class MySQL extends PDO implements iSgbd
                     $entity = $this->em->getEntity($table);
                     foreach ($result as $key => $value) {
                         $var = $vars[$key];
-                        if (is_object($foreign[$var])) {
+                        if (is_object($foreign)) {
                             $fTable = $this->em->getTable($foreign[$var]);
                             $value = $this->find($fTable, $value);
                         }
