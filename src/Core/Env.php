@@ -154,8 +154,8 @@ class Env extends Skeleton
                         case self::DB_NATIVE:
                             if (!empty($database['driver'])) {
                                 switch ($database['driver']) {
-                                    case Db::FIRESTORE:
-                                    case Db::FIREBASE:
+                                    case EDR::FIRESTORE:
+                                    case EDR::FIREBASE:
                                         if ( !empty($database['host']) && !empty($database['apiKey']) && !empty($database['clientId']) && !empty($database['oAuthToken']) ) {
                                             $_SERVER['APP']['SGBD'] = array(
                                                 'DRIVER' => $database['driver'],
@@ -169,9 +169,9 @@ class Env extends Skeleton
                                             throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
                                         }
                                         break;
-                                    case Db::ORACLE:
-                                    case Db::MYSQL:
-                                    case Db::MARIADB:
+                                    case EDR::ORACLE:
+                                    case EDR::MYSQL:
+                                    case EDR::MARIADB:
                                     default:
                                         if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) ) {
                                             $_SERVER['APP']['SGBD'] = array(

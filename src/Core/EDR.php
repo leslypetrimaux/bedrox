@@ -6,7 +6,7 @@ use Bedrox\Core\Databases\FirebaseDatabase;
 use Bedrox\Core\Databases\Firestore;
 use Bedrox\Core\Databases\MySQL;
 
-class Db
+class EDR
 {
     public const ENCODAGE_DEFAULT = 'utf-8';
 
@@ -29,7 +29,7 @@ class Db
     protected $response;
 
     /**
-     * Db constructor
+     * EDR constructor
      * Set variables from configurations to connect to the wanted SGBD.
      */
     public function __construct()

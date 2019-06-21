@@ -2,7 +2,7 @@
 
 namespace Bedrox\Core\Databases;
 
-use Bedrox\Core\Db;
+use Bedrox\Core\EDR;
 use Bedrox\Core\Entity;
 use Bedrox\Core\EntityManager;
 use Bedrox\Core\Interfaces\iSgbd;
@@ -46,16 +46,16 @@ class MySQL extends PDO implements iSgbd
     {
         $this->response = new Response();
         try {
-            $opt = $driver === Db::MYSQL ? array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE'])) : null;
+            $opt = $driver === EDR::MYSQL ? array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE'])) : null;
             $this->driver = $driver;
             parent::__construct(
-                Db::MYSQL . ':dbname=' . $schema . ';port=' . $port . ';host=' . $host,
+                EDR::MYSQL . ':dbname=' . $schema . ';port=' . $port . ';host=' . $host,
                 $user,
                 $pwd,
                 $opt
             );
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            if ($this->getAttribute(PDO::ATTR_DRIVER_NAME) === Db::MYSQL) {
+            if ($this->getAttribute(PDO::ATTR_DRIVER_NAME) === EDR::MYSQL) {
                 $this->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             }
             $this->em = new EntityManager();
