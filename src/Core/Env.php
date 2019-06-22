@@ -5,6 +5,9 @@ namespace Bedrox\Core;
 use App\Kernel;
 use Bedrox\Skeleton;
 use Bedrox\Yaml\YamlParser;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Tools\Setup;
 use RuntimeException;
 
 class Env extends Skeleton
@@ -149,7 +152,27 @@ class Env extends Skeleton
                 if (!empty($database['type'])) {
                     switch ($database['type']) {
                         case self::DB_DOCTRINE:
-                            // TODO: connexion & entité avec doctrine
+                            if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) ) {
+                                try {
+                                    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__ . '/new/App/Entity'), $this->content['app']['env']);
+                                    // database configuration parameters
+                                    $_SERVER['APP']['SGBD'] = array(
+                                        'driver' => $database['driver'],
+                                        'host' => $database['port'],
+                                        'port ' => $database['schema'],
+                                        'user' => $database['user'],
+                                        'password' => $database['password'],
+                                        'dbname' => $database['schema'],
+                                        'charset' => $database['encode'],
+                                    );
+                                    // obtaining the entity manager
+                                    $this->entityManager = EntityManager::create($_SERVER['APP']['SGBD'], $config);
+                                } catch (ORMException $e) {
+                                    throw new RuntimeException($e->getMessage());
+                                }
+                            } else {
+                                throw new RuntimeException('Echec lors de la lecture des informations pour doctrine du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                            }
                             break;
                         case self::DB_NATIVE:
                             if (!empty($database['driver'])) {
@@ -162,8 +185,7 @@ class Env extends Skeleton
                                                 'HOST' => $database['host'],
                                                 'API_KEY' => $database['apiKey'],
                                                 'CLIENT_ID' => $database['clientId'],
-                                                'OAUTH_TOKEN' => $database['oAuthToken'],
-                                                'TYPE' => $database['type']
+                                                'OAUTH_TOKEN' => $database['oAuthToken']
                                             );
                                         } else {
                                             throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
