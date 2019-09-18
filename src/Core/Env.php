@@ -38,9 +38,21 @@ class Env extends Skeleton
         try {
             if (file_exists($file)) {
                 $this->content = YamlParser::YAMLLoad($file);
-                $_SESSION['APP_DEBUG'] = $this->content['app']['env'];
-                $_SESSION['APP_FORMAT'] = $this->content['app']['format'];
-                $_SESSION['DUMPS_COUNT'] = 0;
+                if (
+                    !empty($this->content['app']['env']) &&
+                    !empty($this->content['app']['format'])
+                ) {
+                    $_SESSION['APP_DEBUG'] = $this->content['app']['env'];
+                    $_SESSION['APP_FORMAT'] = $this->content['app']['format'];
+                    $_SESSION['DUMPS_COUNT'] = 0;
+                } else {
+                    $encode = $this->parsing->parseAppFormat();
+                    http_response_code(500);
+                    exit($this->response->renderView($encode, null,  array(
+                        'code' => 'ERR_FILE_ENV',
+                        'message' => 'Le fichier d\'environnement n\'est pas correctement complété. Veuillez vérifier votre fichier "./config/env.yaml".'
+                    )));
+                }
             } else {
                 $encode = $this->parsing->parseAppFormat();
                 http_response_code(500);
@@ -49,7 +61,16 @@ class Env extends Skeleton
                     'message' => 'Echec lors de l\'ouverture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".'
                 )));
             }
-            if ( is_array($this->content['app']) && !empty($this->content['app']['name']) && !empty($this->content['app']['env']) && !empty($this->content['app']['router']) && !empty($this->content['app']['security']) && !empty($this->content['app']['format']) && !empty($this->content['app']['encodage']) && is_array($this->content['app']['database']) ) {
+            if (
+                is_array($this->content['app']) &&
+                !empty($this->content['app']['name']) &&
+                !empty($this->content['app']['env']) &&
+                !empty($this->content['app']['router']) &&
+                !empty($this->content['app']['security']) &&
+                !empty($this->content['app']['format']) &&
+                !empty($this->content['app']['encodage']) &&
+                is_array($this->content['app']['database'])
+            ) {
                 $this->defineApp($this->content['app']['name']);
                 $this->defineEnv($this->content['app']['env']);
                 $this->defineFile(self::FILE_ROUTER, $this->content['app']['router']);
@@ -57,16 +78,19 @@ class Env extends Skeleton
                 $this->outputFormat($this->content['app']['format'], $this->content['app']['encodage']);
                 $this->defineSGBD($this->content['app']['database']);
             } else {
-                throw new RuntimeException(
-                    'Echec lors de la lecture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".'
-                );
+                $encode = $this->parsing->parseAppFormat();
+                http_response_code(500);
+                exit($this->response->renderView($encode, null, array(
+                    'code' => 'ERR_READ_APP',
+                    'message' => 'Echec lors de la lecture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".'
+                )));
             }
             if (!is_array($_SERVER['APP'])) {
                 $encode = $this->parsing->parseAppFormat();
                 http_response_code(500);
                 exit($this->response->renderView($encode, null, array(
                     'code' => 'ERR_VAR_APP',
-                    'message' => 'Les variables de configuration de l\'application n\'ont pas pu être définies correctement. Veuillez réessayer.'
+                    'message' => 'Les variables de configuration de l\'application n\'ont pas pu être définies correctement. Veuillez vérifier votre fichier "./config/env.yaml".'
                 )));
             }
         } catch (RuntimeException $e) {
