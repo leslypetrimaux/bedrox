@@ -86,19 +86,23 @@ class Router extends Skeleton implements iRouter
                             }
                             $class = '\\App\\Entity\\' . ucfirst($repo);
                             $em = (new Controller(new Response()))->getDoctrine();
-                            if (
-                                !empty($_SERVER['APP']['SGBD']['type']) &&
-                                $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE &&
-                                $em->getRepository($class) !== null
-                            ) {
-                                $route->setParams($em->getRepository($class)->find($aCurrent[$key]));
+                            if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
+                                if ($em->getRepository($class) !== null) {
+                                    $route->setParams($em->getRepository($class)->find($aCurrent[$key]));
+                                } else {
+                                    http_response_code(500);
+                                    exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
+                                        'code' => 'ERR_ORM_PARAMS',
+                                        'message' => 'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
+                                    )));
+                                }
                             } else {
                                 if ((new EntityManager())->getRepo($repo) !== null) {
                                     $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
                                 } else {
                                     http_response_code(500);
                                     exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                                        'code' => 'ERR_URI_PARAMS',
+                                        'code' => 'ERR_EDR_PARAMS',
                                         'message' => 'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
                                     )));
                                 }
