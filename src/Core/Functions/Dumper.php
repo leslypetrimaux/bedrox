@@ -8,7 +8,6 @@ use Bedrox\Skeleton;
 class Dumper extends Skeleton
 {
     /**
-     * @param bool $die
      * @param mixed ...$strings
      */
     public static function dump(... $strings): void
@@ -37,7 +36,17 @@ class Dumper extends Skeleton
      */
     public static function printAndDie(): void
     {
-        exit((new Response())->renderView($_SERVER['APP']['FORMAT'] ?? $_SESSION['APP_FORMAT'], null, null));
+        $format = null;
+        if (!empty($_SESSION['URI_FORMAT'])) {
+            $format = $_SESSION['URI_FORMAT'];
+        } else {
+            if (!empty($_SERVER['APP']['FORMAT'])) {
+                $format = $_SERVER['APP']['FORMAT'];
+            } else {
+                $format = $_SESSION['APP_FORMAT'];
+            }
+        }
+        exit((new Response())->renderView($format, null, null));
     }
 
     /**

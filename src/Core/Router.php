@@ -51,7 +51,7 @@ class Router extends Skeleton implements iRouter
     {
         $cRoute = explode('.', $current);
         if (empty($format) && !empty(end($cRoute)) && (new Request())->getResponseType(end($cRoute))) {
-            $format = end($cRoute);
+            $_SESSION['URI_FORMAT'] = $format = end($cRoute);
             $current = str_replace(
                 array('.' . Response::FORMAT_XML, '.' . Response::FORMAT_JSON),
                 '',
