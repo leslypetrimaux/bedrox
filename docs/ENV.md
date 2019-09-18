@@ -3,7 +3,7 @@ Retrouvez ici la liste des valeurs possibles pour le fichier d'environnement ain
 
 ---
 <details>
-<summary>Valeurs des SGBD disponibles :</summary>
+<summary>Valeurs des SGBD native disponibles :</summary>
 
 ```bash
 # app_sgbd()
@@ -13,6 +13,11 @@ firebase # Firebase Realtime Database
 firestore # Firebase Cloud Firestore
 ```
 </details>
+<details>
+<summary>Pour la configuration de Doctrine, référez-vous à la documentation correspondante.</summary>
+</details>
+
+---
 <details>
 <summary>Valeur d'encodage de caractères de l'application :</summary>
 
@@ -32,19 +37,41 @@ xml
 </details>
 
 ---
-> Configuration avec MySQL ou MariaDB :
+> Configuration EDR (native) avec MySQL ou MariaDB :
 ```yaml
 app:
   name: 'Mon Application'
-  version: '0.1.6'
+  version: '0.4'
   env: 'dev'
   database:
-    driver: 'mysql|mariadb'
+    type: 'native'
+    driver: 'mysql'
     host: 'localhost'
     port: '3306'
     user: 'framework'
     password: 'framework'
     schema: 'framework'
+  encodage: 'utf-8'
+  format: 'json'
+  router: './routes.yaml'
+  security: './security.yaml'
+```
+
+> Configuration Doctrine avec MySQL ou MariaDB :
+```yaml
+app:
+  name: 'Mon Application'
+  version: '0.4'
+  env: 'dev'
+  database:
+    type: 'doctrine'
+    driver: 'pdo_mysql'
+    host: 'localhost'
+    port: '3306'
+    user: 'framework'
+    password: 'framework'
+    schema: 'framework'
+    encode: 'utf8mb4'
   encodage: 'utf-8'
   format: 'json'
   router: './routes.yaml'
