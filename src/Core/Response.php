@@ -90,6 +90,13 @@ class Response extends Skeleton implements iResponse
         return $domXml->saveXML();
     }
 
+    /**
+     * Render CSV Format.
+     *
+     * @param array|null $data
+     * @param array|null $error
+     * @return string|null
+     */
     public function renderCSV(?array $data, ?array $error): ?string
     {
         $result = $this->renderResult($data, $error);
