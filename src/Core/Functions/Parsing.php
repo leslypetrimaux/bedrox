@@ -99,6 +99,12 @@ class Parsing
         }
     }
 
+    public function parseArrayToCsv(array $arrays): string
+    {
+        // TODO: implements method
+        return implode(';', $arrays);
+    }
+
     /**
      * @return string|null
      */

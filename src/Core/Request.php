@@ -28,6 +28,7 @@ class Request implements iRequest
         $request->get = !empty($_GET) ? $_GET : null;
         $request->post = !empty($_POST) ? $_POST : null;
         $request->files = !empty($_FILES) ? $_FILES : null;
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $headers = getallheaders();
         if (!empty($headers[self::X_RESPONSE_TYPE])) {
             $format = $request->parseResponseType($headers[self::X_RESPONSE_TYPE]);
@@ -66,7 +67,8 @@ class Request implements iRequest
     {
         return in_array($format, array(
             Response::FORMAT_JSON,
-            Response::FORMAT_XML
+            Response::FORMAT_XML,
+            Response::FORMAT_CSV
         ), true);
     }
 

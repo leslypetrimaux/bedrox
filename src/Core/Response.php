@@ -41,6 +41,8 @@ class Response extends Skeleton implements iResponse
                 return $this->renderJSON($data, $error);
             case self::FORMAT_XML:
                 return $this->renderXML($data, $error);
+            case self::FORMAT_CSV:
+                return $this->renderCSV($data, $error);
             default:
                 return $this->renderJSON(null, array(
                     'code' => 'ERR_OUTPUT',
@@ -86,6 +88,15 @@ class Response extends Skeleton implements iResponse
         header('Content-Type: application/xml; charset=' . $this->parsing->parseAppEncode());
         $this->clear();
         return $domXml->saveXML();
+    }
+
+    public function renderCSV(?array $data, ?array $error): ?string
+    {
+        $result = $this->renderResult($data, $error);
+        $result = $this->parsing->parseRecursiveToArray($result);
+        $csv = $this->parsing->parseArrayToCsv($result);
+        $this->clear();
+        return $csv;
     }
 
     /**
