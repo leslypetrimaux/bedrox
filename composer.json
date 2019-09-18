@@ -20,7 +20,8 @@
     "ext-json": "*",
     "ext-dom": "*",
     "ext-curl": "*",
-    "doctrine/orm": "^2.6.2"
+    "doctrine/orm": "^2.6.2",
+    "ext-apache": "*"
   },
   "autoload": {
     "exclude-from-classmap": ["/docs/", "/tests/"],

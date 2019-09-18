@@ -78,12 +78,9 @@ class Env extends Skeleton
                 $this->outputFormat($this->content['app']['format'], $this->content['app']['encodage']);
                 $this->defineSGBD($this->content['app']['database']);
             } else {
-                $encode = $this->parsing->parseAppFormat();
-                http_response_code(500);
-                exit($this->response->renderView($encode, null, array(
-                    'code' => 'ERR_READ_APP',
-                    'message' => 'Echec lors de la lecture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".'
-                )));
+                throw new RuntimeException(
+                    'Echec lors de la lecture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".'
+                );
             }
             if (!is_array($_SERVER['APP'])) {
                 $encode = $this->parsing->parseAppFormat();
