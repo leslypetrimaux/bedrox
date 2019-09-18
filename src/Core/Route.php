@@ -106,10 +106,10 @@ class Route
     }
 
     /**
-     * @param Entity $params
+     * @param mixed $params
      * @return Route
      */
-    public function setParams(Entity $params): self
+    public function setParams($params): self
     {
         $this->params = $params;
         return $this;

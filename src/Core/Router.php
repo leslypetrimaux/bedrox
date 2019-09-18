@@ -51,12 +51,13 @@ class Router extends Skeleton implements iRouter
     {
         $cRoute = explode('.', $current);
         if (empty($format) && !empty(end($cRoute)) && (new Request())->getResponseType(end($cRoute))) {
-            $_SESSION['URI_FORMAT'] = $format = end($cRoute);
+            $format = end($cRoute);
             $current = str_replace(
                 array('.' . Response::FORMAT_XML, '.' . Response::FORMAT_JSON),
                 '',
                 $current
             );
+            $this->session->set('URI_FORMAT', $format);
         }
         if (!empty($format) && !(new Request())->getResponseType($format)) {
             http_response_code(500);
@@ -83,14 +84,24 @@ class Router extends Skeleton implements iRouter
                             foreach ($keys as $keyKey => $keyValue) {
                                 $repo = str_replace('{' . $keyValue . '}', $keyValue, $aPath[$key]);
                             }
-                            if ((new EntityManager())->getRepo($repo) !== null) {
-                                $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
+                            $class = '\\App\\Entity\\' . ucfirst($repo);
+                            $em = (new Controller(new Response()))->getDoctrine();
+                            if (
+                                !empty($_SERVER['APP']['SGBD']['type']) &&
+                                $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE &&
+                                $em->getRepository($class) !== null
+                            ) {
+                                $route->setParams($em->getRepository($class)->find($aCurrent[$key]));
                             } else {
-                                http_response_code(500);
-                                exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                                    'code' => 'ERR_URI_PARAMS',
-                                    'message' => 'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
-                                )));
+                                if ((new EntityManager())->getRepo($repo) !== null) {
+                                    $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
+                                } else {
+                                    http_response_code(500);
+                                    exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
+                                        'code' => 'ERR_URI_PARAMS',
+                                        'message' => 'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
+                                    )));
+                                }
                             }
                             $current = str_replace($aCurrent[$key], $aPath[$key], $current);
                         }

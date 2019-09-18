@@ -176,6 +176,7 @@ class Env extends Skeleton
                                 try {
                                     // database configuration parameters
                                     $_SERVER['APP']['SGBD'] = array(
+                                        'type' => $database['type'],
                                         'driver' => $database['driver'],
                                         'host' => $database['host'],
                                         'port ' => $database['port'],
