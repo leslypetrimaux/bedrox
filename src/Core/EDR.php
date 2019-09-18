@@ -70,10 +70,11 @@ class EDR
      * Set the SGBD to be used in the application.
      * Differents SGBD systems:
      * - MySQL: v 5.7+
-     * - MariaDB: v 10.2+ (currently unavailable)
+     * - MariaDB: v 10.2+
      * - Oracle: v 12g  (currently unavailable)
      * - MSSQL: v xx (currently unavailable)
-     * - FirebaseDb: (currently unavailable)
+     * - Firestore: bêta
+     * - FirebaseDatabase: bêta
      * - JSON: (currently unavailable)
      *
      * @param string $driver

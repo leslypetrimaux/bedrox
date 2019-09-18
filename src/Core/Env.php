@@ -5,7 +5,6 @@ namespace Bedrox\Core;
 use App\Kernel;
 use Bedrox\Skeleton;
 use Bedrox\Yaml\YamlParser;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Setup;
 use RuntimeException;
@@ -154,19 +153,19 @@ class Env extends Skeleton
                         case self::DB_DOCTRINE:
                             if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) ) {
                                 try {
-                                    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__ . '/new/App/Entity'), $this->content['app']['env']);
                                     // database configuration parameters
                                     $_SERVER['APP']['SGBD'] = array(
                                         'driver' => $database['driver'],
-                                        'host' => $database['port'],
-                                        'port ' => $database['schema'],
+                                        'host' => $database['host'],
+                                        'port ' => $database['port'],
                                         'user' => $database['user'],
                                         'password' => $database['password'],
                                         'dbname' => $database['schema'],
                                         'charset' => $database['encode'],
                                     );
                                     // obtaining the entity manager
-                                    $this->entityManager = EntityManager::create($_SERVER['APP']['SGBD'], $config);
+                                    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__ . '/new/App/Entity'), $this->content['app']['env'] !== 'prod');
+                                    Skeleton::$entityManager = \Doctrine\ORM\EntityManager::create($_SERVER['APP']['SGBD'], $config);
                                 } catch (ORMException $e) {
                                     throw new RuntimeException($e->getMessage());
                                 }

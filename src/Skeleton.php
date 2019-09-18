@@ -10,7 +10,7 @@ class Skeleton
     public const BASE = '/';
 
     public $request;
-    public $entityManager;
+    public static $entityManager;
     public $auth;
 
     protected $session;
