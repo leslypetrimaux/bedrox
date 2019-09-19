@@ -33,6 +33,11 @@ class Controller extends Skeleton
         return new EntityManager();
     }
 
+    /**
+     * Return Doctrine EntityManager to be usable in the current controller.
+     *
+     * @return \Doctrine\ORM\EntityManager|null
+     */
     public function getDoctrine(): ?\Doctrine\ORM\EntityManager
     {
         return Skeleton::$entityManager;

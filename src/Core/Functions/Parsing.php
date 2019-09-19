@@ -99,6 +99,13 @@ class Parsing
         }
     }
 
+    /**
+     * Parse an CSV file, encode/decode through JSON to convert to an array.
+     * Call parseRecursiveToArray() to return an array.
+     *
+     * @param array $arrays
+     * @return string
+     */
     public function parseArrayToCsv(array $arrays): string
     {
         // TODO: implements method
