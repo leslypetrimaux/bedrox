@@ -21,13 +21,6 @@ class Env extends Skeleton
     public const DB_DOCTRINE = 'doctrine';
 
     protected $content;
-    protected $response;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->response = new Response();
-    }
 
     /**
      * Load environments configuration file.

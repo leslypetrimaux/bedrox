@@ -26,7 +26,6 @@ class Security extends Skeleton
     public const ANONYMOUS = 'anonymous';
 
     protected $core;
-    protected $response;
 
     /**
      * Security constructor.
@@ -34,7 +33,6 @@ class Security extends Skeleton
      */
     public function __construct()
     {
-        $this->response = new Response();
         try {
             parent::__construct();
             if (file_exists($_SERVER['APP'][Env::FILE_SECURITY])) {

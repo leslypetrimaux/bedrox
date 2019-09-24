@@ -4,22 +4,12 @@ namespace Bedrox\Core\Annotations;
 
 use Bedrox\Core\Entity;
 use Bedrox\Core\Exceptions\BedroxException;
-use Bedrox\Core\Response;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 
 class PhpParser
 {
-    protected $response;
-
-    /**
-     * PhpParser constructor.
-     */
-    public function __construct()
-    {
-        $this->response = new Response();
-    }
 
     /**
      * Return the class comment from $class into a string.

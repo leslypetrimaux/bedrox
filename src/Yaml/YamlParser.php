@@ -3,7 +3,6 @@
 namespace Bedrox\Yaml;
 
 use Bedrox\Core\Exceptions\BedroxException;
-use Bedrox\Core\Response;
 use Exception;
 use RuntimeException;
 use stdClass;
@@ -53,17 +52,6 @@ class YamlParser
      * @var mixed
      */
     public $_nodeId;
-
-    /** @var Response */
-    protected $response;
-
-    /**
-     * YamlParser constructor.
-     */
-    public function __construct()
-    {
-        $this->response = new Response();
-    }
 
     /**
      * Load a valid YAML string to YamlParser.

@@ -7,7 +7,6 @@ use Bedrox\Core\Entity;
 use Bedrox\Core\EntityManager;
 use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iSgbd;
-use Bedrox\Core\Response;
 use Bedrox\EDR\Column;
 use Exception;
 use PDO;
@@ -25,7 +24,6 @@ class MySQL extends PDO implements iSgbd
     protected $em;
     protected $con;
     protected $driver;
-    protected $response;
 
     /**
      * MySQL constructor.
@@ -45,7 +43,6 @@ class MySQL extends PDO implements iSgbd
      */
     public function __construct(string $driver, string $host, int $port, string $user, string $pwd, string $schema)
     {
-        $this->response = new Response();
         try {
             $opt = $driver === EDR::MYSQL ? array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE'])) : null;
             $this->driver = $driver;

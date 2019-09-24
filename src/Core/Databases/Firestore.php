@@ -6,7 +6,6 @@ use Bedrox\Core\Entity;
 use Bedrox\Core\EntityManager;
 use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iSgbd;
-use Bedrox\Core\Response;
 use Bedrox\Google\Firebase\CloudFirestore;
 
 class Firestore extends CloudFirestore implements iSgbd
@@ -14,7 +13,6 @@ class Firestore extends CloudFirestore implements iSgbd
     public const UTF8 = 'utf-8';
 
     protected $em;
-    protected $response;
 
     /**
      * Firestore constructor.
@@ -29,7 +27,6 @@ class Firestore extends CloudFirestore implements iSgbd
     {
         parent::__construct($host, $apiKey, $clientId, $oAuthToken, $type);
         $this->em = new EntityManager();
-        $this->response = new Response();
     }
 
     /**

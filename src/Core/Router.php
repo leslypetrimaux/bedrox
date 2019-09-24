@@ -12,7 +12,6 @@ class Router extends Skeleton implements iRouter
 {
     protected $security;
     protected $routes;
-    protected $response;
 
     public $route;
 
@@ -22,7 +21,6 @@ class Router extends Skeleton implements iRouter
      */
     public function __construct()
     {
-        $this->response = new Response();
         try {
             parent::__construct();
             $this->security = new Security();

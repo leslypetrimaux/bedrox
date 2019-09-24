@@ -7,7 +7,6 @@ use Bedrox\Core\EntityManager;
 use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Functions\Parsing;
 use Bedrox\Core\Interfaces\iSgbd;
-use Bedrox\Core\Response;
 use Bedrox\Google\Firebase\RealtimeDatabase;
 
 class FirebaseDatabase extends RealtimeDatabase implements iSgbd
@@ -15,7 +14,6 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
     public const UTF8 = 'utf-8';
 
     protected $em;
-    protected $response;
 
     /**
      * FirebaseDatabase constructor.
@@ -30,7 +28,6 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
     {
         parent::__construct($host, $apiKey, $clientId, $oAuthToken, $type);
         $this->em = new EntityManager();
-        $this->response = new Response();
     }
 
     /**

@@ -12,7 +12,6 @@ class EntityManager implements iEntityManager
 {
     protected $phpParser;
     protected $annotationsTypes;
-    protected $response;
 
     /**
      * EntityManager Constructor
@@ -21,7 +20,6 @@ class EntityManager implements iEntityManager
     {
         $this->phpParser = new PhpParser();
         $this->annotationsTypes = new AnnotationsTypes('@Database');
-        $this->response = new Response();
     }
 
     /**

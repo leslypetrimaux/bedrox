@@ -3,12 +3,10 @@
 namespace Bedrox\Google\Firebase;
 
 use Bedrox\Core\Exceptions\BedroxException;
-use Bedrox\Core\Response;
 use Exception;
 
 class RealtimeDatabase extends Firebase
 {
-    protected $response;
 
     /**
      * RealtimeDatabase constructor.
@@ -22,7 +20,6 @@ class RealtimeDatabase extends Firebase
     public function __construct(string &$host, string $apiKey, string $clientId, string $oAuthToken, string $type = 'public')
     {
         parent::__construct($host, $apiKey, $clientId, $oAuthToken, $type);
-        $this->response = new Response();
         $this->setBaseURI($this->host);
         $this->setTimeOut(10);
         if ($type !== 'public') {

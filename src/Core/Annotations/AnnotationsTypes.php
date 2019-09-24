@@ -3,7 +3,6 @@
 namespace Bedrox\Core\Annotations;
 
 use Bedrox\Core\Exceptions\BedroxException;
-use Bedrox\Core\Response;
 
 class AnnotationsTypes
 {
@@ -33,8 +32,6 @@ class AnnotationsTypes
 
     public $ctrlRoute;
 
-    protected $response;
-
     /**
      * AnnotationsTypes public constructor
      * Create object depending on $type.
@@ -43,7 +40,6 @@ class AnnotationsTypes
      */
     public function __construct(?string $type)
     {
-        $this->response = new Response();
         if ($type !== null) {
             if ($type === self::LABEL_DB) {
                 $this->dbTable = self::DB_TABLE;

@@ -27,7 +27,6 @@ class EDR
     protected $clientId;
     protected $oAuthToken;
     protected $type;
-    protected $response;
 
     /**
      * EDR constructor
@@ -35,7 +34,6 @@ class EDR
      */
     public function __construct()
     {
-        $this->response = new Response();
         if (!empty($_SERVER['APP']['SGBD']['DRIVER'])) {
             switch ($_SERVER['APP']['SGBD']['DRIVER']) {
                 case self::FIRESTORE:
