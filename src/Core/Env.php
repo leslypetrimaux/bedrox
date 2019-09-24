@@ -20,6 +20,8 @@ class Env extends Skeleton
     public const DB_NATIVE = 'native';
     public const DB_DOCTRINE = 'doctrine';
 
+    public const DOCTRINE_CHARSET = 'utf8mb4';
+
     protected $content;
 
     /**
@@ -177,7 +179,7 @@ class Env extends Skeleton
                                         'user' => $database['user'],
                                         'password' => $database['password'],
                                         'dbname' => $database['schema'],
-                                        'charset' => $database['encode'],
+                                        'charset' => !empty($database['encode']) ? $database['encode'] : self::DOCTRINE_CHARSET,
                                     );
                                     // obtaining the entity manager
                                     $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__ . '/new/App/Entity'), $this->content['app']['env'] !== 'prod');
