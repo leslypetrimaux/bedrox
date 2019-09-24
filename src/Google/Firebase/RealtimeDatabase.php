@@ -2,6 +2,7 @@
 
 namespace Bedrox\Google\Firebase;
 
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Response;
 use Exception;
 
@@ -136,6 +137,7 @@ class RealtimeDatabase extends Firebase
      */
     private function writeData(string $path, string $data, string $method = 'PATCH')
     {
+        $return = null;
         $header = array(
             'Content-Type: application/json',
             'Content-Length: ' . strlen($data)
@@ -146,11 +148,10 @@ class RealtimeDatabase extends Firebase
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             $return = curl_exec($ch);
         } catch (Exception $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_FIREBASE_PERSIST:' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_FIREBASE_PERSIST:' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         return $return;
     }
@@ -161,15 +162,15 @@ class RealtimeDatabase extends Firebase
      */
     public function get(string $path)
     {
+        $return = null;
         try {
             $ch = $this->getCurlHandler($path, 'GET');
             $return = curl_exec($ch);
         } catch (Exception $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_FIREBASE_GET:' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_FIREBASE_GET:' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         return $return;
     }
@@ -190,15 +191,15 @@ class RealtimeDatabase extends Firebase
      */
     public function unset(string $path)
     {
+        $return = null;
         try {
             $ch = $this->getCurlHandler($path, 'DELETE');
             $return = curl_exec($ch);
         } catch (Exception $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_FIREBASE_DELETE:' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_FIREBASE_DELETE:' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         return $return;
     }

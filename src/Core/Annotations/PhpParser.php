@@ -3,6 +3,7 @@
 namespace Bedrox\Core\Annotations;
 
 use Bedrox\Core\Entity;
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Response;
 use ReflectionClass;
 use ReflectionException;
@@ -32,11 +33,10 @@ class PhpParser
         try {
             $document = (new ReflectionClass($class))->getDocComment();
         } catch (ReflectionException $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_ANNOTATIONS_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         return $document;
     }
@@ -57,11 +57,10 @@ class PhpParser
                 ReflectionProperty::IS_PROTECTED
             );
         } catch (ReflectionException $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_ANNOTATIONS_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         return $properties;
     }
@@ -85,11 +84,10 @@ class PhpParser
                 );
             }
         } catch (ReflectionException $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_ANNOTATIONS_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         return $document;
     }
@@ -112,17 +110,17 @@ class PhpParser
                     $match = str_replace(AnnotationsTypes::DB_COLUMN, '', $column);
                     $propName = $property->getName();
                     if (strpos($match, 'name')) {
-                        $name  = preg_replace('/\(\{(.*)?name=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?\}\)/', '$2', $match);
+                        $name  = preg_replace('/\({(.*)?name=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?}\)/', '$2', $match);
                     } else {
                         $name = null;
                     }
                     if (strpos($match, 'type')) {
-                        $type  = preg_replace('/\(\{(.*)?type=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?\}\)/', '$2', $match);
+                        $type  = preg_replace('/\({(.*)?type=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?}\)/', '$2', $match);
                     } else {
                         $type = null;
                     }
                     if (strpos($match, 'length')) {
-                        $length  = preg_replace('/\(\{(.*)?length=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?\}\)/', '$2', $match);
+                        $length  = preg_replace('/\({(.*)?length=\"([a-zA-Z0-9]+[_[a-zA-Z0-9]+]?)\"(.*)?}\)/', '$2', $match);
                     } else {
                         $length = null;
                     }
@@ -141,11 +139,10 @@ class PhpParser
                 );
             }
         } catch (ReflectionException $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_ANNOTATIONS_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         return $columns;
     }
@@ -176,11 +173,10 @@ class PhpParser
                 );
             }
         } catch (ReflectionException $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_ANNOTATIONS_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         return $columns;
     }
@@ -215,11 +211,10 @@ class PhpParser
                 );
             }
         } catch (ReflectionException $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_ANNOTATIONS_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_ANNOTATIONS_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         return $columns;
     }
@@ -253,11 +248,10 @@ class PhpParser
                 }
             }
         } else {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_ANNOTATIONS_VALUE',
-                'message' => 'Impossible de récupérer la value pour l\'annotation de type "' . $annotation . '".'
-            )));
+            BedroxException::render(
+                'ERR_ANNOTATIONS_VALUE',
+                'Impossible de récupérer la value pour l\'annotation de type "' . $annotation . '".'
+            );
         }
         return $value;
     }

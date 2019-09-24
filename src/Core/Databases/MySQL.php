@@ -5,6 +5,7 @@ namespace Bedrox\Core\Databases;
 use Bedrox\Core\EDR;
 use Bedrox\Core\Entity;
 use Bedrox\Core\EntityManager;
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iSgbd;
 use Bedrox\Core\Response;
 use Bedrox\EDR\Column;
@@ -60,11 +61,10 @@ class MySQL extends PDO implements iSgbd
             }
             $this->em = new EntityManager();
         } catch (PDOException $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_' . strtoupper($this->driver) . '_CONSTRUCT_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_' . strtoupper($this->driver) . '_CONSTRUCT_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
     }
 
@@ -94,12 +94,12 @@ class MySQL extends PDO implements iSgbd
             $this->con = $this->commit();
             return $results;
         } catch (PDOException | Exception $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_' . strtoupper($this->driver) . '_BUILDQUERY_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_' . strtoupper($this->driver) . '_BUILDQUERY_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
+        return null;
     }
 
     /**
@@ -147,12 +147,12 @@ class MySQL extends PDO implements iSgbd
             }
             return $entity;
         } catch (PDOException | Exception | RuntimeException $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_' . strtoupper($this->driver) . '_FIND_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_' . strtoupper($this->driver) . '_FIND_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
+        return null;
     }
 
     /**
@@ -204,12 +204,12 @@ class MySQL extends PDO implements iSgbd
             }
             return $entity;
         } catch (PDOException | Exception | RuntimeException $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_' . strtoupper($this->driver) . '_FINDONEBY_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_' . strtoupper($this->driver) . '_FINDONEBY_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
+        return null;
     }
 
     /**
@@ -253,12 +253,12 @@ class MySQL extends PDO implements iSgbd
             }
             return $entities;
         } catch (PDOException | Exception | RuntimeException $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_' . strtoupper($this->driver) . '_FINDALL_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_' . strtoupper($this->driver) . '_FINDALL_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
+        return null;
     }
 
     /**
@@ -336,12 +336,12 @@ class MySQL extends PDO implements iSgbd
             return $result;
         } catch (PDOException | Exception | RuntimeException $e) {
             $this->con = $this->rollBack();
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_' . strtoupper($this->driver) . '_INSERT_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_' . strtoupper($this->driver) . '_INSERT_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
+        return null;
     }
 
     /**
@@ -394,12 +394,12 @@ class MySQL extends PDO implements iSgbd
             return $result;
         } catch (PDOException | Exception | RuntimeException $e) {
             $this->con = $this->rollBack();
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_' . strtoupper($this->driver) . '_UPDATE_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_' . strtoupper($this->driver) . '_UPDATE_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
+        return null;
     }
 
     /**
@@ -432,11 +432,11 @@ class MySQL extends PDO implements iSgbd
             return $result;
         } catch (PDOException | Exception | RuntimeException $e) {
             $this->con = $this->rollBack();
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_' . strtoupper($this->driver) . '_DELETE_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_' . strtoupper($this->driver) . '_DELETE_' . $e->getCode(),
+                $e->getMessage()
+            );
         }
+        return null;
     }
 }

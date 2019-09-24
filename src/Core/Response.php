@@ -2,6 +2,7 @@
 
 namespace Bedrox\Core;
 
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iResponse;
 use Bedrox\Skeleton;
 use DOMDocument;
@@ -78,7 +79,7 @@ class Response extends Skeleton implements iResponse
     public function renderXML(?array $data, ?array $error): ?string
     {
         $result = $this->renderResult($data, $error);
-        $xml = new SimpleXMLElement('<Response/>');
+        $xml = new SimpleXMLElement('<Response></Response>');
         $result = $this->parsing->parseRecursiveToArray($result);
         $xml = $this->parsing->parseArrayToXml($result, $xml);
         $domXml = new DOMDocument('1.0', $this->parsing->parseAppEncode());
@@ -162,29 +163,28 @@ class Response extends Skeleton implements iResponse
                     if ($response->route->paramsCount === 1) {
                         $function = $class->$functionStr($response->route->params);
                     } else {
-                        http_response_code(500);
-                        exit($this->renderView($render, null, array(
-                            'code' => 'ERR_URI_PARAMS',
-                            'message' => 'La route "' . $response->route->url . '" ne possède pas le bon nombre de paramètres. Veuillez vérifier votre fichier "./routes.yaml".'
-                        )));
+                        BedroxException::render(
+                            'ERR_URI_PARAMS',
+                            'La route "' . $response->route->url . '" ne possède pas le bon nombre de paramètres. Veuillez vérifier votre fichier "./routes.yaml".'
+                        );
                     }
                 } else {
-                    http_response_code(500);
-                    exit($this->renderView($_SERVER['APP']['FORMAT'], null, array(
-                        'code' => 'ERR_URI_NOTFOUND_PARAMS',
-                        'message' => 'Le paramètre de cette route n\'existe pas dans la base de données. Veuillez vérifier votre requête.'
-                    )));
+                    BedroxException::render(
+                        'ERR_URI_NOTFOUND_PARAMS',
+                        'Le paramètre de cette route n\'existe pas dans la base de données. Veuillez vérifier votre requête.'
+                    );
                 }
             } else {
                 $function = $class->$functionStr();
             }
             http_response_code(200);
+            /** @var mixed $function */
             exit($this->renderView($render, $function, null));
         }
-        http_response_code(404);
-        exit($this->renderView($render, null, array(
-            'code' => 'ERR_URI_NOTFOUND',
-            'message' => 'La route "' . $_SERVER['REQUEST_URI'] . '" n\'existe pas OU n\'est pas configurée correctement dans votre Application. Veuillez vérifier votre fichier "./routes.yaml".'
-        )));
+        BedroxException::render(
+            'ERR_URI_NOTFOUND',
+            'La route "' . $_SERVER['REQUEST_URI'] . '" n\'existe pas OU n\'est pas configurée correctement dans votre Application. Veuillez vérifier votre fichier "./routes.yaml".',
+            404
+        );
     }
 }

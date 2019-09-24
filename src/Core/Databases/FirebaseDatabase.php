@@ -4,6 +4,7 @@ namespace Bedrox\Core\Databases;
 
 use Bedrox\Core\Entity;
 use Bedrox\Core\EntityManager;
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Functions\Parsing;
 use Bedrox\Core\Interfaces\iSgbd;
 use Bedrox\Core\Response;
@@ -52,11 +53,11 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
     public function buildQuery(string $query): ?array
     {
         // TODO: Implement buildQuery() method.
-        http_response_code(500);
-        exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-            'code' => 'ERR_FIREBASE_QUERYBUILDER',
-            'message' => 'Le "QueryBuilder" pour Firebase Realtime Database n\'est pas encore disponible.'
-        )));
+        BedroxException::render(
+            'ERR_FIREBASE_QUERYBUILDER',
+            'Le "QueryBuilder" pour Firebase Realtime Database n\'est pas encore disponible.'
+        );
+        return null;
     }
 
     /**

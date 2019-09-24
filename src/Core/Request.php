@@ -2,6 +2,7 @@
 
 namespace Bedrox\Core;
 
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iRequest;
 use Bedrox\Skeleton;
 
@@ -33,11 +34,10 @@ class Request implements iRequest
         if (!empty($headers[self::X_RESPONSE_TYPE])) {
             $format = $request->parseResponseType($headers[self::X_RESPONSE_TYPE]);
             if (!empty($format) && !$request->getResponseType($format)) {
-                http_response_code(500);
-                exit((new Response())->renderView($_SERVER['APP']['FORMAT'], null, array(
-                    'code' => 'ERR_URI_FORMAT',
-                    'message' => 'Erreur lors de la récupération de l\'encodage de la page dans l\'en-tête. Vérifiez votre route ou la configuration de votre application.'
-                )));
+                BedroxException::render(
+                    'ERR_URI_FORMAT',
+                    'Erreur lors de la récupération de l\'encodage de la page dans l\'en-tête. Vérifiez votre route ou la configuration de votre application.'
+                );
             }
         } else {
             $format = null;
@@ -88,11 +88,10 @@ class Request implements iRequest
             $response->request->files = !empty($request->files) ? $request->files : null;
             $response->route = $request->route;
         } else {
-            http_response_code(500);
-            exit($response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_REQUEST',
-                'message' => 'Une erreur s\'est produite lors de la lecture de la requête.'
-            )));
+            BedroxException::render(
+                'ERR_REQUEST',
+                'Une erreur s\'est produite lors de la lecture de la requête.'
+            );
         }
         return $response;
     }

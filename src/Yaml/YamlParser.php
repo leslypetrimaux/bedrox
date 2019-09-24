@@ -2,9 +2,11 @@
 
 namespace Bedrox\Yaml;
 
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Response;
 use Exception;
 use RuntimeException;
+use stdClass;
 
 class YamlParser
 {
@@ -144,7 +146,7 @@ class YamlParser
      * you can turn off wordwrap by passing in 0.
      *
      * @access public
-     * @param array|\stdClass $array PHP array
+     * @param array|stdClass $array PHP array
      * @param bool $indent
      * @param bool $wordwrap
      * @param bool $no_opening_dashes
@@ -585,12 +587,12 @@ class YamlParser
             }
             return $this->returnKeyValuePair($line);
         } catch (Exception $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_SESSION',
-                'message' => 'Une erreur s\'est produite lors de la lecture/écriture de la session courante. Merci de supprimer le cache de l\'Application.'
-            )));
+            BedroxException::render(
+                'ERR_SESSION',
+                'Une erreur s\'est produite lors de la lecture/écriture de la session courante. Merci de supprimer le cache de l\'Application.'
+            );
         }
+        return null;
     }
 
     /**
@@ -735,9 +737,9 @@ class YamlParser
         $i = 0;
         do {
             // Check for sequences
-            while (preg_match('/\[([^{}\[\]]+)\]/U',$inline,$matchseqs)) {
+            while (preg_match('/\[([^{}\[\]]+)]/U',$inline,$matchseqs)) {
                 $seqs[] = $matchseqs[0];
-                $inline = preg_replace('/\[([^{}\[\]]+)\]/U', 'YAMLSeq' . (count($seqs) - 1) . 's', $inline, 1);
+                $inline = preg_replace('/\[([^{}\[\]]+)]/U', 'YAMLSeq' . (count($seqs) - 1) . 's', $inline, 1);
             }
             // Check for mappings
             while (preg_match('/{([^\[\]{}]+)}/U',$inline,$matchmaps)) {

@@ -2,6 +2,7 @@
 
 namespace Bedrox\Google\Firebase;
 
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Response;
 use Exception;
 
@@ -137,6 +138,7 @@ class CloudFirestore extends Firebase
      */
     private function writeData(string $path, string $data, string $method = 'PATCH')
     {
+        $return = null;
         try {
             $tmp = json_decode($data);
             $doc = array();
@@ -154,11 +156,10 @@ class CloudFirestore extends Firebase
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             $return = curl_exec($ch);
         } catch (Exception $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_FIRESTORE_PERSIST:' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_FIRESTORE_PERSIST:' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         return $return;
     }
@@ -169,16 +170,16 @@ class CloudFirestore extends Firebase
      */
     public function get(string $path): ?array
     {
+        $db = $doc = null;
         try {
             $ch = $this->getCurlHandler($path, 'GET');
             $db = json_decode(curl_exec($ch));
             $docs = $doc = null;
         } catch (Exception $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_FIRESTORE_GET:' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_FIRESTORE_GET:' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         if (!empty($db->documents)) {
             $docs = array();
@@ -214,15 +215,15 @@ class CloudFirestore extends Firebase
      */
     public function unset(string $path)
     {
+        $return = null;
         try {
             $ch = $this->getCurlHandler($path, 'DELETE');
             $return = curl_exec($ch);
         } catch (Exception $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_FIRESTORE_DELETE:' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_FIRESTORE_DELETE:' . $e->getCode(),
+                $e->getMessage()
+            );
         }
         return $return;
     }

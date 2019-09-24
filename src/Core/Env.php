@@ -3,6 +3,7 @@
 namespace Bedrox\Core;
 
 use App\Kernel;
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Skeleton;
 use Bedrox\Yaml\YamlParser;
 use Doctrine\ORM\ORMException;
@@ -46,20 +47,20 @@ class Env extends Skeleton
                     $_SESSION['APP_FORMAT'] = $this->content['app']['format'];
                     $_SESSION['DUMPS_COUNT'] = 0;
                 } else {
-                    $encode = $this->parsing->parseAppFormat();
-                    http_response_code(500);
-                    exit($this->response->renderView($encode, null,  array(
-                        'code' => 'ERR_FILE_ENV',
-                        'message' => 'Le fichier d\'environnement n\'est pas correctement complété. Veuillez vérifier votre fichier "./config/env.yaml".'
-                    )));
+                    BedroxException::render(
+                        'ERR_FILE_ENV',
+                        'Le fichier d\'environnement n\'est pas correctement complété. Veuillez vérifier votre fichier "./config/env.yaml".',
+                        500,
+                        $this->parsing->parseAppFormat()
+                    );
                 }
             } else {
-                $encode = $this->parsing->parseAppFormat();
-                http_response_code(500);
-                exit($this->response->renderView($encode, null,  array(
-                    'code' => 'ERR_FILE_ENV',
-                    'message' => 'Echec lors de l\'ouverture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".'
-                )));
+                BedroxException::render(
+                    'ERR_FILE_ENV',
+                    'Echec lors de l\'ouverture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".',
+                    500,
+                    $this->parsing->parseAppFormat()
+                );
             }
             if (
                 is_array($this->content['app']) &&
@@ -83,20 +84,20 @@ class Env extends Skeleton
                 );
             }
             if (!is_array($_SERVER['APP'])) {
-                $encode = $this->parsing->parseAppFormat();
-                http_response_code(500);
-                exit($this->response->renderView($encode, null, array(
-                    'code' => 'ERR_VAR_APP',
-                    'message' => 'Les variables de configuration de l\'application n\'ont pas pu être définies correctement. Veuillez vérifier votre fichier "./config/env.yaml".'
-                )));
+                BedroxException::render(
+                    'ERR_VAR_APP',
+                    'Les variables de configuration de l\'application n\'ont pas pu être définies correctement. Veuillez vérifier votre fichier "./config/env.yaml".',
+                    500,
+                    $this->parsing->parseAppFormat()
+                );
             }
         } catch (RuntimeException $e) {
-            $encode = $this->parsing->parseAppFormat();
-            http_response_code(500);
-            exit($this->response->renderView($encode, null, array(
-                'code' => 'ERR_FILE_ENV',
-                'message' => $e
-            )));
+            BedroxException::render(
+                'ERR_FILE_ENV',
+                $e->getMessage(),
+                500,
+                $this->parsing->parseAppFormat()
+            );
         }
     }
 
@@ -137,12 +138,12 @@ class Env extends Skeleton
             $_SERVER['APP'][$type] = $_SERVER['DOCUMENT_ROOT'] . '/../config/' . $file;
         }
         if (!file_exists($_SERVER['APP'][$type])) {
-            $encode = $this->parsing->parseAppFormat();
-            http_response_code(500);
-            exit($this->response->renderView($encode, null, array(
-                'code' => 'ERR_FILE_ENV',
-                'message' => 'Echec lors de la lecture du fichier "' . $file . '". Veuillez vérifier votre fichier "./config/env.yaml".'
-            )));
+            BedroxException::render(
+                'ERR_FILE_ENV',
+                'Echec lors de la lecture du fichier "' . $file . '". Veuillez vérifier votre fichier "./config/env.yaml".',
+                500,
+                $this->parsing->parseAppFormat()
+            );
         }
     }
 
@@ -243,12 +244,12 @@ class Env extends Skeleton
                 throw new RuntimeException('Echec lors de récupérer les informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
             }
         } catch (RuntimeException $e) {
-            $encode = $this->parsing->parseAppFormat();
-            http_response_code(500);
-            exit($this->response->renderView($encode, null, array(
-                'code' => 'ERR_FILE_ENV_' . $e->getCode(),
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_FILE_ENV_' . $e->getCode(),
+                $e->getMessage(),
+                500,
+                $this->parsing->parseAppFormat()
+            );
         }
     }
 }

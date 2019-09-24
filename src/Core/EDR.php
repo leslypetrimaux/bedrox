@@ -5,6 +5,7 @@ namespace Bedrox\Core;
 use Bedrox\Core\Databases\FirebaseDatabase;
 use Bedrox\Core\Databases\Firestore;
 use Bedrox\Core\Databases\MySQL;
+use Bedrox\Core\Exceptions\BedroxException;
 
 class EDR
 {
@@ -58,11 +59,10 @@ class EDR
                     break;
             }
         } else {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_DB_CONSTRUCT',
-                'message' => 'Echec lors de création de la connexion à la base de données. Veuillez vérifier votre fichier "./config/env.yaml".'
-            )));
+            BedroxException::render(
+                'ERR_DB_CONSTRUCT',
+                'Echec lors de création de la connexion à la base de données. Veuillez vérifier votre fichier "./config/env.yaml".'
+            );
         }
     }
 
@@ -103,11 +103,10 @@ class EDR
                 break;
         }
         if (empty($this->con)) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_DB_CONNECT',
-                'message' => 'Impossible de créer une connexion "' . $driver . '".'
-            )));
+            BedroxException::render(
+                'ERR_DB_CONNECT',
+                'Impossible de créer une connexion "' . $driver . '".'
+            );
         }
         return $this->con;
     }

@@ -4,6 +4,7 @@ namespace Bedrox\Core\Databases;
 
 use Bedrox\Core\Entity;
 use Bedrox\Core\EntityManager;
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iSgbd;
 use Bedrox\Core\Response;
 use Bedrox\Google\Firebase\CloudFirestore;
@@ -51,11 +52,11 @@ class Firestore extends CloudFirestore implements iSgbd
     public function buildQuery(string $query): ?array
     {
         // TODO: Implement buildQuery() method.
-        http_response_code(500);
-        exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-            'code' => 'ERR_FIRESTORE_QUERYBUILDER',
-            'message' => 'Le "QueryBuilder" pour Firebase Cloud Firestore n\'est pas encore disponible.'
-        )));
+        BedroxException::render(
+            'ERR_FIRESTORE_QUERYBUILDER',
+            'Le "QueryBuilder" pour Firebase Cloud Firestore n\'est pas encore disponible.'
+        );
+        return null;
     }
 
     /**

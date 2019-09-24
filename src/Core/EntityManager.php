@@ -4,6 +4,7 @@ namespace Bedrox\Core;
 
 use Bedrox\Core\Annotations\AnnotationsTypes;
 use Bedrox\Core\Annotations\PhpParser;
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iEntityManager;
 use Bedrox\EDR;
 
@@ -32,11 +33,10 @@ class EntityManager implements iEntityManager
     public function getRepo(?string $entity): Repository
     {
         if (!$entity) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_EM_REPO',
-                'message' => 'Impossible de récupérer un Repository de l\'Application.'
-            )));
+            BedroxException::render(
+                'ERR_EM_REPO',
+                'Impossible de récupérer un Repository de l\'Application.'
+            );
         }
         $table = $this->getTable($this->getEntity($entity));
         return new Repository($table);
@@ -52,11 +52,10 @@ class EntityManager implements iEntityManager
     {
         $entity = 'App\Entity\\' . ucwords($entity);
         if (!class_exists($entity)) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_EM_ENTITY',
-                'message' => 'La classe "' . $entity . '" n\'existe pas.'
-            )));
+            BedroxException::render(
+                'ERR_EM_ENTITY',
+                'La classe "' . $entity . '" n\'existe pas.'
+            );
         }
         return new $entity();
     }

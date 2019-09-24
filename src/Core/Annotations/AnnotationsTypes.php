@@ -2,6 +2,7 @@
 
 namespace Bedrox\Core\Annotations;
 
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Response;
 
 class AnnotationsTypes
@@ -51,11 +52,10 @@ class AnnotationsTypes
                 $this->dbColumn = self::DB_COLUMN;
             }
         } else {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_ANNOTATIONS_TYPE',
-                'message' => 'Impossible d\'écrire les types d\'annotations disponibles pour cette Application.'
-            )));
+            BedroxException::render(
+                'ERR_ANNOTATIONS_TYPE',
+                'Impossible d\'écrire les types d\'annotations disponibles pour cette Application.'
+            );
         }
     }
 
@@ -84,11 +84,10 @@ class AnnotationsTypes
                     break;
             }
         } else {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_ANNOTATIONS_TYPE',
-                'message' => 'Impossible de lire les types d\'annotations disponibles pour cette Application.'
-            )));
+            BedroxException::render(
+                'ERR_ANNOTATIONS_TYPE',
+                'Impossible de lire les types d\'annotations disponibles pour cette Application.'
+            );
         }
         return $annotation;
     }

@@ -2,6 +2,7 @@
 
 namespace Bedrox\Core;
 
+use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iRouter;
 use Bedrox\Skeleton;
 use Bedrox\Yaml\YamlParser;
@@ -36,11 +37,10 @@ class Router extends Skeleton implements iRouter
                 throw new RuntimeException('Erreur lors de l\'ouverture du fichier des routes. Veuillez vérifier votre fichier "./config/env.yaml".');
             }
         } catch (RuntimeException $e) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_FILE_ROUTER',
-                'message' => $e->getMessage()
-            )));
+            BedroxException::render(
+                'ERR_FILE_ROUTER',
+                $e->getMessage()
+            );
         }
     }
 
@@ -68,11 +68,10 @@ class Router extends Skeleton implements iRouter
             $this->session->set('URI_FORMAT', $format);
         }
         if (!empty($format) && !(new Request())->getResponseType($format)) {
-            http_response_code(500);
-            exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                'code' => 'ERR_URI_FORMAT',
-                'message' => 'Erreur lors de la récupération de l\'encodage de la page. Vérifiez votre route ou la configuration de votre application.'
-            )));
+            BedroxException::render(
+                'ERR_URI_FORMAT',
+                'Erreur lors de la récupération de l\'encodage de la page. Vérifiez votre route ou la configuration de votre application.'
+            );
         }
         $route = new Route();
         $firewall = $this->security->getFirewall();
@@ -98,21 +97,19 @@ class Router extends Skeleton implements iRouter
                                 if ($em->getRepository($class) !== null) {
                                     $route->setParams($em->getRepository($class)->find($aCurrent[$key]));
                                 } else {
-                                    http_response_code(500);
-                                    exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                                        'code' => 'ERR_ORM_PARAMS',
-                                        'message' => 'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
-                                    )));
+                                    BedroxException::render(
+                                        'ERR_ORM_PARAMS',
+                                        'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
+                                    );
                                 }
                             } else {
                                 if ((new EntityManager())->getRepo($repo) !== null) {
                                     $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
                                 } else {
-                                    http_response_code(500);
-                                    exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                                        'code' => 'ERR_EDR_PARAMS',
-                                        'message' => 'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
-                                    )));
+                                    BedroxException::render(
+                                        'ERR_EDR_PARAMS',
+                                        'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
+                                    );
                                 }
                             }
                             $current = str_replace($aCurrent[$key], $aPath[$key], $current);
@@ -129,11 +126,11 @@ class Router extends Skeleton implements iRouter
                 $route->setFunction($controller[1]);
                 $route->setRender(!empty($format) ? $format : $_SERVER['APP']['FORMAT']);
                 if ($this->security->isNotAuthorized($route->getName(), $firewall)) {
-                    http_response_code(403);
-                    exit($this->response->renderView($_SERVER['APP']['FORMAT'], null, array(
-                        'code' => 'ERR_URI_DENIED_ACCESS',
-                        'message' => 'Vous n\'avez pas accès à cette page. Veuillez vérifier votre token ou l\'adresse de votre page.'
-                    )));
+                    BedroxException::render(
+                        'ERR_URI_DENIED_ACCESS',
+                        'Vous n\'avez pas accès à cette page. Veuillez vérifier votre token ou l\'adresse de votre page.',
+                        403
+                    );
                 }
             }
         }

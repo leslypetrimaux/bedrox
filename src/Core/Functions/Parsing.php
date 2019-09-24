@@ -3,7 +3,7 @@
 namespace Bedrox\Core\Functions;
 
 use App\Kernel;
-use Bedrox\Core\Response;
+use Bedrox\Core\Exceptions\BedroxException;
 use RuntimeException;
 use SimpleXMLElement;
 
@@ -90,12 +90,13 @@ class Parsing
             $object = json_decode(json_encode($xml));
             return $this->parseRecursiveToArray($object);
         } catch (RuntimeException $e) {
-            $encode = $this->parseAppFormat();
-            http_response_code(500);
-            exit((new Response())->renderView($encode, null, array(
-                'code' => 'ERR_XML_FILE',
-                'message' => 'La classe "libXMLError" ressort l\'erreur n° ' . $e['code'] . '. Echec lors de la lecture du fichier XML "' . $file . '". Veuillez vérifier la configuration de l\'application.'
-            )));
+            BedroxException::render(
+                'ERR_XML_FILE',
+                'La classe "libXMLError" ressort l\'erreur n° ' . $e['code'] . '. Echec lors de la lecture du fichier XML "' . $file . '". Veuillez vérifier la configuration de l\'application.',
+                500,
+                $this->parseAppFormat()
+            );
+            return null;
         }
     }
 
