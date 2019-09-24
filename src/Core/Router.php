@@ -27,9 +27,13 @@ class Router extends Skeleton implements iRouter
             $this->security = new Security();
             if (file_exists($_SERVER['APP'][Env::FILE_ROUTER])) {
                 $content = YamlParser::YAMLLoad($_SERVER['APP'][Env::FILE_ROUTER]);
-                $this->routes = $content;
+                if (is_array($content)) {
+                    $this->routes = $content;
+                } else {
+                    throw new RuntimeException('Impossible de récupérer les routes depuis le fichier. Veuillez vérifier votre fichier "./config/env.yaml".');
+                }
             } else {
-                throw new RuntimeException('Echec lors de l\'ouverture du fichier des routes. Veuillez vérifier votre fichier "./config/env.yaml".');
+                throw new RuntimeException('Erreur lors de l\'ouverture du fichier des routes. Veuillez vérifier votre fichier "./config/env.yaml".');
             }
         } catch (RuntimeException $e) {
             http_response_code(500);
@@ -75,7 +79,7 @@ class Router extends Skeleton implements iRouter
         foreach ($this->routes as $name => $routes) {
             $path = $routes['path'];
             $keys = array();
-            if (!empty($routes['params'])) {
+            if (!empty($routes['params']) && is_array($routes['params'])) {
                 $aCurrent = explode('/', $current);
                 $aPath = explode('/', $path);
                 foreach ($routes['params'] as $param) {
