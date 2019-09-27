@@ -160,18 +160,32 @@ class Response extends Skeleton implements iResponse
             $functionStr = $response->route->function;
             if ($response->route->paramsCount > 0) {
                 if (!empty($response->route->params)) {
-                    if ($response->route->paramsCount === 1) {
+                    $isArray = is_array($response->route->params) ? true : false;
+                    if (!$isArray && $response->route->paramsCount === 1) {
                         $function = $class->$functionStr($response->route->params);
                     } else {
-                        BedroxException::render(
-                            'ERR_URI_PARAMS',
-                            'La route "' . $response->route->url . '" ne possède pas le bon nombre de paramètres. Veuillez vérifier votre fichier "./routes.yaml".'
-                        );
+                        if ($isArray) {
+                            BedroxException::render(
+                                'ERR_URI_PARAMS',
+                                'Seul un paramètre est injectable pour l\'instant. Veuillez vérifier votre fichier "./routes.yaml".'
+                            );
+                            $paramsStr = '';
+                            foreach ($response->route->params as $param) {
+                                $paramsStr .= !empty($paramsStr) ? ', ' : '';
+                                $paramsStr .= $param;
+                            }
+                            $function = $class->$functionStr($paramsStr);
+                        } else {
+                            BedroxException::render(
+                                'ERR_URI_PARAMS',
+                                'La route "' . $response->route->url . '" ne possède pas le bon nombre de paramètres. Veuillez vérifier votre fichier "./routes.yaml".'
+                            );
+                        }
                     }
                 } else {
                     BedroxException::render(
                         'ERR_URI_NOTFOUND_PARAMS',
-                        'Le paramètre de cette route n\'existe pas dans la base de données. Veuillez vérifier votre requête.'
+                        'Le paramètre de cette route est vide. Veuillez vérifier votre requête.'
                     );
                 }
             } else {

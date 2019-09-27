@@ -3,6 +3,8 @@
 namespace Bedrox;
 
 use Bedrox\Core\Functions\Parsing;
+use Bedrox\Core\Request;
+use Bedrox\Core\Response;
 use Bedrox\Core\Session;
 
 class Skeleton
@@ -33,6 +35,23 @@ class Skeleton
             '_class' => static::class,
             '_this' => $this
         );
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function handle(Request $request): Response
+    {
+        return $request->handle($request);
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function terminate(Response $response): void
+    {
+        $response->terminate($response);
     }
 
     /**
