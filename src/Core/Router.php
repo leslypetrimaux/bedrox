@@ -85,8 +85,7 @@ class Router extends Skeleton implements iRouter
                 if (!empty($keys) && count($aCurrent)===count($aPath)) {
                     foreach ($aCurrent as $key => $value) {
                         if ($aCurrent[$key]!==$aPath[$key]) {
-                            $repo = null;
-                            $criteria = null;
+                            $repo = $criteria = $string = null;
                             foreach ($keys as $keyKey => $keyValue) {
                                 $repo = preg_replace('/{' . $keyValue . '(.*)?$/', $keyValue, $aPath[$key]);
                                 $criteria = str_replace('{' . $keyValue . '.', '', $aPath[$key]);
