@@ -76,24 +76,29 @@ class Router extends Skeleton implements iRouter
         foreach ($this->routes as $name => $routes) {
             $path = $routes['path'];
             $keys = array();
-            if (!empty($routes['params']) && is_array($routes['params'])) {
+            if (!empty($routes['entity']) && is_array($routes['entity'])) {
                 $aCurrent = explode('/', $current);
                 $aPath = explode('/', $path);
-                foreach ($routes['params'] as $param) {
+                foreach ($routes['entity'] as $param) {
                     $keys[] = $param;
                 }
                 if (!empty($keys) && count($aCurrent)===count($aPath)) {
                     foreach ($aCurrent as $key => $value) {
                         if ($aCurrent[$key]!==$aPath[$key]) {
                             $repo = null;
+                            $criteria = null;
                             foreach ($keys as $keyKey => $keyValue) {
-                                $repo = str_replace('{' . $keyValue . '}', $keyValue, $aPath[$key]);
+                                $repo = preg_replace('/{' . $keyValue . '(.*)?$/', $keyValue, $aPath[$key]);
+                                $criteria = str_replace('{' . $keyValue . '.', '', $aPath[$key]);
+                                $criteria = str_replace('}', '', $criteria);
                             }
                             $class = '\\App\\Entity\\' . ucfirst($repo);
                             $em = (new Controller(new Response()))->getDoctrine();
                             if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
                                 if ($em->getRepository($class) !== null) {
-                                    $route->setParams($em->getRepository($class)->find($aCurrent[$key]));
+                                    $route->setParams($em->getRepository($class)->findOneBy(array(
+                                        $criteria => $aCurrent[$key]
+                                    )));
                                 } else {
                                     BedroxException::render(
                                         'ERR_ORM_PARAMS',
