@@ -10,17 +10,19 @@ use RuntimeException;
 class Security extends Skeleton
 {
     public const FIREWALL = 'firewall';
-    public const TOKEN = 'token';
     public const ENCODE = 'encode';
     public const SECRET = 'secret';
-
     public const TYPE = 'type';
-    public const AUTH = 'auth';
-    public const NOAUTH = 'no-auth';
+    public const TOKEN = 'token';
+    public const SIGNIN = 'signin';
+    public const NOAUTH = 'public';
 
     public const SOURCE = 'source';
     public const STRATEGY = 'strategy';
     public const ENTITY = 'entity';
+    public const ENTITY_CLASS = 'class';
+    public const ENTITY_LOGIN = 'login';
+    public const ENTITY_PASS = 'password';
     
     public const ROUTE = 'route';
     public const ANONYMOUS = 'anonymous';
@@ -90,9 +92,10 @@ class Security extends Skeleton
             self::SECRET => $this->core[self::FIREWALL][self::TOKEN][self::SECRET],
             self::ENCODE => $this->core[self::FIREWALL][self::TOKEN][self::ENCODE],
             self::TYPE => $this->core[self::FIREWALL][self::TYPE],
+            self::ENTITY => $this->core[self::FIREWALL][self::ENTITY],
             self::ANONYMOUS => array()
         );
-        if ($firewall[self::TYPE] === self::AUTH) {
+        if ($firewall[self::TYPE] === self::TOKEN) {
             if (empty($this->core[self::FIREWALL][self::ANONYMOUS])) {
                 BedroxException::render(
                     'ERR_FIREWALL_ANONYMOUS',
@@ -143,7 +146,7 @@ class Security extends Skeleton
     {
         $redirect = true;
         switch ($firewall[self::TYPE]) {
-            case self::AUTH:
+            case self::TOKEN:
                 $auth = new Auth();
                 $token = $auth->tokenVerification();
                 if ($token) {
@@ -157,6 +160,13 @@ class Security extends Skeleton
                         }
                     }
                 }
+                break;
+            case self::SIGNIN:
+                // TODO: handle user login
+                BedroxException::render(
+                    'FIREWALL_USERS_AUTH',
+                    'L\'authentification par utilisateurs n\'est pas encore disponible. Merci d\'utiliser le type "token" ou "public".'
+                );
                 break;
             case self::NOAUTH:
                 $redirect = false;

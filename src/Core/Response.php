@@ -185,7 +185,7 @@ class Response extends Skeleton implements iResponse
                 } else {
                     BedroxException::render(
                         'ERR_URI_NOTFOUND_PARAMS',
-                        'Le paramètre de cette route est vide. Veuillez vérifier votre requête.'
+                        'Le paramètre de cette route est vide ou n\'existe pas. Veuillez vérifier votre requête.'
                     );
                 }
             } else {
