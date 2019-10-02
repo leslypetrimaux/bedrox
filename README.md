@@ -69,6 +69,10 @@ Vous pouvez déclarer autant de route et de controller que vous le souhaitez. Af
   controller: '%NAMESPACE\CLASSNAME%::%FUNCTION_NAME%'
   params:
     %ENTITY%
+
+set_string:
+  path: '%ROUTE_PATH%[%TYPE%]'
+  controller: '%NAMESPACE\CLASSNAME%::%FUNCTION_NAME%'
 ```
 Vous pouvez retrouver le détails concernant ce fichier dans la documentation [ROUTES.md](./docs/ROUTES.md).
 
