@@ -16,7 +16,7 @@ class Route
     /** @var string $function */
     public $function;
 
-    /** @var Entity $params */
+    /** @var array $params */
     public $params;
 
     /** @var int $paramsCount */
@@ -24,6 +24,12 @@ class Route
 
     /** @var string $render */
     public $render;
+
+    public function __construct()
+    {
+        $this->params = array();
+        $this->paramsCount = 0;
+    }
 
     /**
      * @return string|null
@@ -98,9 +104,9 @@ class Route
     }
 
     /**
-     * @return Entity|null
+     * @return array
      */
-    public function getParams(): ?Entity
+    public function getParams(): ?array
     {
         return $this->params;
     }
@@ -111,7 +117,8 @@ class Route
      */
     public function setParams($params): self
     {
-        $this->params = $params;
+        array_push($this->params, $params);
+        $this->addParamsCount();
         return $this;
     }
 
@@ -130,6 +137,12 @@ class Route
     public function setParamsCount(int $paramsCount): self
     {
         $this->paramsCount = $paramsCount;
+        return $this;
+    }
+
+    public function addParamsCount(): self
+    {
+        $this->paramsCount++;
         return $this;
     }
 

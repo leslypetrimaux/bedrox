@@ -85,39 +85,56 @@ class Router extends Skeleton implements iRouter
                 if (!empty($keys) && count($aCurrent)===count($aPath)) {
                     foreach ($aCurrent as $key => $value) {
                         if ($aCurrent[$key]!==$aPath[$key]) {
-                            $repo = $criteria = $string = null;
                             foreach ($keys as $keyKey => $keyValue) {
-                                $repo = preg_replace('/{' . $keyValue . '(.*)?$/', $keyValue, $aPath[$key]);
-                                $criteria = str_replace('{' . $keyValue . '.', '', $aPath[$key]);
-                                $criteria = str_replace('}', '', $criteria);
-                            }
-                            $class = '\\App\\Entity\\' . ucfirst($repo);
-                            $em = (new Controller(new Response()))->getDoctrine();
-                            if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
-                                if ($em->getRepository($class) !== null) {
-                                    $route->setParams($em->getRepository($class)->findOneBy(array(
-                                        $criteria => $aCurrent[$key]
-                                    )));
-                                } else {
-                                    BedroxException::render(
-                                        'ERR_ORM_PARAMS',
-                                        'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
-                                    );
+                                $isEntity = preg_match('/{(.*)*}$/', $aPath[$key]);
+                                $isString = preg_match('[string]', $aPath[$key]);
+                                $isNum = preg_match('[num]', $aPath[$key]);
+                                $isDate = preg_match('[date]', $aPath[$key]);
+                                $isBool = preg_match('[bool]', $aPath[$key]);
+                                if (($isString || $isDate) && is_string($aCurrent[$key])) {
+                                    $route->setParams(strval($aCurrent[$key]));
                                 }
-                            } else {
-                                if ((new EntityManager())->getRepo($repo) !== null) {
-                                    $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
-                                } else {
-                                    BedroxException::render(
-                                        'ERR_EDR_PARAMS',
-                                        'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
-                                    );
+                                if ($isNum && is_float($aCurrent[$key])) {
+                                    $route->setParams(floatval($aCurrent[$key]));
+                                }
+                                if ($isNum && is_int($aCurrent[$key])) {
+                                    $route->setParams(intval($aCurrent[$key]));
+                                }
+                                if ($isBool && is_bool($aCurrent[$key])) {
+                                    $route->setParams(boolval($aCurrent[$key]));
+                                }
+                                if ($isEntity) {
+                                    $repo = preg_replace('/{' . $keyValue . '(.*)?$/', $keyValue, $aPath[$key]);
+                                    $criteria = str_replace('{' . $keyValue . '.', '', $aPath[$key]);
+                                    $criteria = str_replace('}', '', $criteria);
+                                    $class = '\\App\\Entity\\' . ucfirst($repo);
+                                    $em = (new Controller(new Response()))->getDoctrine();
+                                    if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
+                                        if ($em->getRepository($class) !== null) {
+                                            $route->setParams($em->getRepository($class)->findOneBy(array(
+                                                $criteria => $aCurrent[$key]
+                                            )));
+                                        } else {
+                                            BedroxException::render(
+                                                'ERR_ORM_PARAMS',
+                                                'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
+                                            );
+                                        }
+                                    } else {
+                                        if ((new EntityManager())->getRepo($repo) !== null) {
+                                            $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
+                                        } else {
+                                            BedroxException::render(
+                                                'ERR_EDR_PARAMS',
+                                                'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
+                                            );
+                                        }
+                                    }
                                 }
                             }
                             $current = str_replace($aCurrent[$key], $aPath[$key], $current);
                         }
                     }
-                    $route->setParamsCount(count($keys));
                 }
             }
             if ( $current === $path && !empty($routes['controller']) ) {

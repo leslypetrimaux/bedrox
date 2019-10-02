@@ -6,6 +6,8 @@ use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iResponse;
 use Bedrox\Skeleton;
 use DOMDocument;
+use ReflectionClass;
+use ReflectionException;
 use SimpleXMLElement;
 
 class Response extends Skeleton implements iResponse
@@ -160,27 +162,26 @@ class Response extends Skeleton implements iResponse
             $functionStr = $response->route->function;
             if ($response->route->paramsCount > 0) {
                 if (!empty($response->route->params)) {
-                    $isArray = is_array($response->route->params) ? true : false;
-                    if (!$isArray && $response->route->paramsCount === 1) {
-                        $function = $class->$functionStr($response->route->params);
-                    } else {
-                        if ($isArray) {
-                            BedroxException::render(
-                                'ERR_URI_PARAMS',
-                                'Seul un paramètre est injectable pour l\'instant. Veuillez vérifier votre fichier "./routes.yaml".'
-                            );
-                            $paramsStr = '';
-                            foreach ($response->route->params as $param) {
-                                $paramsStr .= !empty($paramsStr) ? ', ' : '';
-                                $paramsStr .= $param;
+                    try {
+                        if ($response->route->paramsCount === 1) {
+                            if (!empty($response->route->params[0])) {
+                                $function = $class->$functionStr($response->route->params[0]);
+                            } else {
+                                throw new ReflectionException('Le paramètre de votre route est vide. Veuillez vérifier votre URL.');
                             }
-                            $function = $class->$functionStr($paramsStr);
                         } else {
-                            BedroxException::render(
-                                'ERR_URI_PARAMS',
-                                'La route "' . $response->route->url . '" ne possède pas le bon nombre de paramètres. Veuillez vérifier votre fichier "./routes.yaml".'
-                            );
+                            $method = (new ReflectionClass($class))->getMethod($functionStr);
+                            if (count($method->getParameters()) === count($response->route->params)) {
+                                $function = call_user_func_array(array($class, $functionStr), $response->route->params);
+                            } else {
+                                throw new ReflectionException('Le nombre de paramètres ne correspond pas. Vérifiez votre URL et/ou votre route.');
+                            }
                         }
+                    } catch (ReflectionException $e) {
+                        BedroxException::render(
+                            'ERR_URI_PARAMS',
+                            $e->getMessage()
+                        );
                     }
                 } else {
                     BedroxException::render(
