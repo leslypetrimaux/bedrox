@@ -18,18 +18,18 @@ users_get:
     users
 
 set_string:
-  path: '/users/get/[string]' # Correspond au type PHP 'string'
+  path: '/users/string/[string]' # Correspond au type PHP 'string'
   controller: 'App\Controllers\DefaultController::card'
 
 set_float:
-  path: '/users/get/[float]' # Correspond au type PHP 'float'
+  path: '/users/float/[float]' # Correspond au type PHP 'float'
   controller: 'App\Controllers\DefaultController::card'
 
 set_date:
-  path: '/users/get/[date]' # Correspond au type PHP 'DateTime'
+  path: '/users/date/[date]' # Correspond au type PHP 'DateTime'
   controller: 'App\Controllers\DefaultController::card'
 
 set_bool:
-  path: '/users/get/[bool]' # Correspond au type PHP 'bool'
+  path: '/users/bool/[bool]' # Correspond au type PHP 'bool'
   controller: 'App\Controllers\DefaultController::card'
 ```
