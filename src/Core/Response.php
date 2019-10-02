@@ -163,19 +163,16 @@ class Response extends Skeleton implements iResponse
             if ($response->route->paramsCount > 0) {
                 if (!empty($response->route->params)) {
                     try {
-                        if ($response->route->paramsCount === 1) {
-                            if (!empty($response->route->params[0])) {
-                                $function = $class->$functionStr($response->route->params[0]);
-                            } else {
-                                throw new ReflectionException('Le paramètre de votre route est vide. Veuillez vérifier votre URL.');
+                        foreach ($response->route->params as $paramKey => $paramValue) {
+                            if (empty($paramValue)) {
+                                throw new ReflectionException('Le paramètre "' . $paramKey . '" est vide. Vérifiez votre URL et/ou votre route.');
                             }
+                        }
+                        $method = (new ReflectionClass($class))->getMethod($functionStr);
+                        if (count($method->getParameters()) === count($response->route->params)) {
+                            $function = call_user_func_array(array($class, $functionStr), $response->route->params);
                         } else {
-                            $method = (new ReflectionClass($class))->getMethod($functionStr);
-                            if (count($method->getParameters()) === count($response->route->params)) {
-                                $function = call_user_func_array(array($class, $functionStr), $response->route->params);
-                            } else {
-                                throw new ReflectionException('Le nombre de paramètres ne correspond pas. Vérifiez votre URL et/ou votre route.');
-                            }
+                            throw new ReflectionException('Le nombre de paramètres ne correspond pas. Vérifiez votre URL et/ou votre route.');
                         }
                     } catch (ReflectionException $e) {
                         BedroxException::render(
