@@ -97,11 +97,23 @@ class Router extends Skeleton implements iRouter
                                     $route->setParams(strval($aCurrent[$key]));
                                 }
                                 if (preg_match(self::ARG_FLOAT, $aPath[$key]) && is_float(floatval($aCurrent[$key]))) {
-                                    $route->setParams(floatval($aCurrent[$key]));
+                                    if (floatval($aCurrent[$key])) {
+                                        $route->setParams(floatval($aCurrent[$key]));
+                                    } else {
+                                        BedroxException::render(
+                                            'ERR_URI_PARAM_FLOAT',
+                                            'Le paramètre ne correspond pas à celui de la route ou du controller. Veuillez vérifier la configuration de votre route.'
+                                        );
+                                    }
                                 }
                                 if (preg_match(self::ARG_DATE, $aPath[$key])) {
                                     if (strtotime($aCurrent[$key])) {
                                         $route->setParams(new DateTime($aCurrent[$key]));
+                                    } else {
+                                        BedroxException::render(
+                                            'ERR_URI_PARAM_DATE',
+                                            'Le paramètre ne correspond pas à celui de la route ou du controller. Veuillez vérifier la configuration de votre route.'
+                                        );
                                     }
                                 }
                                 if (preg_match(self::ARG_BOOL, $aPath[$key])) {
