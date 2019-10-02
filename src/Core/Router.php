@@ -6,12 +6,18 @@ use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iRouter;
 use Bedrox\Skeleton;
 use Bedrox\Yaml\YamlParser;
+use DateTime;
 use RuntimeException;
 
 class Router extends Skeleton implements iRouter
 {
     protected $security;
     protected $routes;
+
+    public const ARG_STRING = '[string]';
+    public const ARG_FLOAT = '[float]';
+    public const ARG_DATE = '[date]';
+    public const ARG_BOOL = '[bool]';
 
     public $route;
 
@@ -48,6 +54,7 @@ class Router extends Skeleton implements iRouter
      * @param string $current
      * @param string|null $format
      * @return Route|null
+     * @throws \Exception
      */
     public function getCurrentRoute(string $current, ?string $format = null): ?Route
     {
@@ -86,24 +93,35 @@ class Router extends Skeleton implements iRouter
                     foreach ($aCurrent as $key => $value) {
                         if ($aCurrent[$key]!==$aPath[$key]) {
                             foreach ($keys as $keyKey => $keyValue) {
-                                $isEntity = preg_match('/{(.*)*}$/', $aPath[$key]);
-                                $isString = preg_match('[string]', $aPath[$key]);
-                                $isNum = preg_match('[num]', $aPath[$key]);
-                                $isDate = preg_match('[date]', $aPath[$key]);
-                                $isBool = preg_match('[bool]', $aPath[$key]);
-                                if (($isString || $isDate) && is_string($aCurrent[$key])) {
+                                if (preg_match(self::ARG_STRING, $aPath[$key]) && is_string($aCurrent[$key])) {
                                     $route->setParams(strval($aCurrent[$key]));
                                 }
-                                if ($isNum && is_float($aCurrent[$key])) {
+                                if (preg_match(self::ARG_FLOAT, $aPath[$key]) && is_float(floatval($aCurrent[$key]))) {
                                     $route->setParams(floatval($aCurrent[$key]));
                                 }
-                                if ($isNum && is_int($aCurrent[$key])) {
-                                    $route->setParams(intval($aCurrent[$key]));
+                                if (preg_match(self::ARG_DATE, $aPath[$key])) {
+                                    if (strtotime($aCurrent[$key])) {
+                                        $route->setParams(new DateTime($aCurrent[$key]));
+                                    }
                                 }
-                                if ($isBool && is_bool($aCurrent[$key])) {
-                                    $route->setParams(boolval($aCurrent[$key]));
+                                if (preg_match(self::ARG_BOOL, $aPath[$key])) {
+                                    switch ($aCurrent[$key]) {
+                                        case 'true':
+                                        case '1':
+                                            $route->setParams(true);
+                                            break;
+                                        case 'false':
+                                        case '0':
+                                            $route->setParams(false);
+                                            break;
+                                        default:
+                                            BedroxException::render(
+                                                'ERR_URI_PARAM_BOOL',
+                                                'Le paramètre ne correspond pas à celui de la route ou du controller. Veuillez vérifier la configuration de votre route.'
+                                            );
+                                    }
                                 }
-                                if ($isEntity) {
+                                if (preg_match('/{(.*)*}$/', $aPath[$key])) {
                                     $repo = preg_replace('/{' . $keyValue . '(.*)?$/', $keyValue, $aPath[$key]);
                                     $criteria = str_replace('{' . $keyValue . '.', '', $aPath[$key]);
                                     $criteria = str_replace('}', '', $criteria);
