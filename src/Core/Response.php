@@ -9,6 +9,7 @@ use DOMDocument;
 use ReflectionClass;
 use ReflectionException;
 use SimpleXMLElement;
+use TypeError;
 
 class Response extends Skeleton implements iResponse
 {
@@ -170,7 +171,14 @@ class Response extends Skeleton implements iResponse
                         }
                         $method = (new ReflectionClass($class))->getMethod($functionStr);
                         if (count($method->getParameters()) === count($response->route->params)) {
-                            $function = call_user_func_array(array($class, $functionStr), $response->route->params);
+                            try {
+                                $function = call_user_func_array(array($class, $functionStr), $response->route->params);
+                            } catch (TypeError $e) {
+                                BedroxException::render(
+                                    'ERR_URI_TYPE',
+                                    'L\'argument passé en paramètre de l\'URI ne correspond pas à celui attendu par le Controller. Vérifiez votre configuration et votre controller.'
+                                );
+                            }
                         } else {
                             throw new ReflectionException('Le nombre de paramètres ne correspond pas. Vérifiez votre URL et/ou votre route.');
                         }
