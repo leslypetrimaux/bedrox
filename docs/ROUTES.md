@@ -17,19 +17,15 @@ users_get:
   entity:
     users
 
-set_string:
-  path: '/users/string/[string]' # Correspond au type PHP 'string'
-  controller: 'App\Controllers\DefaultController::card'
+set_data:
+  path: '/users/string/route_data()'
+  controller: 'App\Controllers\DefaultController::data'
+```
 
-set_float:
-  path: '/users/float/[float]' # Correspond au type PHP 'float'
-  controller: 'App\Controllers\DefaultController::card'
-
-set_date:
-  path: '/users/date/[date]' # Correspond au type PHP 'DateTime'
-  controller: 'App\Controllers\DefaultController::card'
-
-set_bool:
-  path: '/users/bool/[bool]' # Correspond au type PHP 'bool'
-  controller: 'App\Controllers\DefaultController::card'
+```bash
+# route_data()
+[string] # Correspond au type PHP 'string'
+[num] # Correspond au type PHP 'int'
+[date] # Correspond au type PHP 'DateTime'
+[bool] # Correspond au type PHP 'bool'
 ```

@@ -15,7 +15,7 @@ class Router extends Skeleton implements iRouter
     protected $routes;
 
     public const ARG_STRING = '[string]';
-    public const ARG_FLOAT = '[float]';
+    public const ARG_NUM = '[num]';
     public const ARG_DATE = '[date]';
     public const ARG_BOOL = '[bool]';
 
@@ -96,12 +96,12 @@ class Router extends Skeleton implements iRouter
                                 if (preg_match(self::ARG_STRING, $aPath[$key]) && is_string($aCurrent[$key])) {
                                     $route->setParams(strval($aCurrent[$key]));
                                 }
-                                if (preg_match(self::ARG_FLOAT, $aPath[$key]) && is_float(floatval($aCurrent[$key]))) {
-                                    if (floatval($aCurrent[$key])) {
-                                        $route->setParams(floatval($aCurrent[$key]));
+                                if (preg_match(self::ARG_NUM, $aPath[$key]) && is_int(intval($aCurrent[$key]))) {
+                                    if (intval($aCurrent[$key])) {
+                                        $route->setParams(intval($aCurrent[$key]));
                                     } else {
                                         BedroxException::render(
-                                            'ERR_URI_PARAM_FLOAT',
+                                            'ERR_URI_PARAM_INT',
                                             'Le paramètre ne correspond pas à celui de la route ou du controller. Veuillez vérifier la configuration de votre route.'
                                         );
                                     }
