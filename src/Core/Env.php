@@ -13,9 +13,11 @@ use RuntimeException;
 class Env extends Skeleton
 {
     public const FILE_ENV = '/../config/env.yaml';
+    public const FILE_ROUTER = '/../config/routes.yaml';
+    public const FILE_SECURITY = '/../config/security.yaml';
 
-    public const FILE_ROUTER = 'ROUTER';
-    public const FILE_SECURITY = 'SECURITY';
+    public const ROUTER = 'ROUTER';
+    public const SECURITY = 'SECURITY';
 
     public const DB_NATIVE = 'native';
     public const DB_DOCTRINE = 'doctrine';
@@ -61,16 +63,14 @@ class Env extends Skeleton
                 is_array($this->content['app']) &&
                 !empty($this->content['app']['name']) &&
                 !empty($this->content['app']['env']) &&
-                !empty($this->content['app']['router']) &&
-                !empty($this->content['app']['security']) &&
                 !empty($this->content['app']['format']) &&
                 !empty($this->content['app']['encodage']) &&
                 is_array($this->content['app']['database'])
             ) {
                 $this->defineApp($this->content['app']['name']);
                 $this->defineEnv($this->content['app']['env']);
-                $this->defineFile(self::FILE_ROUTER, $this->content['app']['router']);
-                $this->defineFile(self::FILE_SECURITY, $this->content['app']['security']);
+                $this->defineFile(self::ROUTER, self::FILE_ROUTER);
+                $this->defineFile(self::SECURITY, self::FILE_SECURITY);
                 $this->outputFormat($this->content['app']['format'], $this->content['app']['encodage']);
                 $this->defineSGBD($this->content['app']['database']);
             } else {

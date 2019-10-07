@@ -30,8 +30,8 @@ class Router extends Skeleton implements iRouter
         try {
             parent::__construct();
             $this->security = new Security();
-            if (file_exists($_SERVER['APP'][Env::FILE_ROUTER])) {
-                $content = YamlParser::YAMLLoad($_SERVER['APP'][Env::FILE_ROUTER]);
+            if (file_exists($_SERVER['APP'][Env::ROUTER])) {
+                $content = YamlParser::YAMLLoad($_SERVER['APP'][Env::ROUTER]);
                 if (is_array($content)) {
                     $this->routes = $content;
                 } else {
