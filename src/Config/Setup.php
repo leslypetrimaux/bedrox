@@ -8,7 +8,13 @@ class Setup
 {
     public const SECRET_KEY = 'secretKey';
     public const ENCODE_ALGO = 'encodeAlgo';
+
     public const TOKEN_CHARS = 'AZERTYUIOPQSDFGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn,;:!?./§ù*%µ^$¨£¤&é#{([-|è`_\ç^à@)]=}0123456789';
+
+    public const TOKEN_ACTIONS = array(
+        self::SECRET_KEY,
+        self::ENCODE_ALGO
+    );
 
     /**
      * Install & configure components
@@ -23,7 +29,8 @@ class Setup
      */
     public static function setSecurity(): void
     {
-        self::generateToken();
+        self::generateToken(self::ENCODE_ALGO);
+        self::generateToken(self::SECRET_KEY);
     }
 
     /**
@@ -38,11 +45,7 @@ class Setup
         $real = realpath($file);
         if (file_exists($real)) {
             $content = file_get_contents($file);
-            $action = array(
-                self::SECRET_KEY,
-                self::ENCODE_ALGO
-            );
-            if (!empty($type) && in_array($type, $action)) {
+            if (!empty($type) && in_array($type, self::TOKEN_ACTIONS)) {
                 if (preg_match('/(' . $type . ')/', $content)) {
                     $replace = '';
                     switch ($type) {
