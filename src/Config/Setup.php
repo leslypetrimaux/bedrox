@@ -9,7 +9,7 @@ class Setup
         self::generateSecurity();
     }
 
-    public static function generateSecurity(): void
+    public static function generateSecurity(int $length = 48): void
     {
         $file = __DIR__ . '/../config/security.yaml';
         $content = file_get_contents($file);
@@ -17,7 +17,7 @@ class Setup
             $chars = 'AZERTYUIOPQSDFGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn,;:!?./§ù*%µ^$¨£¤&é#{([-|è`_\ç^à@)]=}0123456789';
             $charsLength = strlen($chars);
             $secret = '';
-            for ($i=0; $i < 48; $i++) {
+            for ($i=0; $i < $length; $i++) {
                 $char = $chars[rand(0, $charsLength - 1)];
                 if ($char != ' ') {
                     $secret .= utf8_encode($char);
