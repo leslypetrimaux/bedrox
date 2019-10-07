@@ -11,7 +11,7 @@ class Setup
 
     public static function generateSecurity(int $length = 48): void
     {
-        $file = __DIR__ . '/../../../../../config/security.yaml';
+        $file = $_SERVER['DOCUMENT_ROOT'] . '/../config/security.yaml';
         $real = realpath($file);
         if (file_exists($real)) {
             $content = file_get_contents($file);
