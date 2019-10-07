@@ -79,7 +79,7 @@ security:
     type: 'no-auth'
     token:
       encode: 'sha256'
-      secret: '!+rh$Cvd^R*c3c272-!TLV=#CcW#_Bg8'
+      secret: 'secretKey'
     anonymous:
       home
       users_list
