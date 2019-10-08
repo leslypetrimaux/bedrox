@@ -28,7 +28,7 @@ class Base extends Skeleton
     public const ROUTE = 'route';
     public const ANONYMOUS = 'anonymous';
 
-    protected $core;
+    protected $security;
 
     /**
      * Security constructor.
@@ -40,18 +40,13 @@ class Base extends Skeleton
             parent::__construct();
             if (file_exists($_SERVER['APP'][Env::SECURITY])) {
                 $content = YamlParser::YAMLLoad($_SERVER['APP'][Env::SECURITY]);
-                $this->core = $content['security'];
+                $this->security = $content['security'];
             } else {
                 BedroxException::render(
                     'ERR_FILE_SECURITY:',
                     'Echec lors de l\'ouverture du fichier de sécurité. Veuillez vérifier votre fichier "' . $_SERVER['APP'][Env::SECURITY] . '".',
                     500,
                     $this->parsing->parseAppFormat()
-                );
-            }
-            if ( !is_array($this->core) && is_array($this->core[self::FIREWALL]) && !is_array($this->core[self::FIREWALL][self::ANONYMOUS][self::ROUTE]) && empty($this->core[self::FIREWALL][self::TOKEN]['@attributes']->secret) && empty($this->core[self::FIREWALL][self::TOKEN]['@attributes']->encode) && empty($this->core[self::FIREWALL]['@attributes'][self::TYPE]) ) {
-                throw new RuntimeException(
-                    'Les variables de configuration de sécurité n\'ont pas pu être définies correctement. Veuillez réessayer.'
                 );
             }
         } catch (RuntimeException $e) {

@@ -9,15 +9,14 @@ class Token extends Base
     /**
      * Define Application Token.
      *
-     * @param string $encode
-     * @param string $token
+     * @param array $firewall
      */
-    public function defineToken(string $encode, string $token): void
+    public function defineToken(array $firewall): void
     {
-        if ((!empty($encode) || !empty($token)) && in_array($encode, hash_algos(), true)) {
+        if ((!empty($firewall[self::ENCODE]) || !empty($firewall[self::SECRET])) && in_array($firewall[self::ENCODE], hash_algos(), true)) {
             $app = str_replace(' ', '', ucwords($this->session->get('APP_NAME')));
-            $token = $app . '-' . $token;
-            $this->session->set('APP_TOKEN', hash($encode, $token));
+            $token = $app . '-' . $firewall[self::SECRET];
+            $this->session->set('APP_TOKEN', hash($firewall[self::ENCODE], $token));
         } else {
             BedroxException::render(
                 'ERR_TOKEN',
