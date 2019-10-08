@@ -3,6 +3,8 @@
 namespace Bedrox\Core;
 
 use Bedrox\Skeleton;
+use Bedrox\EDR\EntityManager as EDR;
+use Doctrine\ORM\EntityManager;
 
 class Controller extends Skeleton
 {
@@ -26,19 +28,19 @@ class Controller extends Skeleton
     /**
      * Return EntityManager to be usable in the current controller.
      *
-     * @return EntityManager
+     * @return EDR
      */
-    public function getEntityManager(): EntityManager
+    public function getEntityManager(): EDR
     {
-        return new EntityManager();
+        return new EDR();
     }
 
     /**
      * Return Doctrine EntityManager to be usable in the current controller.
      *
-     * @return \Doctrine\ORM\EntityManager|null
+     * @return EntityManager|null
      */
-    public function getDoctrine(): ?\Doctrine\ORM\EntityManager
+    public function getDoctrine(): ?EntityManager
     {
         return Skeleton::$entityManager;
     }

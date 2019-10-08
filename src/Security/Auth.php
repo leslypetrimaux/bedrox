@@ -1,13 +1,12 @@
 <?php
 
-namespace Bedrox\Core;
+namespace Bedrox\Security;
 
 use Bedrox\Skeleton;
 
 class Auth extends Skeleton
 {
     public $request;
-    protected $em;
 
     /**
      * Auth constructor.
@@ -17,7 +16,6 @@ class Auth extends Skeleton
     {
         parent::__construct();
         $this->request = !empty($_REQUEST) ? $_REQUEST : false;
-        $this->em = new EntityManager();
     }
 
     /**

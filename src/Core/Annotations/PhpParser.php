@@ -2,7 +2,7 @@
 
 namespace Bedrox\Core\Annotations;
 
-use Bedrox\Core\Entity;
+use Bedrox\EDR\Entity;
 use Bedrox\Core\Exceptions\BedroxException;
 use ReflectionClass;
 use ReflectionException;

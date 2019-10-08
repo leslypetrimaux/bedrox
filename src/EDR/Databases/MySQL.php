@@ -1,12 +1,12 @@
 <?php
 
-namespace Bedrox\Core\Databases;
+namespace Bedrox\EDR\Databases;
 
-use Bedrox\Core\EDR;
-use Bedrox\Core\Entity;
-use Bedrox\Core\EntityManager;
+use Bedrox\EDR\EDR;
+use Bedrox\EDR\Entity;
+use Bedrox\EDR\EntityManager;
 use Bedrox\Core\Exceptions\BedroxException;
-use Bedrox\Core\Interfaces\iSgbd;
+use Bedrox\EDR\Interfaces\iSgbd;
 use Bedrox\EDR\Column;
 use Exception;
 use PDO;

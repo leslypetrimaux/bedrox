@@ -1,10 +1,10 @@
 <?php
 
-namespace Bedrox\Core;
+namespace Bedrox\EDR;
 
-use Bedrox\Core\Databases\FirebaseDatabase;
-use Bedrox\Core\Databases\Firestore;
-use Bedrox\Core\Databases\MySQL;
+use Bedrox\EDR\Databases\FirebaseDatabase;
+use Bedrox\EDR\Databases\Firestore;
+use Bedrox\EDR\Databases\MySQL;
 use Bedrox\Core\Exceptions\BedroxException;
 
 class EDR

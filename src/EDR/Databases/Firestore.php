@@ -1,22 +1,21 @@
 <?php
 
-namespace Bedrox\Core\Databases;
+namespace Bedrox\EDR\Databases;
 
-use Bedrox\Core\Entity;
-use Bedrox\Core\EntityManager;
+use Bedrox\EDR\Entity;
+use Bedrox\EDR\EntityManager;
 use Bedrox\Core\Exceptions\BedroxException;
-use Bedrox\Core\Functions\Parsing;
-use Bedrox\Core\Interfaces\iSgbd;
-use Bedrox\Google\Firebase\RealtimeDatabase;
+use Bedrox\EDR\Interfaces\iSgbd;
+use Bedrox\Google\Firebase\CloudFirestore;
 
-class FirebaseDatabase extends RealtimeDatabase implements iSgbd
+class Firestore extends CloudFirestore implements iSgbd
 {
     public const UTF8 = 'utf-8';
 
     protected $em;
 
     /**
-     * FirebaseDatabase constructor.
+     * Firestore constructor.
      *
      * @param string $host
      * @param string $apiKey
@@ -42,7 +41,7 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
     }
 
     /**
-     * A customized query builder for FirebaseDatabase
+     * A customized query builder for FirebaseDatabase Cloud Firestore
      *
      * @param string $query
      * @return array|null
@@ -51,8 +50,8 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
     {
         // TODO: Implement buildQuery() method.
         BedroxException::render(
-            'ERR_FIREBASE_QUERYBUILDER',
-            'Le "QueryBuilder" pour Firebase Realtime Database n\'est pas encore disponible.'
+            'ERR_FIRESTORE_QUERYBUILDER',
+            'Le "QueryBuilder" pour Firebase Cloud Firestore n\'est pas encore disponible.'
         );
         return null;
     }
@@ -60,17 +59,16 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
     /**
      * @param string $table
      * @param string $id
-     * @return Entity|mixed|null
+     * @return Entity|null
      */
     public function find(string $table, string $id): ?Entity
     {
         $path = $table . '/' . $id;
-        $json = $this->get($path);
-        $result = (new Parsing())->parseRecursiveToArray(json_decode($json));
+        $content = $this->get($path);
         $entity = $this->em->getEntity($table);
         $columns = $this->em->getColumns($entity);
-        if ($result !== null) {
-            foreach ($result as $key => $value) {
+        if ($content !== null) {
+            foreach ($content as $key => $value) {
                 $var = array_search($key, $columns, true);
                 $entity->$var = $value;
             }
@@ -97,21 +95,16 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
      */
     public function findAll(string $table): ?array
     {
-        $json = $this->get($table);
-        $content = (new Parsing())->parseRecursiveToArray(json_decode($json));
+        $content = $this->get($table);
         $result = array();
-        if (!empty($content)) {
-            foreach ($content as $data) {
-                if (!empty($data)) {
-                    $entity = $this->em->getEntity($table);
-                    $columns = $this->em->getColumns($entity);
-                    foreach ($data as $key => $value) {
-                        $var = array_search($key, $columns, true);
-                        $entity->$var = $value;
-                    }
-                    $result[] = $entity;
-                }
+        foreach ($content as $col) {
+            $entity = $this->em->getEntity($table);
+            $columns = $this->em->getColumns($entity);
+            foreach ($col as $key => $value) {
+                $var = array_search($key, $columns, true);
+                $entity->$var = $value;
             }
+            $result[] = $entity;
         }
         return $result;
     }
@@ -131,10 +124,10 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
      */
     public function insert(Entity $entity): bool
     {
-        $path = $this->em->getTable($entity);
         $entity->setId(uniqid('', true));
-        $array = array($entity->getId() => $entity);
-        $data = json_encode($array);
+        $data = json_encode($entity);
+        $table = $this->em->getTable($entity);
+        $path = $table . '/' . $entity->getId();
         return !empty($this->patch($path, $data)) ? true : false;
     }
 
@@ -144,9 +137,9 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
      */
     public function update(Entity $entity): bool
     {
-        $path = $this->em->getTable($entity);
-        $array = array($entity->getId() => $entity);
-        $data = json_encode($array);
+        $data = json_encode($entity);
+        $table = $this->em->getTable($entity);
+        $path = $table . '/' . $entity->getId();
         return !empty($this->patch($path, $data)) ? true : false;
     }
 

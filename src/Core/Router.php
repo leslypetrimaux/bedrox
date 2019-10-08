@@ -4,22 +4,23 @@ namespace Bedrox\Core;
 
 use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iRouter;
+use Bedrox\EDR\EntityManager;
 use Bedrox\Skeleton;
 use Bedrox\Yaml\YamlParser;
+use Bedrox\Security\Firewall;
 use DateTime;
+use Exception;
 use RuntimeException;
 
 class Router extends Skeleton implements iRouter
 {
-    protected $security;
+    protected $firewall;
     protected $routes;
 
     public const ARG_STRING = '[string]';
     public const ARG_NUM = '[num]';
     public const ARG_DATE = '[date]';
     public const ARG_BOOL = '[bool]';
-
-    public $route;
 
     /**
      * Router constructor.
@@ -29,7 +30,7 @@ class Router extends Skeleton implements iRouter
     {
         try {
             parent::__construct();
-            $this->security = new Security();
+            $this->firewall = new Firewall();
             if (file_exists($_SERVER['APP'][Env::ROUTER])) {
                 $content = YamlParser::YAMLLoad($_SERVER['APP'][Env::ROUTER]);
                 if (is_array($content)) {
@@ -54,7 +55,7 @@ class Router extends Skeleton implements iRouter
      * @param string $current
      * @param string|null $format
      * @return Route|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getCurrentRoute(string $current, ?string $format = null): ?Route
     {
@@ -79,7 +80,7 @@ class Router extends Skeleton implements iRouter
             );
         }
         $route = new Route();
-        $firewall = $this->security->getFirewall();
+        $firewall = $this->firewall->getFirewall();
         foreach ($this->routes as $name => $routes) {
             $path = $routes['path'];
             $keys = array();
@@ -174,7 +175,7 @@ class Router extends Skeleton implements iRouter
                 $route->setController($controller[0]);
                 $route->setFunction($controller[1]);
                 $route->setRender(!empty($format) ? $format : $_SERVER['APP']['FORMAT']);
-                if ($this->security->isNotAuthorized($route->getName(), $firewall)) {
+                if ($this->firewall->isNotAuthorized($route->getName(), $firewall)) {
                     BedroxException::render(
                         'ERR_URI_DENIED_ACCESS',
                         'Vous n\'avez pas accès à cette page. Veuillez vérifier votre token ou l\'adresse de votre page.',

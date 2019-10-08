@@ -5,6 +5,7 @@ namespace Bedrox\Core;
 use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iRequest;
 use Bedrox\Skeleton;
+use Exception;
 
 /**
  * @property  route
@@ -26,23 +27,30 @@ class Request implements iRequest
     public static function createFromGlobals(): self
     {
         $request = new self();
-        $request->get = !empty($_GET) ? $_GET : null;
-        $request->post = !empty($_POST) ? $_POST : null;
-        $request->files = !empty($_FILES) ? $_FILES : null;
-        /** @noinspection PhpComposerExtensionStubsInspection */
-        $headers = getallheaders();
-        if (!empty($headers[self::X_RESPONSE_TYPE])) {
-            $format = $request->parseResponseType($headers[self::X_RESPONSE_TYPE]);
-            if (!empty($format) && !$request->getResponseType($format)) {
-                BedroxException::render(
-                    'ERR_URI_FORMAT',
-                    'Erreur lors de la récupération de l\'encodage de la page dans l\'en-tête. Vérifiez votre route ou la configuration de votre application.'
-                );
+        try {
+            $request->get = !empty($_GET) ? $_GET : null;
+            $request->post = !empty($_POST) ? $_POST : null;
+            $request->files = !empty($_FILES) ? $_FILES : null;
+            /** @noinspection PhpComposerExtensionStubsInspection */
+            $headers = getallheaders();
+            if (!empty($headers[self::X_RESPONSE_TYPE])) {
+                $format = $request->parseResponseType($headers[self::X_RESPONSE_TYPE]);
+                if (!empty($format) && !$request->getResponseType($format)) {
+                    BedroxException::render(
+                        'ERR_URI_FORMAT',
+                        'Erreur lors de la récupération de l\'encodage de la page dans l\'en-tête. Vérifiez votre route ou la configuration de votre application.'
+                    );
+                }
+            } else {
+                $format = null;
             }
-        } else {
-            $format = null;
+            $request->route = (new Router())->getCurrentRoute(!empty($_SERVER['REDIRECT_URL']) ? $_SERVER['REDIRECT_URL'] : Skeleton::BASE, $format);
+        } catch (Exception $e) {
+            BedroxException::render(
+                'ERR_GET_ROUTE',
+                'Impossible de récupérer la route demandée. Vérifiez votre route ou la configuration de votre application.'
+            );
         }
-        $request->route = (new Router())->getCurrentRoute(!empty($_SERVER['REDIRECT_URL']) ? $_SERVER['REDIRECT_URL'] : Skeleton::BASE, $format);
         return $request;
     }
 

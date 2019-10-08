@@ -1,11 +1,11 @@
 <?php
 
-namespace Bedrox\Core;
+namespace Bedrox\EDR;
 
 use Bedrox\Core\Annotations\AnnotationsTypes;
 use Bedrox\Core\Annotations\PhpParser;
 use Bedrox\Core\Exceptions\BedroxException;
-use Bedrox\Core\Interfaces\iEntityManager;
+use Bedrox\EDR\Interfaces\iEntityManager;
 use Bedrox\EDR;
 
 class EntityManager implements iEntityManager

@@ -72,7 +72,7 @@ class Skeleton
      */
     public function setAuth(?bool $auth): self
     {
-        $this->auth = $auth ?: false;
+        $this->auth = $auth ?? false;
         return $this;
     }
 

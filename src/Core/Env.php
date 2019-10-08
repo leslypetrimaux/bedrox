@@ -4,8 +4,10 @@ namespace Bedrox\Core;
 
 use App\Kernel;
 use Bedrox\Core\Exceptions\BedroxException;
+use Bedrox\EDR\EDR;
 use Bedrox\Skeleton;
 use Bedrox\Yaml\YamlParser;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Setup;
 use RuntimeException;
@@ -183,7 +185,7 @@ class Env extends Skeleton
                                     );
                                     // obtaining the entity manager
                                     $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__ . '/new/App/Entity'), $this->content['app']['env'] !== 'prod');
-                                    Skeleton::$entityManager = \Doctrine\ORM\EntityManager::create($_SERVER['APP']['SGBD'], $config);
+                                    Skeleton::$entityManager = EntityManager::create($_SERVER['APP']['SGBD'], $config);
                                 } catch (ORMException $e) {
                                     throw new RuntimeException($e->getMessage());
                                 }

@@ -1,21 +1,22 @@
 <?php
 
-namespace Bedrox\Core\Databases;
+namespace Bedrox\EDR\Databases;
 
-use Bedrox\Core\Entity;
-use Bedrox\Core\EntityManager;
+use Bedrox\EDR\Entity;
+use Bedrox\EDR\EntityManager;
 use Bedrox\Core\Exceptions\BedroxException;
-use Bedrox\Core\Interfaces\iSgbd;
-use Bedrox\Google\Firebase\CloudFirestore;
+use Bedrox\Core\Functions\Parsing;
+use Bedrox\EDR\Interfaces\iSgbd;
+use Bedrox\Google\Firebase\RealtimeDatabase;
 
-class Firestore extends CloudFirestore implements iSgbd
+class FirebaseDatabase extends RealtimeDatabase implements iSgbd
 {
     public const UTF8 = 'utf-8';
 
     protected $em;
 
     /**
-     * Firestore constructor.
+     * FirebaseDatabase constructor.
      *
      * @param string $host
      * @param string $apiKey
@@ -41,7 +42,7 @@ class Firestore extends CloudFirestore implements iSgbd
     }
 
     /**
-     * A customized query builder for FirebaseDatabase Cloud Firestore
+     * A customized query builder for FirebaseDatabase
      *
      * @param string $query
      * @return array|null
@@ -50,8 +51,8 @@ class Firestore extends CloudFirestore implements iSgbd
     {
         // TODO: Implement buildQuery() method.
         BedroxException::render(
-            'ERR_FIRESTORE_QUERYBUILDER',
-            'Le "QueryBuilder" pour Firebase Cloud Firestore n\'est pas encore disponible.'
+            'ERR_FIREBASE_QUERYBUILDER',
+            'Le "QueryBuilder" pour Firebase Realtime Database n\'est pas encore disponible.'
         );
         return null;
     }
@@ -59,16 +60,17 @@ class Firestore extends CloudFirestore implements iSgbd
     /**
      * @param string $table
      * @param string $id
-     * @return Entity|null
+     * @return Entity|mixed|null
      */
     public function find(string $table, string $id): ?Entity
     {
         $path = $table . '/' . $id;
-        $content = $this->get($path);
+        $json = $this->get($path);
+        $result = (new Parsing())->parseRecursiveToArray(json_decode($json));
         $entity = $this->em->getEntity($table);
         $columns = $this->em->getColumns($entity);
-        if ($content !== null) {
-            foreach ($content as $key => $value) {
+        if ($result !== null) {
+            foreach ($result as $key => $value) {
                 $var = array_search($key, $columns, true);
                 $entity->$var = $value;
             }
@@ -95,16 +97,21 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function findAll(string $table): ?array
     {
-        $content = $this->get($table);
+        $json = $this->get($table);
+        $content = (new Parsing())->parseRecursiveToArray(json_decode($json));
         $result = array();
-        foreach ($content as $col) {
-            $entity = $this->em->getEntity($table);
-            $columns = $this->em->getColumns($entity);
-            foreach ($col as $key => $value) {
-                $var = array_search($key, $columns, true);
-                $entity->$var = $value;
+        if (!empty($content)) {
+            foreach ($content as $data) {
+                if (!empty($data)) {
+                    $entity = $this->em->getEntity($table);
+                    $columns = $this->em->getColumns($entity);
+                    foreach ($data as $key => $value) {
+                        $var = array_search($key, $columns, true);
+                        $entity->$var = $value;
+                    }
+                    $result[] = $entity;
+                }
             }
-            $result[] = $entity;
         }
         return $result;
     }
@@ -124,10 +131,10 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function insert(Entity $entity): bool
     {
+        $path = $this->em->getTable($entity);
         $entity->setId(uniqid('', true));
-        $data = json_encode($entity);
-        $table = $this->em->getTable($entity);
-        $path = $table . '/' . $entity->getId();
+        $array = array($entity->getId() => $entity);
+        $data = json_encode($array);
         return !empty($this->patch($path, $data)) ? true : false;
     }
 
@@ -137,9 +144,9 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function update(Entity $entity): bool
     {
-        $data = json_encode($entity);
-        $table = $this->em->getTable($entity);
-        $path = $table . '/' . $entity->getId();
+        $path = $this->em->getTable($entity);
+        $array = array($entity->getId() => $entity);
+        $data = json_encode($array);
         return !empty($this->patch($path, $data)) ? true : false;
     }
 
