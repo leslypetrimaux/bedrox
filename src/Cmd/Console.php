@@ -15,7 +15,21 @@ class Console
 
     public static function executeArguments(array &$args): void
     {
-        var_dump($args);
+        if (!empty($args[0])) {
+            switch ($args[0]) {
+                case 'generate':
+                    if (!empty($args[1])) {
+                        print_r('La génération est en cours de développement.');
+                        $success = (new Cli())->generate($args[1], $args);
+                        print_r($success);
+                    } else {
+                        print_r('La commande de génération demande un second argument. Nous vous invitons à consulter la documentation pour la liste des commandes.');
+                    }
+                    break;
+                default:
+                    print_r('Cette commande n\'existe pas. Nous vous invitons à consulter la documentation pour la liste des commandes.');
+            }
+        }
     }
 
     /**
