@@ -16,14 +16,9 @@ class Generator
     {
         $routeName = !empty($args[Route::NAME]) ? $args[Route::NAME] : null;
         $routePath = !empty($args[Route::PATH]) ? $args[Route::PATH] : null;
-        $routeParams = !empty($args[Route::PARAMS]) ? $args[Route::PARAMS] : null;
+        $routeParams = $this->setParams(!empty($args[Route::PARAMS]) ? $args[Route::PARAMS] : null);
         $controllerSrc = !empty($args[Controller::SRC]) ? $args[Controller::SRC] : null;
-        $arrayRouteParams = array();
-        $params = explode(',', $routeParams);
-        foreach ($params as $param) {
-            $arrayRouteParams[] = $param;
-        }
-        $this->route = new Route($routeName, $routePath, $arrayRouteParams);
+        $this->route = new Route($routeName, $routePath, $routeParams);
         $this->controller = new Controller($controllerSrc);
     }
 
@@ -41,5 +36,10 @@ class Generator
                 break;
         }
         return null;
+    }
+
+    public function setParams(?string $params): ?array
+    {
+        return null === $params ? null : explode(',', $params);
     }
 }
