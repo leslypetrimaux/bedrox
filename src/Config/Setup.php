@@ -21,6 +21,8 @@ class Setup
      */
     public static function PostInstall(): void
     {
+        self::print('Préparation de la configuration de votre application...');
+        self::print('Configuration du fichier "./config/security.yaml"');
         self::setSecurity();
     }
 
@@ -29,7 +31,9 @@ class Setup
      */
     public static function setSecurity(): void
     {
+        self::print('Mise en place d\'une stratégie d\'encodage de sécurité...', false);
         self::generateToken(self::ENCODE_ALGO);
+        self::print('Génération d\'une clé secrète pour l\'application...', false);
         self::generateToken(self::SECRET_KEY);
     }
 
@@ -69,9 +73,19 @@ class Setup
                             break;
                     }
                     $content = str_replace($type, $replace, $content);
-                    file_put_contents($file, $content);
+                    if (file_put_contents($file, $content)) {
+                        self::print('OK.');
+                    } else {
+                        self::print('KO. Veuillez vérifier votre fichier de sécurité.');
+                    }
                 }
             }
         }
+    }
+
+    public static function print(string $text, bool $eol = true): void
+    {
+        $newLine = $eol ? PHP_EOL : '';
+        print_r($text . $newLine);
     }
 }

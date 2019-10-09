@@ -57,7 +57,7 @@ app:
 Vous pouvez retrouver le détails concernant ce fichier dans la documentation [ENV.md](./docs/ENV.md).
 
 ## Routes
-Vous pouvez déclarer autant de route et de controller que vous le souhaitez. Afin de configurer une route, référencez le fichier `./config/routes.yaml` dans le fichier d'__environnement__. Vous pouvez le remplir de la manière suivante :
+Vous pouvez déclarer autant de route et de controller que vous le souhaitez. Afin de configurer une route, créez le fichier `./config/routes.yaml`. Vous pouvez le remplir de la manière suivante :
 
 ```yaml
 %ROUTE_NAME1%:
@@ -77,7 +77,7 @@ set_string:
 Vous pouvez retrouver le détails concernant ce fichier dans la documentation [ROUTES.md](./docs/ROUTES.md).
 
 ## Sécurité
-Afin de configurer le firewall, il faut référencer le fichier `./config/security.yaml` dans le fichier d'__environnement__ et le remplir de la manière suivante :
+Afin de configurer le firewall, il faut créer le fichier `./config/security.yaml`  et le remplir de la manière suivante :
 
 ```yaml
 security:
