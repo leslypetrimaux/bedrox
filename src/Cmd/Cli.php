@@ -2,19 +2,13 @@
 
 namespace Bedrox\Cmd;
 
+use Bedrox\Cmd\Router\Controller;
 use Bedrox\Cmd\Router\Generator;
-use Bedrox\Skeleton;
+use Bedrox\Cmd\Router\Route;
 
 class Cli extends Console
 {
     protected const ROUTE = 'route';
-
-    protected $bedrox;
-
-    public function __construct()
-    {
-        $this->bedrox = new Skeleton(true);
-    }
 
     public function generate(string $type, array $args): bool
     {
@@ -30,7 +24,14 @@ class Cli extends Console
                 if ($countArgs === count($params)) {
                     $generator = new Generator();
                     $generator->configure($params);
-                    // TODO: new Route (Add in Yaml + generate new Controller)
+                    /** @var Route $route */
+                    $route = $generator->get('route');
+                    /** @var Controller $controller */
+                    $controller = $generator->get('controller');
+                    $route->setController($controller);
+                    print_r($route);
+                    print_r($controller);
+                    parent::print('La génération de route n\'est pas encore disponible.');
                 } else {
                     parent::print('Le nombre de paramètres ne correspond pas.');
                 }
@@ -42,22 +43,5 @@ class Cli extends Console
         return false;
     }
 
-    // TODO: use Doctrine Console
-
-    /**
-     * @return Skeleton
-     */
-    public function getBedrox(): Skeleton
-    {
-        return $this->bedrox;
-    }
-    /**
-     * @param Skeleton $bedrox
-     * @return Cli
-     */
-    public function setBedrox(Skeleton $bedrox): Cli
-    {
-        $this->bedrox = $bedrox;
-        return $this;
-    }
+    // TODO: import Doctrine Console
 }

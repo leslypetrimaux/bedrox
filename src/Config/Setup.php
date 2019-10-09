@@ -21,7 +21,7 @@ class Setup
      */
     public static function PostInstall(): void
     {
-        self::print('Préparation de la configuration de votre application...');
+        self::print(PHP_EOL . 'Préparation de la configuration de votre application...');
         self::print('Configuration du fichier "./config/security.yaml"');
         self::setSecurity();
         self::print('Configuration terminée.' . PHP_EOL . 'Vous pouvez maintenant utiliser votre application.');

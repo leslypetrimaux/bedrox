@@ -29,9 +29,6 @@ class ArgvInput
                     if (preg_match('/(=)/', $value)) {
                         $arg = explode('=', $value);
                         $args[$arg[0]] = $arg[1];
-                    } else if (preg_match('/(:)/', $value)) {
-                        $arg = explode(':', $value);
-                        $args[$arg[0]] = $arg[1];
                     } else {
                         $args[] = $value;
                     }

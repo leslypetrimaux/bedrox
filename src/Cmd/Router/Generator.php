@@ -14,8 +14,17 @@ class Generator
 
     public function configure(array &$args): void
     {
-        $this->route = new Route($args['url']);
-        $this->controller = new Controller($args['src']);
+        $routeName = !empty($args[Route::NAME]) ? $args[Route::NAME] : null;
+        $routePath = !empty($args[Route::PATH]) ? $args[Route::PATH] : null;
+        $routeParams = !empty($args[Route::PARAMS]) ? $args[Route::PARAMS] : null;
+        $controllerSrc = !empty($args[Controller::SRC]) ? $args[Controller::SRC] : null;
+        $arrayRouteParams = array();
+        $params = explode(',', $routeParams);
+        foreach ($params as $param) {
+            $arrayRouteParams[] = $param;
+        }
+        $this->route = new Route($routeName, $routePath, $arrayRouteParams);
+        $this->controller = new Controller($controllerSrc);
     }
 
     public function get(string $param)

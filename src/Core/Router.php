@@ -59,14 +59,14 @@ class Router extends Skeleton implements iRouter
      */
     public function getCurrentRoute(string $current, ?string $format = null): ?Route
     {
+        $class = null;
         $cRoute = explode('.', $current);
         if (empty($format) && !empty(end($cRoute)) && (new Request())->getResponseType(end($cRoute))) {
             $format = end($cRoute);
             $current = str_replace(
                 array(
                     '.' . Response::FORMAT_XML,
-                    '.' . Response::FORMAT_JSON,
-                    '.' . Response::FORMAT_CSV
+                    '.' . Response::FORMAT_JSON
                 ),
                 '',
                 $current
@@ -138,7 +138,14 @@ class Router extends Skeleton implements iRouter
                                     $repo = preg_replace('/{' . $keyValue . '(.*)?$/', $keyValue, $aPath[$key]);
                                     $criteria = str_replace('{' . $keyValue . '.', '', $aPath[$key]);
                                     $criteria = str_replace('}', '', $criteria);
-                                    $class = '\\App\\Entity\\' . ucfirst($repo);
+                                    if ($repo === $keyValue) {
+                                        $class = '\\App\\Entity\\' . ucfirst($repo);
+                                    } else {
+                                        BedroxException::render(
+                                            'ERR_ROUTE_PARAMS',
+                                            'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
+                                        );
+                                    }
                                     $em = (new Controller(new Response()))->getDoctrine();
                                     if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
                                         if ($em->getRepository($class) !== null) {

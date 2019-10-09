@@ -46,7 +46,7 @@ class Response extends Skeleton implements iResponse
             case self::FORMAT_XML:
                 return $this->renderXML($data, $error);
             case self::FORMAT_CSV:
-                return $this->renderCSV($data, $error);
+                // return $this->renderCSV($data, $error);
             default:
                 return $this->renderJSON(null, array(
                     'code' => 'ERR_OUTPUT',
