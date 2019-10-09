@@ -2,10 +2,13 @@
 
 namespace Bedrox\Cmd;
 
+use Bedrox\Cmd\Router\Generator;
 use Bedrox\Skeleton;
 
 class Cli extends Console
 {
+    protected const ROUTE = 'route';
+
     protected $bedrox;
 
     public function __construct()
@@ -13,19 +16,27 @@ class Cli extends Console
         $this->bedrox = new Skeleton(true);
     }
 
-    // TODO: new Route (Add in Yaml + generate new Controller)
     public function generate(string $type, array $args): bool
     {
         switch ($type) {
-            case 'route':
+            case self::ROUTE:
+                $params = array();
+                $countArgs = count($args) - 2;
                 foreach ($args as $key => $value) {
                     if (is_string($key)) {
-                        self::print($key . ' => ' . $value);
+                        $params[$key] = $value;
                     }
+                }
+                if ($countArgs === count($params)) {
+                    $generator = new Generator();
+                    $generator->configure($params);
+                    // TODO: new Route (Add in Yaml + generate new Controller)
+                } else {
+                    parent::print('Le nombre de paramètres ne correspond pas.');
                 }
                 break;
             default:
-                self::print('Cette commande n\'existe pas pour les générations. Nous vous invitons à consulter la documentation pour la liste des commandes.');
+                parent::print('Cette commande n\'existe pas pour les générations. Nous vous invitons à consulter la documentation pour la liste des commandes.');
                 break;
         }
         return false;

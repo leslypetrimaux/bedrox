@@ -4,6 +4,8 @@ namespace Bedrox\Cmd;
 
 class Console
 {
+    protected const CMD_GENERATE = 'generate';
+
     /**
      * @param array $args
      */
@@ -16,11 +18,11 @@ class Console
     {
         if (!empty($args[0])) {
             switch ($args[0]) {
-                case 'generate':
+                case self::CMD_GENERATE:
                     if (!empty($args[1])) {
                         self::print('La génération est en cours de développement.');
                         $success = (new Cli())->generate($args[1], $args);
-                        var_dump($success);
+                        self::print(strval($success));
                     } else {
                         self::print('La commande de génération demande un second argument. Nous vous invitons à consulter la documentation pour la liste des commandes.');
                     }

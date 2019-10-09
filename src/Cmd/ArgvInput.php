@@ -20,7 +20,7 @@ class ArgvInput
     /**
      * @return array
      */
-    public function getAsArray(): array
+    public function getParameters(): array
     {
         $args = array();
         if (count($this->args) > 1) {
