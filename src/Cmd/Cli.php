@@ -1,18 +1,16 @@
 <?php
 
-
 namespace Bedrox\Cmd;
-
 
 use Bedrox\Skeleton;
 
-class Cli
+class Cli extends Console
 {
     protected $bedrox;
 
     public function __construct()
     {
-        $this->bedrox = new Skeleton();
+        $this->bedrox = new Skeleton(true);
     }
 
     // TODO: new Route (Add in Yaml + generate new Controller)
@@ -22,12 +20,12 @@ class Cli
             case 'route':
                 foreach ($args as $key => $value) {
                     if (is_string($key)) {
-                        print_r($key . ' => ' . $value . PHP_EOL);
+                        self::print($key . ' => ' . $value);
                     }
                 }
                 break;
             default:
-                print_r('Cette commande n\'existe pas pour les générations. Nous vous invitons à consulter la documentation pour la liste des commandes.');
+                self::print('Cette commande n\'existe pas pour les générations. Nous vous invitons à consulter la documentation pour la liste des commandes.');
                 break;
         }
         return false;

@@ -4,7 +4,7 @@
 namespace Bedrox\Cmd;
 
 
-class Exec
+class Exec extends Console
 {
     /**
      * @param string $command

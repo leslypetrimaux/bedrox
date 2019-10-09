@@ -22,11 +22,14 @@ class Skeleton
      * Skeleton constructor.
      * Used by the Application Kernel. Is currently the Framework Kernel.
      * Handle every actions on the Application.
+     * @param bool $cmd
      */
-    public function __construct()
+    public function __construct(bool $cmd = false)
     {
-        $this->session = new Session();
-        $this->parsing = new Parsing();
+        if (!$cmd) {
+            $this->session = new Session();
+            $this->parsing = new Parsing();
+        }
     }
 
     public function __debugInfo()

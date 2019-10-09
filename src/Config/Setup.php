@@ -24,6 +24,7 @@ class Setup
         self::print('Préparation de la configuration de votre application...');
         self::print('Configuration du fichier "./config/security.yaml"');
         self::setSecurity();
+        self::print('Configuration terminée.' . PHP_EOL . 'Vous pouvez maintenant utiliser votre application.');
     }
 
     /**
@@ -83,7 +84,7 @@ class Setup
         }
     }
 
-    public static function print(string $text, bool $eol = true): void
+    public static function print(string $text = '', bool $eol = true): void
     {
         $newLine = $eol ? PHP_EOL : '';
         print_r($text . $newLine);
