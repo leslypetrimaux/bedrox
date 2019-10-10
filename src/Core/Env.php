@@ -16,7 +16,8 @@ class Env extends Skeleton
 {
     public const FILE_ENV = '/../config/env.yaml';
     public const FILE_ROUTER = '/../config/routes.yaml';
-    public const FILE_SECURITY = '/../config/security.yaml';
+    public const FILE_SECURITY_ROOT = 'config/security.yaml';
+    public const FILE_SECURITY = '/../' . self::FILE_SECURITY_ROOT;
 
     public const ROUTER = 'ROUTER';
     public const SECURITY = 'SECURITY';

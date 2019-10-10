@@ -46,7 +46,7 @@ class Setup
      */
     public static function generateToken(string $type = self::SECRET_KEY, int $length = 48): void
     {
-        $file = $_SERVER['DOCUMENT_ROOT'] . Env::FILE_SECURITY;
+        $file = $_SERVER['DOCUMENT_ROOT'] . Env::FILE_SECURITY_ROOT;
         $real = realpath($file);
         if (file_exists($real)) {
             $content = file_get_contents($file);
@@ -75,10 +75,12 @@ class Setup
                     }
                     $content = str_replace($type, $replace, $content);
                     if (file_put_contents($file, $content)) {
-                        self::print('OK.');
+                        self::print(' OK.');
                     } else {
-                        self::print('KO. Veuillez vérifier votre fichier de sécurité.');
+                        self::print(' KO. Veuillez vérifier votre fichier de sécurité.');
                     }
+                } else {
+                    self::print(' KO. La valeur doit être "' . $type . '" pour être réinitialisée.');
                 }
             }
         }

@@ -10,6 +10,7 @@ use RuntimeException;
 
 class Base extends Skeleton
 {
+    public const SECURITY = 'security';
     public const FIREWALL = 'firewall';
     public const ENCODE = 'encode';
     public const SECRET = 'secret';
