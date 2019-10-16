@@ -3,7 +3,14 @@
 namespace Bedrox\Cmd;
 
 use Bedrox\Config\Setup;
+use Bedrox\Core\Controller;
 use Bedrox\Core\Env;
+use Bedrox\Core\Response;
+use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use Exception;
+use Symfony\Component\Console\Helper\HelperSet;
 
 class Console
 {
@@ -44,9 +51,21 @@ class Console
                     break;
                 case self::CMD_DOCTRINE:
                     self::print('La console Doctrine n\'est pas encore disponible...');
+                    try {
+                        $em = (new Controller(new Response()))->getDoctrine();
+                        $helperSet = new HelperSet(array(
+                            'db' => new ConnectionHelper($em->getConnection()),
+                            'em' => new EntityManagerHelper($em)
+                        ));
+                        $cli = ConsoleRunner::createApplication($helperSet);
+                        $cli->run();
+                    } catch (Exception $e) {
+                        self::print('L\'erreur ' . $e->getCode() . ' Doctrine suivante vient de se produire : ' . $e->getMessage());
+                    }
                     break;
                 default:
                     self::print('Cette commande n\'existe pas. Nous vous invitons à consulter la documentation pour la liste des commandes.');
+                    break;
             }
         }
     }
