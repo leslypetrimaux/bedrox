@@ -14,8 +14,10 @@ use RuntimeException;
 
 class Env extends Skeleton
 {
-    public const FILE_ENV = '/../config/env.yaml';
-    public const FILE_ROUTER = '/../config/routes.yaml';
+    public const FILE_ENV_ROOT = 'config/env.yaml';
+    public const FILE_ENV = '/../' . self::FILE_ENV_ROOT;
+    public const FILE_ROUTER_ROOT = 'config/routes.yaml';
+    public const FILE_ROUTER = '/../' . self::FILE_ROUTER_ROOT;
     public const FILE_SECURITY_ROOT = 'config/security.yaml';
     public const FILE_SECURITY = '/../' . self::FILE_SECURITY_ROOT;
 
@@ -72,8 +74,8 @@ class Env extends Skeleton
             ) {
                 $this->defineApp($this->content['app']['name']);
                 $this->defineEnv($this->content['app']['env']);
-                $this->defineFile(self::ROUTER, self::FILE_ROUTER);
-                $this->defineFile(self::SECURITY, self::FILE_SECURITY);
+                $this->defineFile(self::ROUTER, $this->cmd ? self::FILE_ROUTER_ROOT : self::FILE_ROUTER);
+                $this->defineFile(self::SECURITY, $this->cmd ? self::FILE_SECURITY_ROOT : self::FILE_SECURITY);
                 $this->outputFormat($this->content['app']['format'], $this->content['app']['encodage']);
                 $this->defineSGBD($this->content['app']['database']);
             } else {
@@ -133,7 +135,7 @@ class Env extends Skeleton
     public function defineFile(string $type, string $file): void
     {
         if (!empty($type) && !empty($file)) {
-            $_SERVER['APP'][$type] = $_SERVER['DOCUMENT_ROOT'] . '/../config/' . $file;
+            $_SERVER['APP'][$type] = realpath($_SERVER['DOCUMENT_ROOT'] . $file);
         }
         if (!file_exists($_SERVER['APP'][$type])) {
             BedroxException::render(

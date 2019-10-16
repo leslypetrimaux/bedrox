@@ -17,6 +17,7 @@ class Skeleton
 
     protected $session;
     protected $parsing;
+    protected $cmd;
 
     /**
      * Skeleton constructor.
@@ -26,10 +27,9 @@ class Skeleton
      */
     public function __construct(bool $cmd = false)
     {
-        if (!$cmd) {
-            $this->session = new Session();
-            $this->parsing = new Parsing();
-        }
+        $this->session = new Session();
+        $this->parsing = new Parsing();
+        $this->cmd = $cmd;
     }
 
     public function __debugInfo()

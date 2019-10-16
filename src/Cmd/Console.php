@@ -3,17 +3,21 @@
 namespace Bedrox\Cmd;
 
 use Bedrox\Config\Setup;
+use Bedrox\Core\Env;
 
 class Console
 {
     protected const CMD_GENERATE = 'generate';
     protected const CMD_CONF = 'configure';
+    protected const CMD_DOCTRINE = 'doctrine';
 
     /**
      * @param array $args
      */
     public static function run(array $args): void
     {
+        // Loading Environment
+        (new Env(true))->load(Env::FILE_ENV_ROOT);
         self::executeArguments($args);
     }
 
@@ -37,6 +41,9 @@ class Console
                     } else {
                         self::print('La commande de génération demande un second argument. Nous vous invitons à consulter la documentation pour la liste des commandes.');
                     }
+                    break;
+                case self::CMD_DOCTRINE:
+                    self::print('La console Doctrine n\'est pas encore disponible...');
                     break;
                 default:
                     self::print('Cette commande n\'existe pas. Nous vous invitons à consulter la documentation pour la liste des commandes.');
