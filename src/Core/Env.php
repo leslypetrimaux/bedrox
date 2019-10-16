@@ -75,6 +75,7 @@ class Env extends Skeleton
             ) {
                 $this->defineApp($this->content['app']['name']);
                 $this->defineEnv($this->content['app']['env']);
+                $this->defineVersion($this->content['app']['version']);
                 $this->defineFile(self::ROUTER, $this->cmd ? self::FILE_ROUTER_ROOT : self::FILE_ROUTER);
                 $this->defineFile(self::SECURITY, $this->cmd ? self::FILE_SECURITY_ROOT : self::FILE_SECURITY);
                 $this->outputFormat($this->content['app']['format'], $this->content['app']['encodage']);
@@ -126,6 +127,17 @@ class Env extends Skeleton
         $_SERVER['APP']['DEBUG'] = $env !== 'prod';
         $this->session->set('APP_ENV', $env);
         $this->session->set('APP_DEBUG', $env !== 'prod');
+    }
+
+    /**
+     * Define the current environment (dev/prod).
+     *
+     * @param string $version
+     */
+    public function defineVersion(string $version): void
+    {
+        $_SERVER['APP']['VERSION'] = $version;
+        $this->session->set('APP_VERSION', $version);
     }
 
     /**
@@ -197,8 +209,9 @@ class Env extends Skeleton
                                         'dbname' => $database['schema'],
                                         'charset' => !empty($database['encode']) ? $database['encode'] : self::DOCTRINE_CHARSET,
                                     );
+                                    $entityPath = $this->cmd ? realpath($_SERVER['APP'][self::ENTITY]) : realpath($_SERVER['DOCUMENT_ROOT'] . '/../' . $_SERVER['APP'][self::ENTITY]);
                                     // obtaining the entity manager
-                                    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__ . DIRECTORY_SEPARATOR . $_SERVER['APP'][self::ENTITY]), $this->content['app']['env'] !== 'prod');
+                                    $config = Setup::createAnnotationMetadataConfiguration(array($entityPath), $this->content['app']['env'] !== 'prod');
                                     Skeleton::$entityManager = EntityManager::create($_SERVER['APP']['SGBD'], $config);
                                 } catch (ORMException $e) {
                                     throw new RuntimeException($e->getMessage());
