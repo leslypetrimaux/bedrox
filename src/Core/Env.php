@@ -23,6 +23,7 @@ class Env extends Skeleton
 
     public const ROUTER = 'ROUTER';
     public const SECURITY = 'SECURITY';
+    public const ENTITY = 'ENTITY';
 
     public const DB_NATIVE = 'native';
     public const DB_DOCTRINE = 'doctrine';
@@ -77,6 +78,7 @@ class Env extends Skeleton
                 $this->defineFile(self::ROUTER, $this->cmd ? self::FILE_ROUTER_ROOT : self::FILE_ROUTER);
                 $this->defineFile(self::SECURITY, $this->cmd ? self::FILE_SECURITY_ROOT : self::FILE_SECURITY);
                 $this->outputFormat($this->content['app']['format'], $this->content['app']['encodage']);
+                $this->defineEntityLocation(!empty($this->content['app']['entity']) ? $this->content['app']['entity'] : null);
                 $this->defineSGBD($this->content['app']['database']);
             } else {
                 throw new RuntimeException(
@@ -148,6 +150,15 @@ class Env extends Skeleton
     }
 
     /**
+     * @param string|null $location
+     */
+    public function defineEntityLocation(?string $location): void
+    {
+        $_SERVER['APP'][self::ENTITY] = $location;
+        $this->session->set(self::ENTITY, $location);
+    }
+
+    /**
      * Define the Application format and encode type.
      *
      * @param string $format
@@ -187,7 +198,7 @@ class Env extends Skeleton
                                         'charset' => !empty($database['encode']) ? $database['encode'] : self::DOCTRINE_CHARSET,
                                     );
                                     // obtaining the entity manager
-                                    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__ . '/new/App/Entity'), $this->content['app']['env'] !== 'prod');
+                                    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__ . DIRECTORY_SEPARATOR . $_SERVER['APP'][self::ENTITY]), $this->content['app']['env'] !== 'prod');
                                     Skeleton::$entityManager = EntityManager::create($_SERVER['APP']['SGBD'], $config);
                                 } catch (ORMException $e) {
                                     throw new RuntimeException($e->getMessage());
