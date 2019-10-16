@@ -77,7 +77,7 @@ class Setup
                     if (file_put_contents($file, $content)) {
                         self::print(' OK.');
                     } else {
-                        self::print(' KO. Veuillez vérifier votre fichier de sécurité.');
+                        self::print(' KO. Impossible d\'écrire dans votre fichier de sécurité.');
                     }
                 } else {
                     self::print(' KO. La valeur doit être "' . $type . '" pour être réinitialisée.');
