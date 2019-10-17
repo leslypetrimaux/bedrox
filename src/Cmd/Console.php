@@ -35,10 +35,16 @@ class Console
                 new Security(), // Configure the security strategy
             );
             $cli->addCommands($commands);
+            self::addCommands($cli);
             $cli->run();
         } catch (Exception $e) {
             self::print('The following error just append : (' . $e->getCode() . ') ' . $e->getMessage());
         }
+    }
+
+    public static function addCommands(Application $cli): void
+    {
+        // TODO: Add new customs commands to the cli
     }
 
     public static function print(string $text = '', bool $eol = true): void
