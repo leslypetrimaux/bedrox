@@ -15,9 +15,6 @@ use Symfony\Component\Console\Helper\HelperSet;
 
 class Console
 {
-    protected const CMD_GENERATE = 'generate';
-    protected const CMD_CONF = 'configure';
-    protected const CMD_DOCTRINE = 'doctrine';
 
     public static function run(): void
     {
@@ -30,7 +27,7 @@ class Console
                 'db' => new ConnectionHelper($em->getConnection()),
                 'em' => new EntityManagerHelper($em)
             ));
-            $cli = new Application('Bedrox Command Line Interface', $_SERVER['APP']['VERSION']);
+            $cli = new Application('Bedrox Command Line Interface', 'alpha-dev');
             $cli->setCatchExceptions(true);
             $cli->setHelperSet($helperSet);
             ConsoleRunner::addCommands($cli);
@@ -40,7 +37,7 @@ class Console
             $cli->addCommands($commands);
             $cli->run();
         } catch (Exception $e) {
-            self::print('L\'erreur suivante vient de se produire : (' . $e->getCode() . ') ' . $e->getMessage());
+            self::print('The following error just append : (' . $e->getCode() . ') ' . $e->getMessage());
         }
     }
 

@@ -20,7 +20,12 @@ class Security extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('Reconfiguration de la stratégie de sécurité...');
+        $output->writeln(array(
+            '==================================================',
+            'Security: Secret key & encrypt algo Configuration',
+            '=================================================='
+        ));
         Setup::setSecurity();
+        $output->writeln('==================================================');
     }
 }

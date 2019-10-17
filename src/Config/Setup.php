@@ -21,10 +21,9 @@ class Setup
      */
     public static function PostInstall(): void
     {
-        self::print(PHP_EOL . 'Préparation de la configuration de votre application...');
-        self::print('Configuration du fichier "./config/security.yaml"');
+        self::print(PHP_EOL . 'Preparing your application...');
         self::setSecurity();
-        self::print('Configuration terminée.' . PHP_EOL . 'Vous pouvez maintenant utiliser votre application.');
+        self::print('You can now use your application. Enjoy ! :-)');
     }
 
     /**
@@ -32,10 +31,19 @@ class Setup
      */
     public static function setSecurity(): void
     {
-        self::print('Mise en place d\'une stratégie d\'encodage de sécurité...', false);
-        self::generateToken(self::ENCODE_ALGO);
-        self::print('Génération d\'une clé secrète pour l\'application...', false);
-        self::generateToken(self::SECRET_KEY);
+        self::print('Configuring security file "./config/security.yaml" :');
+        self::print('Setting an encoding strategy...', false);
+        $algo = self::generateToken(self::ENCODE_ALGO);
+        if ($algo) {
+            self::print('Generating your application secret key...', false);
+            $key = self::generateToken(self::SECRET_KEY);
+            if ($key) {
+                self::print('Your new configuration is ready.');
+            }
+        }
+        if (!$algo || !$key) {
+            self::print('The process was unable to continue properly.');
+        }
     }
 
     /**
@@ -43,9 +51,11 @@ class Setup
      *
      * @param string $type
      * @param int $length
+     * @return bool
      */
-    public static function generateToken(string $type = self::SECRET_KEY, int $length = 48): void
+    public static function generateToken(string $type = self::SECRET_KEY, int $length = 48): bool
     {
+        $res = false;
         $file = $_SERVER['DOCUMENT_ROOT'] . Env::FILE_SECURITY_ROOT;
         $real = realpath($file);
         if (file_exists($real)) {
@@ -76,14 +86,18 @@ class Setup
                     $content = str_replace($type, $replace, $content);
                     if (file_put_contents($file, $content)) {
                         self::print(' OK.');
+                        $res = true;
                     } else {
-                        self::print(' KO. Impossible d\'écrire dans votre fichier de sécurité.');
+                        self::print(' KO.');
+                        self::print('/!\ Unable to write in your file');
                     }
                 } else {
-                    self::print(' KO. La valeur doit être "' . $type . '" pour être réinitialisée.');
+                    self::print(' KO.');
+                    self::print('/!\ The value must be "' . $type . '" to be reinitialize.');
                 }
             }
         }
+        return $res;
     }
 
     public static function print(string $text = '', bool $eol = true): void
