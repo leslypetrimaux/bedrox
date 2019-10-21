@@ -37,6 +37,7 @@ class Firewall extends Base
                 );
             }
             switch ($firewall[self::TYPE]) {
+                case self::NOAUTH:
                 case self::TOKEN:
                     (new Token())->defineToken($firewall);
                     break;
