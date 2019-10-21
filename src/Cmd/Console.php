@@ -23,8 +23,10 @@ class Console
         // Loading Doctrine Console Application
         try {
             $em = (new Controller(new Response()))->getDoctrine();
+            $con = $em->getConnection();
+            $con->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
             $helperSet = new HelperSet(array(
-                'db' => new ConnectionHelper($em->getConnection()),
+                'db' => new ConnectionHelper($con),
                 'em' => new EntityManagerHelper($em)
             ));
             $cli = new Application('Bedrox Command Line Interface', 'alpha-dev');
