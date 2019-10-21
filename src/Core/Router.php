@@ -94,80 +94,97 @@ class Router extends Skeleton implements iRouter
                     foreach ($aCurrent as $key => $value) {
                         if ($aCurrent[$key]!==$aPath[$key]) {
                             foreach ($keys as $keyKey => $keyValue) {
-                                if (preg_match(self::ARG_STRING, $aPath[$key]) && is_string($aCurrent[$key])) {
-                                    $route->setParams(strval($aCurrent[$key]));
-                                }
-                                if (preg_match(self::ARG_NUM, $aPath[$key]) && is_int(intval($aCurrent[$key]))) {
-                                    if (intval($aCurrent[$key])) {
-                                        $route->setParams(intval($aCurrent[$key]));
-                                    } else {
-                                        BedroxException::render(
-                                            'ERR_URI_PARAM_INT',
-                                            'Le paramètre ne correspond pas à celui de la route ou du controller. Veuillez vérifier la configuration de votre route.'
-                                        );
-                                    }
-                                }
-                                if (preg_match(self::ARG_DATE, $aPath[$key])) {
-                                    if (strtotime($aCurrent[$key])) {
-                                        $route->setParams(new DateTime($aCurrent[$key]));
-                                    } else {
-                                        BedroxException::render(
-                                            'ERR_URI_PARAM_DATE',
-                                            'Le paramètre ne correspond pas à celui de la route ou du controller. Veuillez vérifier la configuration de votre route.'
-                                        );
-                                    }
-                                }
-                                if (preg_match(self::ARG_BOOL, $aPath[$key])) {
-                                    switch ($aCurrent[$key]) {
-                                        case 'true':
-                                        case '1':
-                                            $route->setParams(true);
-                                            break;
-                                        case 'false':
-                                        case '0':
-                                            $route->setParams(false);
-                                            break;
-                                        default:
+                                switch ($aPath[$key]) {
+                                    case (preg_match(self::ARG_STRING, $aPath[$key]) ? true : false):
+                                        if (is_string($aCurrent[$key])) {
+                                            $route->setParams(strval($aCurrent[$key]));
+                                        } else {
                                             BedroxException::render(
-                                                'ERR_URI_PARAM_BOOL',
+                                                'ERR_URI_PARAM_STRING',
                                                 'Le paramètre ne correspond pas à celui de la route ou du controller. Veuillez vérifier la configuration de votre route.'
                                             );
-                                    }
-                                }
-                                if (preg_match('/{(.*)*}$/', $aPath[$key])) {
-                                    $repo = preg_replace('/{' . $keyValue . '(.*)?$/', $keyValue, $aPath[$key]);
-                                    $criteria = str_replace('{' . $keyValue . '.', '', $aPath[$key]);
-                                    $criteria = str_replace('}', '', $criteria);
-                                    if ($repo === $keyValue) {
-                                        $class = '\\App\\Entity\\' . ucfirst($repo);
-                                    } else {
-                                        BedroxException::render(
-                                            'ERR_ROUTE_PARAMS',
-                                            'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
-                                        );
-                                    }
-                                    $em = (new Controller(new Response()))->getDoctrine();
-                                    if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
-                                        if ($em->getRepository($class) !== null) {
-                                            $route->setParams($em->getRepository($class)->findOneBy(array(
-                                                $criteria => $aCurrent[$key]
-                                            )));
+                                        }
+                                        break;
+                                    case (preg_match(self::ARG_NUM, $aPath[$key]) ? true : false):
+                                        if (is_int(intval($aCurrent[$key]))) {
+                                            $route->setParams(intval($aCurrent[$key]));
                                         } else {
                                             BedroxException::render(
-                                                'ERR_ORM_PARAMS',
+                                                'ERR_URI_PARAM_INT',
+                                                'Le paramètre ne correspond pas à celui de la route ou du controller. Veuillez vérifier la configuration de votre route.'
+                                            );
+                                        }
+                                        break;
+                                    case (preg_match(self::ARG_DATE, $aPath[$key]) ? true : false):
+                                        if (strtotime($aCurrent[$key])) {
+                                            $route->setParams(new DateTime($aCurrent[$key]));
+                                        } else {
+                                            BedroxException::render(
+                                                'ERR_URI_PARAM_DATE',
+                                                'Le paramètre ne correspond pas à celui de la route ou du controller. Veuillez vérifier la configuration de votre route.'
+                                            );
+                                        }
+                                        break;
+                                    case (preg_match(self::ARG_BOOL, $aPath[$key]) ? true : false):
+                                        switch ($aCurrent[$key]) {
+                                            case 'true':
+                                            case '1':
+                                                $route->setParams(true);
+                                                break;
+                                            case 'false':
+                                            case '0':
+                                                $route->setParams(false);
+                                                break;
+                                            default:
+                                                BedroxException::render(
+                                                    'ERR_URI_PARAM_BOOL',
+                                                    'Le paramètre ne correspond pas à celui de la route ou du controller. Veuillez vérifier la configuration de votre route.'
+                                                );
+                                        }
+                                        break;
+                                    case (preg_match('/{(.*)*}$/', $aPath[$key]) ? true : false):
+                                        $repo = preg_replace('/{' . $keyValue . '(.*)?$/', $keyValue, $aPath[$key]);
+                                        $criteria = str_replace('{' . $keyValue . '.', '', $aPath[$key]);
+                                        $criteria = str_replace('}', '', $criteria);
+                                        if ($repo === $keyValue) {
+                                            $class = '\\App\\Entity\\' . ucfirst($repo);
+                                        } else {
+                                            BedroxException::render(
+                                                'ERR_ROUTE_PARAMS',
                                                 'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
                                             );
                                         }
-                                    } else {
-                                        if ((new EntityManager())->getRepo($repo) !== null) {
-                                            $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
+                                        $em = (new Controller(new Response()))->getDoctrine();
+                                        if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
+                                            if ($em->getRepository($class) !== null) {
+                                                $route->setParams($em->getRepository($class)->findOneBy(array(
+                                                    $criteria => $aCurrent[$key]
+                                                )));
+                                            } else {
+                                                BedroxException::render(
+                                                    'ERR_ORM_PARAMS',
+                                                    'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
+                                                );
+                                            }
                                         } else {
+                                            if ((new EntityManager())->getRepo($repo) !== null) {
+                                                $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
+                                            } else {
+                                                BedroxException::render(
+                                                    'ERR_EDR_PARAMS',
+                                                    'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
+                                                );
+                                            }
+                                        }
+                                        break;
+                                    default:
+                                        if ($aCurrent[$key] !== $aPath[$key]) {
                                             BedroxException::render(
-                                                'ERR_EDR_PARAMS',
-                                                'Erreur lors de la récupération de l\'entité. Veuillez vérifier la configuration de votre route.'
+                                                'ERR_URI_PARAMS',
+                                                'Erreur dans l\'adresse de votre route. Veuillez vérifier la configuration de votre route.'
                                             );
                                         }
-                                    }
+                                        break;
                                 }
                             }
                             $current = str_replace($aCurrent[$key], $aPath[$key], $current);
