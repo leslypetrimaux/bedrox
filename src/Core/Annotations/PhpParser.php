@@ -69,7 +69,7 @@ class PhpParser
                 $document = $properties->getDocComment();
             } else {
                 throw new ReflectionException(
-                    'Impossible de charger les propriétés de la classe.',
+                    'Unable to load class properties.',
                     'REFLECTION_PROPERTIES'
                 );
             }
@@ -118,13 +118,13 @@ class PhpParser
                 }
                 if (empty($columns)) {
                     throw new ReflectionException(
-                        'Impossible de charger les colonnes de la classe. Merci de vérifier votre Entité.',
+                        'Unable to load the class columns. Please check your entities.',
                         'REFLECTION_COLUMNS'
                     );
                 }
             } else {
                 throw new ReflectionException(
-                    'Impossible de charger les propriétés des colonnes de la classe. Merci de vérifier votre Entité.',
+                    'Unable to load the class columns properties. Please check your entities.',
                     'REFLECTION_PROPERTIES'
                 );
             }
@@ -152,13 +152,13 @@ class PhpParser
                 }
                 if (empty($columns)) {
                     throw new ReflectionException(
-                        'Impossible de charger les colonnes de la classe. Merci de vérifier votre Entité.',
+                        'Unable to load the class columns. Please check your entities.',
                         'REFLECTION_COLUMNS'
                     );
                 }
             } else {
                 throw new ReflectionException(
-                    'Impossible de charger les propriétés des colonnes de la classe. Merci de vérifier votre Entité.',
+                    'Unable to load the class columns properties. Please check your entities.',
                     'REFLECTION_PROPERTIES'
                 );
             }
@@ -190,13 +190,13 @@ class PhpParser
                 }
                 if (empty($columns)) {
                     throw new ReflectionException(
-                        'Impossible de charger les colonnes de la classe.',
+                        'Unable to load the class columns.',
                         'REFLECTION_COLUMNS'
                     );
                 }
             } else {
                 throw new ReflectionException(
-                    'Impossible de charger les propriétés des colonnes de la classe.',
+                    'Unable to load the class columns properties.',
                     'REFLECTION_PROPERTIES'
                 );
             }
@@ -240,7 +240,7 @@ class PhpParser
         } else {
             BedroxException::render(
                 'ERR_ANNOTATIONS_VALUE',
-                'Impossible de récupérer la value pour l\'annotation de type "' . $annotation . '".'
+                'Unable to retrieve the value of annotation type "' . $annotation . '".'
             );
         }
         return $value;

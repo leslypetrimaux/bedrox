@@ -50,7 +50,7 @@ class AnnotationsTypes
         } else {
             BedroxException::render(
                 'ERR_ANNOTATIONS_TYPE',
-                'Impossible d\'écrire les types d\'annotations disponibles pour cette Application.'
+                'Unable to access annotations type for your application.'
             );
         }
     }
@@ -82,7 +82,7 @@ class AnnotationsTypes
         } else {
             BedroxException::render(
                 'ERR_ANNOTATIONS_TYPE',
-                'Impossible de lire les types d\'annotations disponibles pour cette Application.'
+                'Unable to read annotations type for your application.'
             );
         }
         return $annotation;

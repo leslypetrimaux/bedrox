@@ -14,7 +14,7 @@ class Security extends Command
         $this
             ->setName('bedrox:configure:security')
             ->setDescription('Reconfigure your Application security strategy.')
-            ->setHelp('Description d\'aide')
+            ->setHelp('Reconfigure your application\'s encrypt algo and secret key.')
         ;
     }
 

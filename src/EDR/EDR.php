@@ -59,7 +59,7 @@ class EDR
         } else {
             BedroxException::render(
                 'ERR_DB_CONSTRUCT',
-                'Echec lors de création de la connexion à la base de données. Veuillez vérifier votre fichier "./config/env.yaml".'
+                'An error occurs while trying to access your database. Please check "config/env.yaml".'
             );
         }
     }
@@ -103,7 +103,7 @@ class EDR
         if (empty($this->con)) {
             BedroxException::render(
                 'ERR_DB_CONNECT',
-                'Impossible de créer une connexion "' . $driver . '".'
+                'Unable to create a "' . $driver . '" connexion.'
             );
         }
         return $this->con;

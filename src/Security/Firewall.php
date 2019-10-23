@@ -2,6 +2,7 @@
 
 namespace Bedrox\Security;
 
+use Bedrox\Core\Env;
 use Bedrox\Core\Exceptions\BedroxException;
 
 class Firewall extends Base
@@ -33,7 +34,7 @@ class Firewall extends Base
             } else {
                 BedroxException::render(
                     'ERR_FIREWALL_ANONYMOUS',
-                    'Vous devez définir au moins une route pour informer de l\'accès privé de l\'Application. Veuillez vérifier votre fichier "./security.yaml".'
+                    'Your must declare at least one public route. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".'
                 );
             }
             switch ($firewall[self::TYPE]) {
@@ -44,26 +45,26 @@ class Firewall extends Base
                 case self::ENTITY:
                     BedroxException::render(
                         'ERR_FIREWALL_ENTITY',
-                        'Impossible de configurer le firewall de l\'Application pour l\'authentification avec un token & une entité. Veuillez vérifier votre fichier "./security.yaml".'
+                        'Entity authentication is not available yet. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".'
                     );
                     break;
                 default:
                     BedroxException::render(
                         'ERR_FIREWALL_PARSING',
-                        'Impossible de configurer le type du firewall de l\'Application. Veuillez vérifier votre fichier "./security.yaml".'
+                        'Unable to configure your firewall application. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".'
                     );
                     break;
             }
         } else {
             BedroxException::render(
                 'ERR_FIREWALL_TYPE',
-                'Impossible de configurer le firewall de l\'Application. Veuillez vérifier votre fichier "./security.yaml".'
+                'Unable to configure your firewall application. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".'
             );
         }
         if (empty($_SESSION['APP_TOKEN'])) {
             BedroxException::render(
                 'ERR_SESSION',
-                'Une erreur s\'est produite lors de la lecture/écriture de la session courante. Merci de supprimer le cache de l\'Application.'
+                'An error occurs while creating your session. Remove your application cache and try to reload.'
             );
         }
         return $firewall;

@@ -45,7 +45,7 @@ class Base extends Skeleton
             } else {
                 BedroxException::render(
                     'ERR_FILE_SECURITY:',
-                    'Echec lors de l\'ouverture du fichier de sécurité. Veuillez vérifier votre fichier "' . $_SERVER['APP'][Env::SECURITY] . '".',
+                    'Error while trying to access your security file. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".',
                     500,
                     $this->parsing->parseAppFormat()
                 );
@@ -96,7 +96,7 @@ class Base extends Skeleton
                 // TODO: handle user login
                 BedroxException::render(
                     'FIREWALL_USERS_AUTH',
-                    'L\'authentification par utilisateurs n\'est pas encore disponible. Merci d\'utiliser le type "token" ou "public".'
+                    'Entity authentication is not available yet. Please use "token" or "public" type.'
                 );
                 break;
             case self::NOAUTH:

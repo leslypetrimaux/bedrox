@@ -52,7 +52,7 @@ class FirebaseDatabase extends RealtimeDatabase implements iSgbd
         // TODO: Implement buildQuery() method.
         BedroxException::render(
             'ERR_FIREBASE_QUERYBUILDER',
-            'Le "QueryBuilder" pour Firebase Realtime Database n\'est pas encore disponible.'
+            'Firebase Realtime Database "QueryBuilder" is not available yet.'
         );
         return null;
     }

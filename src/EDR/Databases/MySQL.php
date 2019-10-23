@@ -162,7 +162,7 @@ class MySQL extends PDO implements iSgbd
     public function findOneBy(string $table, array $criteria): ?Entity
     {
         if (empty($criteria)) {
-            throw new RuntimeException('Aucun critère n\'a été trouvé dans votre requête. Vérifiez votre fonction.');
+            throw new RuntimeException('You must send an array $criteria. Please check your function.');
         }
         $vars = array();
         $entity = $this->em->getEntity($table);
@@ -178,7 +178,7 @@ class MySQL extends PDO implements iSgbd
             $vars[$column->getName()] = $key;
         }
         if (empty($clauses)) {
-            throw new RuntimeException('Aucun critère n\'a été trouvé dans votre requête. Vérifiez votre fonction.');
+            throw new RuntimeException('Your $criteria array is empty. Please check your function.');
         }
         try {
             $req = $this->query('SELECT ' . $cols . ' FROM ' . $table . ' WHERE ' . $clauses);

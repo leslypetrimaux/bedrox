@@ -52,7 +52,7 @@ class Env extends Skeleton
                 } else {
                     BedroxException::render(
                         'ERR_FILE_ENV',
-                        'Le fichier d\'environnement n\'est pas correctement complété. Veuillez vérifier votre fichier "./config/env.yaml".',
+                        'Your configuration is incomplete. Please check "config/env.yaml".',
                         500,
                         $this->parsing->parseAppFormat()
                     );
@@ -60,7 +60,7 @@ class Env extends Skeleton
             } else {
                 BedroxException::render(
                     'ERR_FILE_ENV',
-                    'Echec lors de l\'ouverture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".',
+                    'Error while reading your configuration. Please check "config/env.yaml".',
                     500,
                     $this->parsing->parseAppFormat()
                 );
@@ -83,13 +83,13 @@ class Env extends Skeleton
                 $this->defineSGBD($this->content['app']['database']);
             } else {
                 throw new RuntimeException(
-                    'Echec lors de la lecture du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".'
+                    'Error while reading your configuration. Please check "config/env.yaml".'
                 );
             }
             if (!is_array($_SERVER['APP'])) {
                 BedroxException::render(
                     'ERR_VAR_APP',
-                    'Les variables de configuration de l\'application n\'ont pas pu être définies correctement. Veuillez vérifier votre fichier "./config/env.yaml".',
+                    'The configuration varaibles are not correctly defined. Please check "config/env.yaml".',
                     500,
                     $this->parsing->parseAppFormat()
                 );
@@ -154,7 +154,7 @@ class Env extends Skeleton
         if (!file_exists($_SERVER['APP'][$type])) {
             BedroxException::render(
                 'ERR_FILE_ENV',
-                'Echec lors de la lecture du fichier "' . $file . '". Veuillez vérifier votre fichier "./config/env.yaml".',
+                'Error while reading "' . $file . '".',
                 500,
                 $this->parsing->parseAppFormat()
             );
@@ -217,7 +217,7 @@ class Env extends Skeleton
                                     throw new RuntimeException($e->getMessage());
                                 }
                             } else {
-                                throw new RuntimeException('Echec lors de la lecture des informations pour doctrine du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                                throw new RuntimeException('Error while reading doctrine informations. Please check "config/env.yaml".');
                             }
                             break;
                         case self::DB_NATIVE:
@@ -234,7 +234,7 @@ class Env extends Skeleton
                                                 'OAUTH_TOKEN' => $database['oAuthToken']
                                             );
                                         } else {
-                                            throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                                            throw new RuntimeException('Error while reading Firebase informations. Please check "config/env.yaml".');
                                         }
                                         break;
                                     case EDR::ORACLE:
@@ -252,20 +252,20 @@ class Env extends Skeleton
                                                 'SCHEMA' => $database['schema']
                                             );
                                         } else {
-                                            throw new RuntimeException('Echec lors de la lecture des informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                                            throw new RuntimeException('Error while reading EDR informations. Please check "config/env.yaml".');
                                         }
                                         break;
                                 }
                             } else {
-                                throw new RuntimeException('Impossible de récupérer le driver dans le fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                                throw new RuntimeException('Unable to access the database driver. Please check "config/env.yaml".');
                             }
                             break;
                     }
                 } else {
-                    throw new RuntimeException('Impossible de récupérer le type de connexion de base de données dans le fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                    throw new RuntimeException('Unable to connect to the database. Please check "config/env.yaml".');
                 }
             } else {
-                throw new RuntimeException('Echec lors de récupérer les informations de la base de données du fichier d\'environnement. Veuillez vérifier votre fichier "./config/env.yaml".');
+                throw new RuntimeException('Unable to access database informations. Please check "config/env.yaml".');
             }
         } catch (RuntimeException $e) {
             BedroxException::render(

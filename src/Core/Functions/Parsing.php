@@ -92,7 +92,7 @@ class Parsing
         } catch (RuntimeException $e) {
             BedroxException::render(
                 'ERR_XML_FILE',
-                'La classe "libXMLError" ressort l\'erreur n° ' . $e['code'] . '. Echec lors de la lecture du fichier XML "' . $file . '". Veuillez vérifier la configuration de l\'application.',
+                'The class "libXMLError" send the error number ' . $e['code'] . '. Error while reading your XML file "' . $file . '". Please check your application configuration.',
                 500,
                 $this->parseAppFormat()
             );

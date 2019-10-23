@@ -51,7 +51,7 @@ class Firestore extends CloudFirestore implements iSgbd
         // TODO: Implement buildQuery() method.
         BedroxException::render(
             'ERR_FIRESTORE_QUERYBUILDER',
-            'Le "QueryBuilder" pour Firebase Cloud Firestore n\'est pas encore disponible.'
+            'Firebase Cloud Firestore "QueryBuilder" is not available yet.'
         );
         return null;
     }

@@ -2,6 +2,7 @@
 
 namespace Bedrox\Security;
 
+use Bedrox\Core\Env;
 use Bedrox\Core\Exceptions\BedroxException;
 
 class Token extends Base
@@ -19,8 +20,8 @@ class Token extends Base
             $this->session->set('APP_TOKEN', hash($firewall[self::ENCODE], $token));
         } else {
             BedroxException::render(
-                'ERR_TOKEN',
-                'Impossible de générer le token de l\'Application. Veuillez vérifier votre fichier "./security.yaml".'
+                'ERR_TOKEN_GEN',
+                'Unable to generate your application token. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".'
             );
         }
     }

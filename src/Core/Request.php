@@ -38,7 +38,7 @@ class Request implements iRequest
                 if (!empty($format) && !$request->getResponseType($format)) {
                     BedroxException::render(
                         'ERR_URI_FORMAT',
-                        'Erreur lors de la récupération de l\'encodage de la page dans l\'en-tête. Vérifiez votre route ou la configuration de votre application.'
+                        'Error while trying to access your output format. Please check your application configuration.'
                     );
                 }
             } else {
@@ -48,7 +48,7 @@ class Request implements iRequest
         } catch (Exception $e) {
             BedroxException::render(
                 'ERR_GET_ROUTE',
-                'Impossible de récupérer la route demandée. Vérifiez votre route ou la configuration de votre application.'
+                'Unable to access the requested route. Please check your application configuration.'
             );
         }
         return $request;
@@ -98,7 +98,7 @@ class Request implements iRequest
         } else {
             BedroxException::render(
                 'ERR_REQUEST',
-                'Une erreur s\'est produite lors de la lecture de la requête.'
+                'An error occurs while trying to read the request.'
             );
         }
         return $response;

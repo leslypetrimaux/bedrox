@@ -50,7 +50,7 @@ class Response extends Skeleton implements iResponse
             default:
                 return $this->renderJSON(null, array(
                     'code' => 'ERR_OUTPUT',
-                    'message' => 'Le format d\'écriture de l\'application n\'est pas spécifié. Veuillez vérifier votre fichier "./config/env.yaml".'
+                    'message' => 'The application output format is not specified. Please check "config/env.yaml".'
                 ));
         }
     }
@@ -128,7 +128,7 @@ class Response extends Skeleton implements iResponse
             $result['dumps'] = $this->getDumps();
             $result['error'] = array(
                 'code' => 'WARN_DUMPS',
-                'message' => 'Des dumps sont encore présent dans votre code !'
+                'message' => 'Dumps are still in your code !'
             );
         }
         if ($data) {
@@ -166,7 +166,11 @@ class Response extends Skeleton implements iResponse
                     try {
                         foreach ($response->route->params as $paramKey => $paramValue) {
                             if (empty($paramValue)) {
-                                throw new ReflectionException('Le paramètre "' . $paramKey . '" est vide. Vérifiez votre URL et/ou votre route.');
+                                BedroxException::render(
+                                    'ERR_URI_NOTFOUND_PARAMS',
+                                    'The parameter does not exists. Please check your URI and/or "' . $response->route->name . '".',
+                                    404
+                                );
                             }
                         }
                         $method = (new ReflectionClass($class))->getMethod($functionStr);
@@ -176,11 +180,11 @@ class Response extends Skeleton implements iResponse
                             } catch (TypeError $e) {
                                 BedroxException::render(
                                     'ERR_URI_TYPE',
-                                    'L\'argument passé en paramètre de l\'URI ne correspond pas à celui attendu par le Controller. Vérifiez votre configuration et votre controller.'
+                                    'The URI parameter does not match the controller type. Please check your router or controller.'
                                 );
                             }
                         } else {
-                            throw new ReflectionException('Le nombre de paramètres ne correspond pas. Vérifiez votre URL et/ou votre route.');
+                            throw new ReflectionException('The number of parameter does not match. Please check "' . $_SERVER['APP'][Env::ROUTER] . '" or your URI.');
                         }
                     } catch (ReflectionException $e) {
                         BedroxException::render(
@@ -191,7 +195,8 @@ class Response extends Skeleton implements iResponse
                 } else {
                     BedroxException::render(
                         'ERR_URI_NOTFOUND_PARAMS',
-                        'Le paramètre de cette route est vide ou n\'existe pas. Veuillez vérifier votre requête.'
+                        'The controller need a parameter that was not send. Please check your URI and/or "' . $response->route->name . '".',
+                        404
                     );
                 }
             } else {
@@ -203,7 +208,7 @@ class Response extends Skeleton implements iResponse
         }
         BedroxException::render(
             'ERR_URI_NOTFOUND',
-            'La route "' . $_SERVER['REQUEST_URI'] . '" n\'existe pas OU n\'est pas configurée correctement dans votre Application. Veuillez vérifier votre fichier "./routes.yaml".',
+            'Your URI "' . $_SERVER['REQUEST_URI'] . '" does not exists or is not correctly configure. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".',
             404
         );
     }
