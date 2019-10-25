@@ -31,6 +31,7 @@ class Setup
      */
     public static function setSecurity(): void
     {
+        $algo = $key = false;
         self::print('Configuring security file "./config/security.yaml" :');
         self::print('Setting an encoding strategy...', false);
         $algo = self::generateToken(self::ENCODE_ALGO);

@@ -166,8 +166,9 @@ class Env extends Skeleton
      */
     public function defineEntityLocation(?string $location): void
     {
-        $_SERVER['APP'][self::ENTITY] = $location;
-        $this->session->set(self::ENTITY, $location);
+        $path = realpath($_SERVER['DOCUMENT_ROOT'] . '/../' . $location);
+        $_SERVER['APP'][self::ENTITY] = $path;
+        $this->session->set(self::ENTITY, $path);
     }
 
     /**
