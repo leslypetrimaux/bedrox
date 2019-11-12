@@ -2,7 +2,8 @@
 
 namespace Bedrox\Cmd;
 
-use Bedrox\Cmd\Setup\Security;
+use Bedrox\Cmd\Setup\CreateRoute;
+use Bedrox\Cmd\Setup\ReconfigureSecurityStrategy;
 use Bedrox\Core\Controller;
 use Bedrox\Core\Env;
 use Bedrox\Core\Response;
@@ -34,7 +35,8 @@ class Console
             $cli->setHelperSet($helperSet);
             ConsoleRunner::addCommands($cli);
             $commands = array(
-                new Security(), // Configure the security strategy
+                new ReconfigureSecurityStrategy(), // bedrox:configure:security - Configure the security strategy
+                new CreateRoute(), // bedrox:router:create - Create routes
             );
             $cli->addCommands($commands);
             self::addCommands($cli);

@@ -2,19 +2,18 @@
 
 namespace Bedrox\Cmd\Setup;
 
-use Bedrox\Config\Setup;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Router extends Command
+class CreateRoute extends Command
 {
     protected function configure()
     {
         $this
             ->setName('bedrox:router:create')
-            ->setDescription('Reconfigure your Application security strategy.')
-            ->setHelp('Reconfigure your application\'s encrypt algo and secret key.')
+            ->setDescription('Create new Route/Controller')
+            ->setHelp('Add new URI and Controller to your application')
         ;
     }
 
@@ -25,7 +24,12 @@ class Router extends Command
             'Router: Create a new route & controller',
             '=================================================='
         ));
-        // TODO:
+        // TODO: create route name
+        // TODO: create route URI
+        // TODO: create route's Controller
+        // TODO: create route's parameters
+        // TODO: update routes.yaml
+        // TODO: create/update Controller file
         $output->writeln('==================================================');
     }
 }
