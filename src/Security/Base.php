@@ -10,6 +10,8 @@ use RuntimeException;
 
 class Base extends Skeleton
 {
+    public const REPLACE_FLAGS = ENT_COMPAT | ENT_HTML5;
+
     public const SECURITY = 'security';
     public const FIREWALL = 'firewall';
     public const ENCODE = 'encode';

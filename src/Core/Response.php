@@ -147,6 +147,9 @@ class Response extends Skeleton implements iResponse
     public function clear(): void
     {
         unset($_GET, $_POST, $_FILES);
+        session_unset();
+        session_destroy();
+        setcookie(session_name(), '', -3600);
     }
 
     /**

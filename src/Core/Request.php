@@ -4,6 +4,7 @@ namespace Bedrox\Core;
 
 use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iRequest;
+use Bedrox\Security\Base;
 use Bedrox\Skeleton;
 use Exception;
 
@@ -36,9 +37,9 @@ class Request implements iRequest
     {
         $request = new self();
         try {
-            $request->get = !empty($_GET) ? $_GET : null;
-            $request->post = !empty($_POST) ? $_POST : null;
-            $request->files = !empty($_FILES) ? $_FILES : null;
+            $request->get = !empty($_GET) ? self::xssFilter($_GET) : null;
+            $request->post = !empty($_POST) ? self::xssFilter($_POST) : null;
+            $request->files = !empty($_FILES) ? self::xssFilter($_FILES) : null;
             /** @noinspection PhpComposerExtensionStubsInspection */
             $headers = getallheaders();
             if (!empty($headers[self::X_RESPONSE_TYPE])) {
@@ -72,6 +73,23 @@ class Request implements iRequest
         return $request;
     }
 
+    /**
+     * @param array $items
+     * @return array
+     */
+    public static function xssFilter(array $items): array
+    {
+        $results = array();
+        foreach ($items as $key => $value) {
+            $results[htmlspecialchars($key, Base::REPLACE_FLAGS)] = htmlspecialchars($value, Base::REPLACE_FLAGS);
+        }
+        return $results;
+    }
+
+    /**
+     * @param string $format
+     * @return string|null
+     */
     public function parseResponseType(string $format): ?string
     {
         if (in_array($format, Response::TYPE_JSON, true)) {
