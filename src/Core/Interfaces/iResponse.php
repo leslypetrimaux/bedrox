@@ -29,11 +29,23 @@ interface iResponse
     public function renderXML(?array $data, ?array $error): ?string;
 
     /**
+     * @param array|null $data
+     * @param array|null $error
+     * @return string|null
+     */
+    public function renderCSV(?array $data, ?array $error): ?string;
+
+    /**
      * @param array $data
      * @param array $error
      * @return array|null
      */
     public function renderResult(?array $data, ?array $error): ?array;
+
+    /**
+     * void
+     */
+    public function clear(): void;
 
     /**
      * @param Response $response
