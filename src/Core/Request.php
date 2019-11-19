@@ -14,7 +14,15 @@ use Exception;
 class Request implements iRequest
 {
     protected const X_RESPONSE_TYPE = 'X-Response-Type';
+    protected const HTTP_REQUEST_METHOD = 'Request-Method';
+    protected const HTTP_CONTENT_TYPE = 'Content-Type';
+    protected const HTTP_USER_AGENT = 'User-Agent';
+    protected const HTTP_ACCEPT = 'Accept';
+    protected const HTTP_CACHE_CONTROL = 'Cache-Control';
+    protected const HTTP_COOKIE = 'Cookie';
+    protected const HTTP_CONNECTION = 'Connection';
 
+    public $headers;
     public $files;
     public $get;
     public $post;
@@ -44,6 +52,16 @@ class Request implements iRequest
             } else {
                 $format = null;
             }
+            $request->headers = array(
+                self::HTTP_REQUEST_METHOD => !empty($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : null,
+                self::X_RESPONSE_TYPE => !empty($format) ? $format : null,
+                self::HTTP_CONTENT_TYPE => !empty($headers[self::HTTP_CONTENT_TYPE]) ? $headers[self::HTTP_CONTENT_TYPE] : null,
+                self::HTTP_USER_AGENT => !empty($headers[self::HTTP_USER_AGENT]) ? $headers[self::HTTP_USER_AGENT] : null,
+                self::HTTP_ACCEPT => !empty($headers[self::HTTP_ACCEPT]) ? $headers[self::HTTP_ACCEPT] : null,
+                self::HTTP_CACHE_CONTROL => !empty($headers[self::HTTP_CACHE_CONTROL]) ? $headers[self::HTTP_CACHE_CONTROL] : null,
+                self::HTTP_COOKIE => !empty($headers[self::HTTP_COOKIE]) ? $headers[self::HTTP_COOKIE] : null,
+                self::HTTP_CONNECTION => !empty($headers[self::HTTP_CONNECTION]) ? $headers[self::HTTP_CONNECTION] : null
+            );
             $request->route = (new Router())->getCurrentRoute(!empty($_SERVER['REDIRECT_URL']) ? $_SERVER['REDIRECT_URL'] : Skeleton::BASE, $format);
         } catch (Exception $e) {
             BedroxException::render(
@@ -94,6 +112,10 @@ class Request implements iRequest
             $response->request->get = !empty($request->get) ? $request->get : null;
             $response->request->post = !empty($request->post) ? $request->post : null;
             $response->request->files = !empty($request->files) ? $request->files : null;
+            $response->request->headers = !empty($request->headers) ? $request->headers : null;
+            if (empty($response->request->headers[self::X_RESPONSE_TYPE])) {
+                $response->request->headers[self::X_RESPONSE_TYPE] = $request->route->getRender();
+            }
             $response->route = $request->route;
         } else {
             BedroxException::render(

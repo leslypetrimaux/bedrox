@@ -2,6 +2,7 @@
 
 namespace Bedrox\Cmd;
 
+use App\Kernel;
 use Bedrox\Cmd\Setup\CreateRoute;
 use Bedrox\Cmd\Setup\ReconfigureSecurityStrategy;
 use Bedrox\Core\Controller;
@@ -39,16 +40,16 @@ class Console
                 new CreateRoute(), // bedrox:router:create - Create routes
             );
             $cli->addCommands($commands);
-            self::addCommands($cli);
+            $cli->addCommands(self::addCommands()); // Import user's custom commands
             $cli->run();
         } catch (Exception $e) {
             self::print('The following error just append : (' . $e->getCode() . ') ' . $e->getMessage());
         }
     }
 
-    public static function addCommands(Application $cli): void
+    public static function addCommands(): array
     {
-        // TODO: Add new customs commands to the cli
+        return Kernel::getCustomCmd();
     }
 
     public static function print(string $text = '', bool $eol = true): void
