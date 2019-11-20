@@ -168,6 +168,14 @@ class Env extends Skeleton
     {
         $realpath = !empty($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] . '/../' . $location : $location;
         $path = realpath($realpath);
+        if (!$path) {
+            BedroxException::render(
+                'ERR_ENV_ENTITY',
+                'Error while reading "' . $realpath . '". This directory does not exists.',
+                500,
+                $this->parsing->parseAppFormat()
+            );
+        }
         $_SERVER['APP'][self::ENTITY] = $path;
         $this->session->set(self::ENTITY, $path);
     }
@@ -211,7 +219,7 @@ class Env extends Skeleton
                                         'dbname' => $database['schema'],
                                         'charset' => !empty($database['encode']) ? $database['encode'] : self::DOCTRINE_CHARSET,
                                     );
-                                    $entityPath = $this->cmd ? realpath($_SERVER['APP'][self::ENTITY]) : realpath($_SERVER['DOCUMENT_ROOT'] . '/../' . $_SERVER['APP'][self::ENTITY]);
+                                    $entityPath = $this->cmd ? realpath($_SERVER['APP'][self::ENTITY]) : $_SERVER['APP'][self::ENTITY];
                                     // obtaining the entity manager
                                     $config = Setup::createAnnotationMetadataConfiguration(array($entityPath), $this->content['app']['env'] !== 'prod');
                                     Skeleton::$entityManager = EntityManager::create($_SERVER['APP']['SGBD'], $config);
