@@ -34,11 +34,11 @@ class Response extends Skeleton implements iResponse
 
     /**
      * @param string $format
-     * @param array $data
-     * @param array $error
+     * @param Render $data
+     * @param array|null $error
      * @return null|string
      */
-    public function renderView(string $format, ?array $data, ?array $error): ?string
+    public function renderView(string $format, Render $data, ?array $error): ?string
     {
         switch ($format) {
             case self::FORMAT_JSON:
@@ -58,11 +58,11 @@ class Response extends Skeleton implements iResponse
     /**
      * Render JSON Format.
      *
-     * @param array $data
-     * @param array $error
+     * @param Render $data
+     * @param array|null $error
      * @return string|null
      */
-    public function renderJSON(?array $data, ?array $error): ?string
+    public function renderJSON(Render $data, ?array $error): ?string
     {
         header('Content-Type: application/json; charset=' . $this->parsing->parseAppEncode());
         return json_encode(
@@ -74,11 +74,11 @@ class Response extends Skeleton implements iResponse
     /**
      * Render XML Format.
      *
-     * @param array $data
-     * @param array $error
+     * @param Render $data
+     * @param array|null $error
      * @return string|null
      */
-    public function renderXML(?array $data, ?array $error): ?string
+    public function renderXML(Render $data, ?array $error): ?string
     {
         $result = $this->renderResult($data, $error);
         $xml = new SimpleXMLElement('<Response></Response>');
@@ -95,11 +95,11 @@ class Response extends Skeleton implements iResponse
     /**
      * Render CSV Format.
      *
-     * @param array|null $data
+     * @param Render $data
      * @param array|null $error
      * @return string|null
      */
-    public function renderCSV(?array $data, ?array $error): ?string
+    public function renderCSV(Render $data, ?array $error): ?string
     {
         $result = $this->renderResult($data, $error);
         $result = $this->parsing->parseRecursiveToArray($result);
@@ -110,11 +110,11 @@ class Response extends Skeleton implements iResponse
     /**
      * Render result Array.
      *
-     * @param array $data
-     * @param array $error
+     * @param Render $render
+     * @param array|null $error
      * @return array|null
      */
-    public function renderResult(?array $data, ?array $error): ?array
+    public function renderResult(Render $render, ?array $error): ?array
     {
         $result = array(
             'status' => !is_array($error) ? 'success' : 'error',
@@ -128,8 +128,8 @@ class Response extends Skeleton implements iResponse
                 'message' => 'Dumps are still in your code !'
             );
         }
-        if ($data) {
-            $result['data'] = $data;
+        if ($render instanceof Render) {
+            $result['data'] = $render->getData();
         }
         if ($error) {
             $result['error'] = $error;
