@@ -65,7 +65,6 @@ class Response extends Skeleton implements iResponse
     public function renderJSON(?array $data, ?array $error): ?string
     {
         header('Content-Type: application/json; charset=' . $this->parsing->parseAppEncode());
-        $this->clear();
         return json_encode(
             $this->renderResult($data, $error),
             JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
@@ -90,7 +89,6 @@ class Response extends Skeleton implements iResponse
         $domXml->formatOutput = true;
         $domXml->loadXML($xml->asXML());
         header('Content-Type: application/xml; charset=' . $this->parsing->parseAppEncode());
-        $this->clear();
         return $domXml->saveXML();
     }
 
@@ -106,7 +104,6 @@ class Response extends Skeleton implements iResponse
         $result = $this->renderResult($data, $error);
         $result = $this->parsing->parseRecursiveToArray($result);
         $csv = $this->parsing->parseArrayToCsv($result);
-        $this->clear();
         return $csv;
     }
 
@@ -138,6 +135,7 @@ class Response extends Skeleton implements iResponse
             $result['error'] = $error;
         }
         $this->session->unset('DUMPS');
+        $this->clear();
         return $result;
     }
 
@@ -147,6 +145,9 @@ class Response extends Skeleton implements iResponse
     public function clear(): void
     {
         unset($_GET, $_POST, $_FILES);
+        session_unset();
+        session_destroy();
+        setcookie(session_name(), '', -3600);
     }
 
     /**
