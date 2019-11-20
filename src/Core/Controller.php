@@ -9,7 +9,6 @@ use Doctrine\ORM\EntityManager;
 class Controller extends Skeleton
 {
     public $request;
-    public $_em;
 
     /**
      * Controller constructor.
@@ -22,7 +21,6 @@ class Controller extends Skeleton
         parent::__construct();
         $this->request = $response->request;
         $this->setAuth($this->session->get('APP_AUTH'));
-        $this->_em = $this->getDoctrine();
     }
 
     /**
