@@ -209,15 +209,15 @@ class Response extends Skeleton implements iResponse
                 }
             } else {
                 try {
-                    $params = array();
                     $method = (new ReflectionClass($class))->getMethod($functionStr);
                     $refParams = $method->getParameters();
-                    foreach ($refParams as $refParam) {
-                        $refClass = $refParam->getClass()->getName();
-                        $tmpClass = new $refClass();
-                        array_push($params, $tmpClass);
-                    }
                     try {
+                        $params = array();
+                        foreach ($refParams as $refParam) {
+                            $refClass = $refParam->getClass()->getName();
+                            $tmpClass = new $refClass();
+                            array_push($params, $tmpClass);
+                        }
                         $function = call_user_func_array(array($class, $functionStr), $params);
                     } catch (TypeError $e) {
                         BedroxException::render(
