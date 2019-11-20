@@ -2,6 +2,7 @@
 
 namespace Bedrox\Core\Exceptions;
 
+use Bedrox\Core\Render;
 use Bedrox\Core\Response;
 use Exception;
 
@@ -11,7 +12,7 @@ class BedroxException extends Exception
     {
         $format = !empty($format) ? $format : $_SERVER['APP']['FORMAT'];
         http_response_code($responseCode);
-        exit((new Response())->renderView($format, null, array(
+        exit((new Response())->renderView($format, new Render(), array(
             'code' => $tag,
             'message' => $message
         )));

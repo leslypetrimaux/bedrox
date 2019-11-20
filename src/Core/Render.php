@@ -9,9 +9,9 @@ class Render
 
     /**
      * Render constructor.
-     * @param array $data
+     * @param array|null $data
      */
-    public function __construct(array $data)
+    public function __construct(?array $data = array())
     {
         $this->data = $data;
     }

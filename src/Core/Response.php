@@ -158,6 +158,7 @@ class Response extends Skeleton implements iResponse
      */
     public function terminate(Response $response): void
     {
+        // TODO: simplify how to handle parameters and services
         $render = empty($response->route->render) ? $this->session->get('APP_FORMAT') : $response->route->render;
         if ( !empty($response->route) && !empty($response->route->url) && !empty($response->route->controller) && !empty($response->route->function) && !empty($render) ) {
             $class = new $response->route->controller($response);

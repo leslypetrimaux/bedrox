@@ -2,6 +2,7 @@
 
 namespace Bedrox\Core\Functions;
 
+use Bedrox\Core\Render;
 use Bedrox\Core\Response;
 use Bedrox\Skeleton;
 
@@ -46,7 +47,7 @@ class Dumper extends Skeleton
                 $format = $_SESSION['APP_FORMAT'];
             }
         }
-        exit((new Response())->renderView($format, null, null));
+        exit((new Response())->renderView($format, new Render(), null));
     }
 
     /**
