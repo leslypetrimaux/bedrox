@@ -20,10 +20,7 @@
     "ext-json": "*",
     "ext-dom": "*",
     "ext-curl": "*",
-    "doctrine/orm": "^2.6.2",
-    "symfony/dependency-injection": "^4.3",
-    "symfony/yaml": "^4.3",
-    "symfony/config": "^4.3"
+    "doctrine/orm": "^2.6.2"
   },
   "autoload": {
     "exclude-from-classmap": ["/docs/", "/tests/"],

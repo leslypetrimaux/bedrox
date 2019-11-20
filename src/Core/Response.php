@@ -174,17 +174,25 @@ class Response extends Skeleton implements iResponse
                             }
                         }
                         $method = (new ReflectionClass($class))->getMethod($functionStr);
-                        if (count($method->getParameters()) === count($response->route->params)) {
-                            try {
-                                $function = call_user_func_array(array($class, $functionStr), $response->route->params);
-                            } catch (TypeError $e) {
-                                BedroxException::render(
-                                    'ERR_URI_TYPE',
-                                    'The URI parameter does not match the controller type. Please check your router or controller.'
-                                );
+                        $refParams = $method->getParameters();
+                        try {
+                            $params = array();
+                            foreach ($refParams as $refParam) {
+                                $refClass = $refParam->getClass()->getName();
+                                $tmpClass = new $refClass();
+                                foreach ($response->route->params as $tmpParam) {
+                                    $entity = $tmpClass instanceof $tmpParam;
+                                    if (!$entity) {
+                                        array_push($params, $tmpClass);
+                                    }
+                                }
                             }
-                        } else {
-                            throw new ReflectionException('The number of parameter does not match. Please check "' . $_SERVER['APP'][Env::ROUTER] . '" or your URI.');
+                            $function = call_user_func_array(array($class, $functionStr), array_merge($params, $response->route->params));
+                        } catch (TypeError $e) {
+                            BedroxException::render(
+                                'ERR_URI_TYPE',
+                                'The URI parameter does not match the controller type. Please check your router or controller.'
+                            );
                         }
                     } catch (ReflectionException $e) {
                         BedroxException::render(
@@ -200,14 +208,13 @@ class Response extends Skeleton implements iResponse
                     );
                 }
             } else {
-                // TODO: Handle Dependencies Injections
                 try {
                     $params = array();
                     $method = (new ReflectionClass($class))->getMethod($functionStr);
                     $refParams = $method->getParameters();
                     foreach ($refParams as $refParam) {
                         $refClass = $refParam->getClass()->getName();
-                        $tmpClass = new $refClass;
+                        $tmpClass = new $refClass();
                         array_push($params, $tmpClass);
                     }
                     try {
