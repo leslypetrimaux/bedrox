@@ -147,9 +147,6 @@ class Response extends Skeleton implements iResponse
     public function clear(): void
     {
         unset($_GET, $_POST, $_FILES);
-        session_unset();
-        session_destroy();
-        setcookie(session_name(), '', -3600);
     }
 
     /**
@@ -203,7 +200,30 @@ class Response extends Skeleton implements iResponse
                     );
                 }
             } else {
-                $function = $class->$functionStr();
+                // TODO: Handle Dependencies Injections
+                try {
+                    $params = array();
+                    $method = (new ReflectionClass($class))->getMethod($functionStr);
+                    $refParams = $method->getParameters();
+                    foreach ($refParams as $refParam) {
+                        $refClass = $refParam->getClass()->getName();
+                        $tmpClass = new $refClass;
+                        array_push($params, $tmpClass);
+                    }
+                    try {
+                        $function = call_user_func_array(array($class, $functionStr), $params);
+                    } catch (TypeError $e) {
+                        BedroxException::render(
+                            'ERR_URI_TYPE',
+                            'The URI parameter does not match the controller type. Please check your router or controller.'
+                        );
+                    }
+                } catch (ReflectionException $e) {
+                    BedroxException::render(
+                        'ERR_URI_PARAMS',
+                        $e->getMessage()
+                    );
+                }
             }
             http_response_code(200);
             /** @var mixed $function */
