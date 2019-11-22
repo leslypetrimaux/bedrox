@@ -155,32 +155,27 @@ class Router extends Skeleton implements iRouter
                                         $criteria = str_replace('}', '', $criteria);
                                         if ($repo === $keyValue) {
                                             $class = '\\App\\Entity\\' . ucfirst($repo);
-                                        } else {
-                                            BedroxException::render(
-                                                'ERR_ROUTE_PARAMS',
-                                                'Error while trying to retrieve the entity parameter. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
-                                            );
-                                        }
-                                        $em = (new Controller(new Response()))->getDoctrine();
-                                        if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
-                                            if ($em->getRepository($class) !== null) {
-                                                $route->setParams($em->getRepository($class)->findOneBy(array(
-                                                    $criteria => $aCurrent[$key]
-                                                )));
+                                            $em = (new Controller(new Response()))->getDoctrine();
+                                            if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
+                                                if ($em->getRepository($class) !== null) {
+                                                    $route->setParams($em->getRepository($class)->findOneBy(array(
+                                                        $criteria => $aCurrent[$key]
+                                                    )));
+                                                } else {
+                                                    BedroxException::render(
+                                                        'ERR_ORM_PARAMS',
+                                                        'Error while trying to access the entity. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                                    );
+                                                }
                                             } else {
-                                                BedroxException::render(
-                                                    'ERR_ORM_PARAMS',
-                                                    'Error while trying to access the entity. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
-                                                );
-                                            }
-                                        } else {
-                                            if ((new EntityManager())->getRepo($repo) !== null) {
-                                                $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
-                                            } else {
-                                                BedroxException::render(
-                                                    'ERR_EDR_PARAMS',
-                                                    'Error while trying to access the entity. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
-                                                );
+                                                if ((new EntityManager())->getRepo($repo) !== null) {
+                                                    $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
+                                                } else {
+                                                    BedroxException::render(
+                                                        'ERR_EDR_PARAMS',
+                                                        'Error while trying to access the entity. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                                    );
+                                                }
                                             }
                                         }
                                         break;

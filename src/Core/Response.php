@@ -169,8 +169,7 @@ class Response extends Skeleton implements iResponse
                 $refParams = $method->getParameters();
                 try {
                     foreach ($refParams as $refParam) {
-                        $entity = null;
-                        $type = null;
+                        $type = false;
                         if ($refParam->getClass() != null) {
                             $refClass = $refParam->getClass()->getName();
                             $tmpClass = new $refClass();
@@ -178,6 +177,7 @@ class Response extends Skeleton implements iResponse
                             $refClass = $refParam->getName();
                             $tmpClass = gettype($refClass);
                         }
+                        $usefull = !empty($tmpClass->_em);
                         if ($response->route->paramsCount > 0) {
                             if (!empty($response->route->params)) {
                                 foreach ($response->route->params as $paramKey => $paramValue) {
@@ -192,10 +192,10 @@ class Response extends Skeleton implements iResponse
                                 foreach ($response->route->params as $tmpParam) {
                                     $entity = $tmpClass instanceof $tmpParam;
                                     $type = gettype($tmpClass) === gettype($tmpParam);
-                                    if ($entity && $type) {
-                                        array_push($uriParams, $tmpParam);
-                                    } else if ($type) {
-                                        array_push($uriParams, $tmpParam);
+                                    if (($entity && $type) || ($type && !$entity)) {
+                                        if (empty($tmpClass->_em)) {
+                                            array_push($uriParams, $tmpParam);
+                                        }
                                     }
                                 }
                             } else {
@@ -206,7 +206,7 @@ class Response extends Skeleton implements iResponse
                                 );
                             }
                         }
-                        if (!$type) {
+                        if (!$type && $usefull) {
                             array_push($diParams, $tmpClass);
                         }
                     }
@@ -222,23 +222,7 @@ class Response extends Skeleton implements iResponse
                     $e->getMessage()
                 );
             }
-            if (count($diParams) === count($uriParams)) {
-                $merge = false;
-                foreach ($diParams as $diParam) {
-                    foreach ($uriParams as $uriParam) {
-                        if (gettype($diParam) != gettype($uriParam)) {
-                            $merge = true;
-                        }
-                    }
-                }
-                if ($merge) {
-                    $params = array_merge($diParams, $uriParams);
-                } else {
-                    $params = $uriParams;
-                }
-            } else {
-                $params = array_merge($diParams, $uriParams);
-            }
+            $params = array_merge($diParams, $uriParams);
             $function = call_user_func_array(array($class, $functionStr), $params);
             http_response_code(200);
             /** @var mixed $function */
