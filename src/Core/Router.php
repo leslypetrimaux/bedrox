@@ -84,11 +84,18 @@ class Router extends Skeleton implements iRouter
         foreach ($this->routes as $name => $routes) {
             $path = $routes['path'];
             $keys = array();
-            if (!empty($routes['entity']) && is_array($routes['entity'])) {
+            if ((!empty($routes['params']) && is_array($routes['params'])) || (!empty($routes['entity']) && is_array($routes['entity']))) {
                 $aCurrent = explode('/', $current);
                 $aPath = explode('/', $path);
-                foreach ($routes['entity'] as $param) {
-                    $keys[] = $param;
+                if (!empty($routes['entity'])) {
+                    foreach ($routes['entity'] as $param) {
+                        $keys[] = $param;
+                    }
+                }
+                if (!empty($routes['params'])) {
+                    foreach ($routes['params'] as $param) {
+                        $keys[] = $param;
+                    }
                 }
                 if (!empty($keys) && count($aCurrent)===count($aPath)) {
                     foreach ($aCurrent as $key => $value) {
