@@ -7,7 +7,6 @@ use Bedrox\Cmd\Setup\CreateRoute;
 use Bedrox\Cmd\Setup\ReconfigureSecurityStrategy;
 use Bedrox\Core\Controller;
 use Bedrox\Core\Env;
-use Bedrox\Core\Response;
 use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
@@ -24,7 +23,7 @@ class Console
         (new Env(true))->load(Env::FILE_ENV_ROOT);
         // Loading Doctrine Console Application
         try {
-            $em = (new Controller(new Response()))->getDoctrine();
+            $em = (new Controller())->getDoctrine();
             $con = $em->getConnection();
             $con->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
             $helperSet = new HelperSet(array(

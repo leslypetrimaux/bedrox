@@ -13,13 +13,11 @@ class Controller extends Skeleton
     /**
      * Controller constructor.
      * Return objects for the Application Controllers.
-     *
-     * @param Response $response
      */
-    public function __construct(Response $response)
+    public function __construct()
     {
         parent::__construct();
-        $this->request = $response->request;
+        $this->request = Skeleton::$response->request;
         $this->setAuth($this->session->get('APP_AUTH'));
     }
 

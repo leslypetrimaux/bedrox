@@ -155,7 +155,7 @@ class Router extends Skeleton implements iRouter
                                         $criteria = str_replace('}', '', $criteria);
                                         if ($repo === $keyValue) {
                                             $class = '\\App\\Entity\\' . ucfirst($repo);
-                                            $em = (new Controller(new Response()))->getDoctrine();
+                                            $em = (new Controller())->getDoctrine();
                                             if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
                                                 if ($em->getRepository($class) !== null) {
                                                     $route->setParams($em->getRepository($class)->findOneBy(array(

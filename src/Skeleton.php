@@ -12,6 +12,7 @@ class Skeleton
     public const BASE = '/';
 
     public $request;
+    public static $response;
     public static $entityManager;
     public $auth;
 
@@ -87,6 +88,24 @@ class Skeleton
     public function getDumps(): ?array
     {
         return $this->session->get('DUMPS') ?? null;
+    }
+
+    /**
+     * @return Response|null
+     */
+    public function getResponse(): ?Response
+    {
+        return self::$response;
+    }
+
+    /**
+     * @param Response $response
+     * @return Skeleton
+     */
+    public function setResponse(Response $response): ?self
+    {
+        self::$response = $response;
+        return $this;
     }
 }
 

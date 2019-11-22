@@ -160,7 +160,9 @@ class Response extends Skeleton implements iResponse
     {
         $render = empty($response->route->render) ? $this->session->get('APP_FORMAT') : $response->route->render;
         if ( !empty($response->route) && !empty($response->route->url) && !empty($response->route->controller) && !empty($response->route->function) && !empty($render) ) {
-            $class = new $response->route->controller($response);
+            // TODO: handle a different way to load controller (dependencies injection not allowed for now)
+            $this->setResponse($response);
+            $class = new $response->route->controller();
             $functionStr = $response->route->function;
             $diParams = array();
             $uriParams = array();
