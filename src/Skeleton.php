@@ -28,7 +28,10 @@ class Skeleton
     {
         $this->session = new Session();
         $this->parsing = new Parsing();
-        $this->cmd = $cmd;
+        if ($cmd) {
+            $this->cmd = $cmd;
+            self::setResponse(new Response());
+        }
     }
 
     public function __debugInfo()
