@@ -78,6 +78,7 @@ class Base extends Skeleton
     public function isNotAuthorized(string $route, array $firewall): bool
     {
         $redirect = true;
+        $this->session->set('APP_AUTH', false);
         switch ($firewall[self::TYPE]) {
             case self::TOKEN:
                 $auth = new Auth();

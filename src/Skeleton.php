@@ -11,10 +11,8 @@ class Skeleton
 {
     public const BASE = '/';
 
-    public $request;
-    public static $response;
+    protected static $response;
     public static $entityManager;
-    public $auth;
 
     protected $session;
     protected $parsing;
@@ -45,7 +43,7 @@ class Skeleton
      * @param Request $request
      * @return Response
      */
-    public function handle(Request $request): Response
+    protected function handle(Request $request): Response
     {
         return $request->handle($request);
     }
@@ -53,7 +51,7 @@ class Skeleton
     /**
      * @param Response $response
      */
-    public function terminate(Response $response): void
+    protected function terminate(Response $response): void
     {
         $response->terminate($response);
     }
@@ -61,9 +59,9 @@ class Skeleton
     /**
      * Return the current user.
      *
-     * @return bool
+     * @return bool|null
      */
-    public function getAuth(): bool
+    protected function getAuth(): ?bool
     {
         return $this->auth;
     }
@@ -74,7 +72,7 @@ class Skeleton
      * @param bool|null $auth
      * @return Skeleton
      */
-    public function setAuth(?bool $auth): self
+    protected function setAuth(?bool $auth): self
     {
         $this->auth = $auth ?? false;
         return $this;
@@ -85,7 +83,7 @@ class Skeleton
      *
      * @return array|null
      */
-    public function getDumps(): ?array
+    protected function getDumps(): ?array
     {
         return $this->session->get('DUMPS') ?? null;
     }
@@ -93,7 +91,7 @@ class Skeleton
     /**
      * @return Response|null
      */
-    public function getResponse(): ?Response
+    protected static function getResponse(): ?Response
     {
         return self::$response;
     }
@@ -102,10 +100,16 @@ class Skeleton
      * @param Response $response
      * @return Skeleton
      */
-    public function setResponse(Response $response): ?self
+    protected function setResponse(Response $response): ?self
     {
         self::$response = $response;
         return $this;
+    }
+
+    protected static function getRequest(): ?Request
+    {
+        $response = self::getResponse();
+        return $response->request;
     }
 }
 
