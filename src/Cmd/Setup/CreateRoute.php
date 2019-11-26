@@ -15,13 +15,13 @@ class CreateRoute extends Command
     protected function configure()
     {
         $this
-            ->setName('bedrox:router:create')
+            ->setName('bedrox:router:add')
             ->setDescription('Create new Route/Controller')
-            ->setHelp('Add new URI and Controller to your application')
+            ->setHelp('Add new URI and Controller/function to your application')
+            ->addArgument('mode', InputArgument::OPTIONAL, 'Define the write mode : Create the Controller (create), Update existing Controller (update).', self::MODE_UPDATE)
             ->addArgument('name', InputArgument::REQUIRED, 'The name of the new Route (ex: my_route).')
             ->addArgument('uri', InputArgument::REQUIRED, 'The URI of the new Route (ex: /my/custom/path).')
             ->addArgument('controller', InputArgument::REQUIRED, 'The Controller for the new Route (ex: Namespace\Class::function).')
-            ->addArgument('mode', InputArgument::OPTIONAL, 'Define the write mode : Create the Controller (create), Update existing Controller (update).', self::MODE_UPDATE)
         ;
     }
 
@@ -49,8 +49,71 @@ class CreateRoute extends Command
         $infosPath = $infosPathRoot . DIRECTORY_SEPARATOR . $infosClass . '.php';
         switch ($mode) {
             case self::MODE_CREATE:
-                $output->write('Creating the Route\'s Controller and function... ');
-                $content = '<?php
+                $output->write('Search for an existing Controller... ');
+                if (!file_exists($infosPath)) {
+                    $output->writeln('<fg=cyan;options=bold>No file found.</>');
+                    $output->write('Creating the Route\'s Controller and function... ');
+                    $success = $this->createRouteFunction($infosController, $infosFunction, $infosPath);
+                    if ($success) {
+                        $output->writeln('<fg=green;options=bold>OK</>');
+                    } else {
+                        $output->writeln('<fg=red;options=bold>KO</>');
+                    }
+                } else {
+                    $output->writeln('<fg=red;options=bold>File already exists.</>');
+                    $output->writeln('A controller already exists... <fg=cyan;options=bold>Process will update the existing file.</>');
+                    $output->write('Creating the Controller\'s function... ');
+                    $success = $this->updateRouteFunction($infosFunction, $infosPath);
+                    if ($success) {
+                        $output->writeln('<fg=green;options=bold>OK</>');
+                    } else {
+                        $output->writeln('<fg=red;options=bold>KO</>');
+                    }
+                }
+                break;
+            case self::MODE_UPDATE:
+            default:
+                $output->write('Search for the Controller... ');
+                if (file_exists($infosPath)) {
+                    $output->writeln('<fg=green;options=bold>OK</>');
+                    $output->write('Creating the Controller\'s function... ');
+                    $success = $this->updateRouteFunction($infosFunction, $infosPath);
+                    if ($success) {
+                        $output->writeln('<fg=green;options=bold>OK</>');
+                    } else {
+                        $output->writeln('<fg=red;options=bold>KO</>');
+                    }
+                } else {
+                    $output->writeln('<fg=red;options=bold>The file "' . $infosPath . '" does not exists.</>');
+                }
+                break;
+        }
+        if ($success) {
+            $output->write('Updating the router configuration... ');
+            if ($this->createRouteConfig($name, $uri, $controller)) {
+                $output->writeln('<fg=green;options=bold>OK</>');
+            } else {
+                $output->writeln('<fg=red;options=bold>KO</>');
+            }
+        }
+        $output->writeln('==================================================');
+    }
+
+    private function createRouteConfig(string $name, string $uri, string $controller): bool
+    {
+        $router = file_get_contents($_SERVER['APP']['ROUTER']);
+        $router .= '
+' . $name . ':
+  path: \'' . $uri . '\'
+  controller: \'' . $controller . '\'
+';
+        $success = file_put_contents($_SERVER['APP']['ROUTER'], $router);
+        return $success;
+    }
+
+    private function createRouteFunction(string $infosController, string $infosFunction, string $infosPath): bool
+    {
+        $content = '<?php
 
 namespace App\Controllers;
 
@@ -70,23 +133,16 @@ class ' . $infosController . ' extends Controller
     }
 }
 ';
-                $success = file_put_contents($infosPath, $content);
-                if ($success) {
-                    $output->writeln('OK');
-                } else {
-                    $output->writeln('KO');
-                }
-                break;
-            case self::MODE_UPDATE:
-            default:
-                $output->write('Search for the Controller... ');
-                if (file_exists($infosPath)) {
-                    $output->writeln('OK');
-                    $output->write('Creating the Route\'s function... ');
-                    $content = file_get_contents($infosPath);
-                    $position = strripos($content, '}');
-                    $contentM1 = substr($content, 0, $position);
-                    $contentM1 .= '
+        $success = file_put_contents($infosPath, $content);
+        return $success;
+    }
+
+    private function updateRouteFunction(string $infosFunction, string $infosPath): bool
+    {
+        $content = file_get_contents($infosPath);
+        $position = strripos($content, '}');
+        $contentM1 = substr($content, 0, $position);
+        $contentM1 .= '
     /**
      * @return Render
      */
@@ -97,32 +153,8 @@ class ' . $infosController . ' extends Controller
         ]);
     }
 }';
-                    $success = file_put_contents($infosPath, $contentM1);
-                    if ($success) {
-                        $output->writeln('OK');
-                    } else {
-                        $output->writeln('KO');
-                    }
-                } else {
-                    $output->writeln('The file "' . $infosPath . '" does not exists.');
-                }
-                break;
-        }
-        if ($success) {
-            $output->write('Updating the router configuration... ');
-            $router = file_get_contents($_SERVER['APP']['ROUTER']);
-            $router .= '
-' . $name . ':
-  path: \'' . $uri . '\'
-  controller: \'' . $controller . '\'
-';
-            if (file_put_contents($_SERVER['APP']['ROUTER'], $router)) {
-                $output->writeln('OK');
-            } else {
-                $output->writeln('KO');
-            }
-        }
-        $output->writeln('==================================================');
+        $success = file_put_contents($infosPath, $contentM1);
+        return $success;
     }
 }
 
