@@ -9,6 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ReconfigureSecurityStrategy extends Command
 {
+    /**
+     * CLI configuration
+     */
     protected function configure()
     {
         $this
@@ -19,6 +22,13 @@ class ReconfigureSecurityStrategy extends Command
         ;
     }
 
+    /**
+     * CLI execution
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|void|null
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln(array(

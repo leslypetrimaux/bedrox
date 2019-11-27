@@ -74,6 +74,8 @@ class Request implements iRequest
     }
 
     /**
+     * Search for XSS vunerabilities
+     *
      * @param array $items
      * @return array
      */
@@ -87,6 +89,8 @@ class Request implements iRequest
     }
 
     /**
+     * Search Response type
+     *
      * @param string $format
      * @return string|null
      */

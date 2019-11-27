@@ -12,6 +12,9 @@ class CreateRoute extends Command
     private const MODE_CREATE = 'create';
     private const MODE_UPDATE = 'update';
 
+    /**
+     * CLI configuration
+     */
     protected function configure()
     {
         $this
@@ -26,6 +29,13 @@ class CreateRoute extends Command
         ;
     }
 
+    /**
+     * CLI execution
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|void|null
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln(array(
@@ -130,6 +140,8 @@ class CreateRoute extends Command
     }
 
     /**
+     * Check if the route exists in config file
+     *
      * @param string $name
      * @param string $uri
      * @return bool
@@ -145,6 +157,8 @@ class CreateRoute extends Command
     }
 
     /**
+     * Check if method exists in controller
+     *
      * @param string $infosClass
      * @param string $infosFunction
      * @return bool
@@ -157,6 +171,8 @@ class CreateRoute extends Command
     }
 
     /**
+     * Create route configuration in router file
+     *
      * @param string $name
      * @param string $uri
      * @param string $controller
@@ -175,6 +191,8 @@ class CreateRoute extends Command
     }
 
     /**
+     * Create new Controller for the route
+     *
      * @param string $infosController
      * @param string $infosFunction
      * @param string $infosPath
@@ -207,6 +225,8 @@ class ' . $infosController . ' extends Controller
     }
 
     /**
+     * Update controller for the route
+     *
      * @param string $infosFunction
      * @param string $infosPath
      * @return bool

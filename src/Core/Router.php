@@ -102,6 +102,7 @@ class Router extends Skeleton implements iRouter
                         if ($aCurrent[$key]!==$aPath[$key]) {
                             foreach ($keys as $keyKey => $keyValue) {
                                 switch ($aPath[$key]) {
+                                    // PARAMS: string
                                     case (preg_match(self::ARG_STRING, $aPath[$key]) ? true : false):
                                         if (is_string($aCurrent[$key])) {
                                             $route->setParams(strval($aCurrent[$key]));
@@ -112,6 +113,7 @@ class Router extends Skeleton implements iRouter
                                             );
                                         }
                                         break;
+                                    // PARAMS: int
                                     case (preg_match(self::ARG_NUM, $aPath[$key]) ? true : false):
                                         if (is_int(intval($aCurrent[$key]))) {
                                             $route->setParams(intval($aCurrent[$key]));
@@ -122,6 +124,7 @@ class Router extends Skeleton implements iRouter
                                             );
                                         }
                                         break;
+                                    // PARAMS: date
                                     case (preg_match(self::ARG_DATE, $aPath[$key]) ? true : false):
                                         if (strtotime($aCurrent[$key])) {
                                             $route->setParams(new DateTime($aCurrent[$key]));
@@ -132,6 +135,7 @@ class Router extends Skeleton implements iRouter
                                             );
                                         }
                                         break;
+                                    // PARAMS: bool
                                     case (preg_match(self::ARG_BOOL, $aPath[$key]) ? true : false):
                                         switch ($aCurrent[$key]) {
                                             case 'true':
@@ -149,6 +153,7 @@ class Router extends Skeleton implements iRouter
                                                 );
                                         }
                                         break;
+                                    // PARAMS: entity
                                     case (preg_match('/{(.*)*}$/', $aPath[$key]) ? true : false):
                                         $repo = preg_replace('/{' . $keyValue . '(.*)?$/', $keyValue, $aPath[$key]);
                                         $criteria = str_replace('{' . $keyValue . '.', '', $aPath[$key]);

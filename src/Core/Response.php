@@ -33,6 +33,8 @@ class Response extends Skeleton implements iResponse
     public $route;
 
     /**
+     * Render the view depending on the format
+     *
      * @param string $format
      * @param Render $data
      * @param array|null $error
@@ -150,6 +152,11 @@ class Response extends Skeleton implements iResponse
         setcookie(session_name(), '', -3600);
     }
 
+    private function getRoute(): Route
+    {
+        return $this->route;
+    }
+
     /**
      * Render the view depending on the route/controller/function.
      * Parameters defined in the Router file configuration.
@@ -158,12 +165,13 @@ class Response extends Skeleton implements iResponse
      */
     public function terminate(Response $response): void
     {
-        $render = empty($response->route->render) ? $this->session->get('APP_FORMAT') : $response->route->render;
-        if ( !empty($response->route) && !empty($response->route->url) && !empty($response->route->controller) && !empty($response->route->function) && !empty($render) ) {
-            // TODO: handle a different way to load controller (dependencies injection not allowed for now)
+        $route = $response->getRoute();
+        $render = empty($route->getRender()) ? $this->session->get('APP_FORMAT') : $route->getRender();
+        if ( !empty($route) && !empty($route->getUrl()) && !empty($route->getController()) && !empty($route->getFunction()) && !empty($render) ) {
             $this->setResponse($response);
-            $class = new $response->route->controller();
-            $functionStr = $response->route->function;
+            $controller = $route->getController();
+            $class = new $controller();
+            $functionStr = $route->getFunction();
             $diParams = array();
             $uriParams = array();
             try {
@@ -180,18 +188,18 @@ class Response extends Skeleton implements iResponse
                             $tmpClass = gettype($refClass);
                         }
                         $usefull = !empty($tmpClass->_em);
-                        if ($response->route->paramsCount > 0) {
-                            if (!empty($response->route->params)) {
-                                foreach ($response->route->params as $paramKey => $paramValue) {
+                        if ($route->getParamsCount() > 0) {
+                            if (!empty($route->getParams())) {
+                                foreach ($route->getParams() as $paramKey => $paramValue) {
                                     if (empty($paramValue)) {
                                         BedroxException::render(
                                             'ERR_URI_NOTFOUND_PARAMS',
-                                            'The parameter does not exists. Please check your URI and/or "' . $response->route->name . '".',
+                                            'The parameter does not exists. Please check your URI and/or "' . $route->getName() . '".',
                                             404
                                         );
                                     }
                                 }
-                                foreach ($response->route->params as $tmpParam) {
+                                foreach ($route->getParams() as $tmpParam) {
                                     $entity = $tmpClass instanceof $tmpParam;
                                     $type = gettype($tmpClass) === gettype($tmpParam);
                                     if (($entity && $type) || ($type && !$entity)) {
@@ -203,7 +211,7 @@ class Response extends Skeleton implements iResponse
                             } else {
                                 BedroxException::render(
                                     'ERR_URI_NOTFOUND_PARAMS',
-                                    'The controller need a parameter that was not send. Please check your URI and/or "' . $response->route->name . '".',
+                                    'The controller need a parameter that was not send. Please check your URI and/or "' . $route->getName() . '".',
                                     404
                                 );
                             }
@@ -227,7 +235,6 @@ class Response extends Skeleton implements iResponse
             $params = array_merge($diParams, $uriParams);
             $function = call_user_func_array(array($class, $functionStr), $params);
             http_response_code(200);
-            /** @var mixed $function */
             exit($this->renderView($render, $function, null));
         }
         BedroxException::render(

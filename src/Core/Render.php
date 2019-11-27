@@ -17,6 +17,8 @@ class Render
     }
 
     /**
+     * Return array of data to render the view
+     *
      * @return array
      */
     public function getData(): array

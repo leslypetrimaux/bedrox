@@ -17,6 +17,9 @@ use Symfony\Component\Console\Helper\HelperSet;
 class Console
 {
 
+    /**
+     * Import Doctrine CLI and link Bedrox custom commands
+     */
     public static function run(): void
     {
         // Loading Environment
@@ -46,11 +49,22 @@ class Console
         }
     }
 
+    /**
+     * Import project custom commands
+     *
+     * @return array
+     */
     public static function addCommands(): array
     {
         return Kernel::getCustomCmd();
     }
 
+    /**
+     * Print custom data
+     *
+     * @param string $text
+     * @param bool $eol
+     */
     public static function print(string $text = '', bool $eol = true): void
     {
         $newLine = $eol ? PHP_EOL : '';

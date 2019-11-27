@@ -66,21 +66,14 @@ class Skeleton
      */
     protected function getAuth(): ?bool
     {
-        return $this->auth;
+        return $this->session->get('APP_AUTH') ?? false;
     }
 
     /**
-     * Set the current authentication.
+     * Return the Application's Token
      *
-     * @param bool|null $auth
-     * @return Skeleton
+     * @return string
      */
-    protected function setAuth(?bool $auth): self
-    {
-        $this->auth = $auth ?? false;
-        return $this;
-    }
-
     public function getToken(): string
     {
         return $this->session->get('APP_TOKEN');
@@ -114,6 +107,9 @@ class Skeleton
         return $this;
     }
 
+    /**
+     * @return Request|null
+     */
     protected static function getRequest(): ?Request
     {
         $response = self::getResponse();
