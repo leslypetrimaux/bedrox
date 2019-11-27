@@ -137,10 +137,10 @@ class CreateRoute extends Command
     private function hasConfig(string $name, string $uri): bool
     {
         $content = file_get_contents($_SERVER['APP']['ROUTER']);
-        $hasName = preg_match('/{' . $name . '}/i', $content);
+        $hasName = preg_match('/' . $name . '/i', $content);
         $uri = str_replace('/', '\/', $uri);
-        $hasUri = preg_match('/{' . $uri . '}/i', $content);
-        $hasConfig = ($hasName === false && $hasUri === false) ? false : true;
+        $hasUri = preg_match('/' . $uri . '/i', $content);
+        $hasConfig = ($hasName === 0 && $hasUri === 0) ? false : true;
         return $hasConfig;
     }
 
