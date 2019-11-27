@@ -15,22 +15,23 @@ class CreateRoute extends Command
     protected function configure()
     {
         $this
-            ->setName('bedrox:router:add')
+            ->setName('bedrox:new:router')
+            ->setAliases(['bd:n:r', 'bedrox:route'])
             ->setDescription('Create new Route/Controller')
             ->setHelp('Add new URI and Controller/function to your application')
-            ->addArgument('mode', InputArgument::OPTIONAL, 'Define the write mode : Create the Controller (create), Update existing Controller (update).', self::MODE_UPDATE)
             ->addArgument('name', InputArgument::REQUIRED, 'The name of the new Route (ex: my_route).')
             ->addArgument('uri', InputArgument::REQUIRED, 'The URI of the new Route (ex: /my/custom/path).')
             ->addArgument('controller', InputArgument::REQUIRED, 'The Controller for the new Route (ex: Namespace\Class::function).')
+            ->addArgument('mode', InputArgument::OPTIONAL, 'Define the write mode : Create the Controller (create), Update existing Controller (update).', self::MODE_UPDATE)
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln(array(
-            '==================================================',
+            '====================================================================================================',
             'Router: Create a new route & controller',
-            '=================================================='
+            '===================================================================================================='
         ));
         $name = $input->getArgument('name');
         $uri = $input->getArgument('uri');
@@ -39,7 +40,7 @@ class CreateRoute extends Command
         $success = false;
         $output->writeln('Name : ' . $name . ' (' . $uri . ')');
         $output->writeln($controller);
-        $output->writeln('==================================================');
+        $output->writeln('====================================================================================================');
         $infosRoute = explode('::', $controller);
         $infosClass = $infosRoute[0];
         $arrayClass = explode('\\', $infosClass);
@@ -96,7 +97,7 @@ class CreateRoute extends Command
                 $output->writeln('<fg=red;options=bold>KO</>');
             }
         }
-        $output->writeln('==================================================');
+        $output->writeln('====================================================================================================');
     }
 
     private function createRouteConfig(string $name, string $uri, string $controller): bool

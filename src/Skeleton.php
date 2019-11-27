@@ -81,6 +81,11 @@ class Skeleton
         return $this;
     }
 
+    public function getToken(): string
+    {
+        return $this->session->get('APP_TOKEN');
+    }
+
     /**
      * Get dumps to display
      *
