@@ -38,6 +38,7 @@ class CreateRoute extends Command
         $controller = $input->getArgument('controller');
         $mode = $input->getArgument('mode');
         $success = null;
+        $exists = null;
         $output->writeln('Name : ' . $name . ' (' . $uri . ')');
         $output->writeln($controller);
         $output->writeln('====================================================================================================');
@@ -48,66 +49,119 @@ class CreateRoute extends Command
         $infosFunction = $infosRoute[1];
         $infosPathRoot = realpath($_SERVER['APP']['ENTITY'] . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
         $infosPath = $infosPathRoot . DIRECTORY_SEPARATOR . $infosClass . '.php';
-        switch ($mode) {
-            case self::MODE_CREATE:
-                $output->write('Search for an existing Controller... ');
-                if (!file_exists($infosPath)) {
-                    $output->writeln('<fg=cyan;options=bold>No file found.</>');
-                    $output->write('Creating the Route\'s Controller and function... ');
-                    $success = $this->createRouteFunction($infosController, $infosFunction, $infosPath);
-                    if ($success) {
-                        $output->writeln('<fg=green;options=bold>OK</>');
-                    } else {
-                        $output->writeln('<fg=red;options=bold>KO</>');
-                    }
-                } else {
-                    $output->writeln('<fg=red;options=bold>File already exists.</>');
-                    $output->writeln('A controller already exists... <fg=cyan;options=bold>Process will update the existing file.</>');
-                    $output->write('Creating the Controller\'s function... ');
-                    $success = $this->updateRouteFunction($infosFunction, $infosPath);
-                    if ($success) {
-                        $output->writeln('<fg=green;options=bold>OK</>');
-                    } else {
-                        $output->writeln('<fg=red;options=bold>KO</>');
-                    }
-                }
-                break;
-            case self::MODE_UPDATE:
-            default:
-                $output->write('Search for the Controller... ');
-                if (file_exists($infosPath)) {
-                    $output->writeln('<fg=green;options=bold>OK</>');
-                    $output->write('Creating the Controller\'s function... ');
-                    $success = $this->updateRouteFunction($infosFunction, $infosPath);
-                    if ($success) {
-                        $output->writeln('<fg=green;options=bold>OK</>');
-                    } else {
-                        $output->writeln('<fg=red;options=bold>KO</>');
-                    }
-                } else {
-                    $output->writeln('<fg=red;options=bold>No file found.</>');
-                    $output->writeln('No controller exists... <fg=cyan;options=bold>Process will create the new file.</>');
-                    $output->write('Creating the Route\'s Controller and function... ');
-                    $success = $this->createRouteFunction($infosController, $infosFunction, $infosPath);
-                    if ($success) {
-                        $output->writeln('<fg=green;options=bold>OK</>');
-                    } else {
-                        $output->writeln('<fg=red;options=bold>KO</>');
-                    }
-                }
-                break;
+        $output->writeln('Looking for existing routes and methods... ');
+        $output->write('Search for an existing method... ');
+        $hasMethod = $this->hasMethod($infosClass, $infosFunction);
+        if (!$hasMethod) {
+            $output->writeln('<fg=green;options=bold>No function found.</>');
+        } else {
+            $output->writeln('<fg=red;options=bold>The function already exists.</>');
         }
-        if ($success) {
-            $output->write('Updating the router configuration... ');
-            if ($this->createRouteConfig($name, $uri, $controller)) {
-                $output->writeln('<fg=green;options=bold>OK</>');
-            } else {
-                $output->writeln('<fg=red;options=bold>KO</>');
+        $output->write('Search for an existing configuration... ');
+        $hasConfig = $this->hasConfig($name, $uri);
+        if (!$hasConfig) {
+            $output->writeln('<fg=green;options=bold>No configuration found.</>');
+        } else {
+            $output->writeln('<fg=red;options=bold>The route\'s configuration already exists.</>');
+        }
+        $exists = ($hasMethod === false && $hasConfig === false) ? false : true;
+        if (!$exists) {
+            switch ($mode) {
+                case self::MODE_CREATE:
+                    $output->write('Search for an existing Controller... ');
+                    if (!file_exists($infosPath)) {
+                        $output->writeln('<fg=cyan;options=bold>No file found.</>');
+                        $output->write('Creating the Route\'s Controller and function... ');
+                        $success = $this->createRouteFunction($infosController, $infosFunction, $infosPath);
+                        if ($success) {
+                            $output->writeln('<fg=green;options=bold>OK</>');
+                        } else {
+                            $output->writeln('<fg=red;options=bold>KO</>');
+                        }
+                    } else {
+                        $output->writeln('<fg=red;options=bold>File already exists.</>');
+                        $output->writeln('A controller already exists... <fg=cyan;options=bold>Process will update the existing file.</>');
+                        $output->write('Creating the Controller\'s function... ');
+                        $success = $this->updateRouteFunction($infosFunction, $infosPath);
+                        if ($success) {
+                            $output->writeln('<fg=green;options=bold>OK</>');
+                        } else {
+                            $output->writeln('<fg=red;options=bold>KO</>');
+                        }
+                    }
+                    break;
+                case self::MODE_UPDATE:
+                default:
+                    $output->write('Search for the Controller... ');
+                    if (file_exists($infosPath)) {
+                        $output->writeln('<fg=green;options=bold>OK</>');
+                        $output->write('Creating the Controller\'s function... ');
+                        $success = $this->updateRouteFunction($infosFunction, $infosPath);
+                        if ($success) {
+                            $output->writeln('<fg=green;options=bold>OK</>');
+                        } else {
+                            $output->writeln('<fg=red;options=bold>KO</>');
+                        }
+                    } else {
+                        $output->writeln('<fg=red;options=bold>No file found.</>');
+                        $output->writeln('No controller exists... <fg=cyan;options=bold>Process will create the new file.</>');
+                        $output->write('Creating the Route\'s Controller and function... ');
+                        $success = $this->createRouteFunction($infosController, $infosFunction, $infosPath);
+                        if ($success) {
+                            $output->writeln('<fg=green;options=bold>OK</>');
+                        } else {
+                            $output->writeln('<fg=red;options=bold>KO</>');
+                        }
+                    }
+                    break;
             }
+            if ($success) {
+                $output->write('Updating the router configuration... ');
+                if ($this->createRouteConfig($name, $uri, $controller)) {
+                    $output->writeln('<fg=green;options=bold>OK</>');
+                } else {
+                    $output->writeln('<fg=red;options=bold>KO</>');
+                }
+            }
+        } else {
+            $output->writeln('<fg=red;options=bold>Please check your configuration and/or retry with new parameters.</>');
         }
         $output->writeln('====================================================================================================');
     }
 
+    /**
+     * @param string $name
+     * @param string $uri
+     * @return bool
+     */
+    private function hasConfig(string $name, string $uri): bool
+    {
+        $content = file_get_contents($_SERVER['APP']['ROUTER']);
+        $hasName = preg_match('/{' . $name . '}/i', $content);
+        $uri = str_replace('/', '\/', $uri);
+        $hasUri = preg_match('/{' . $uri . '}/i', $content);
+        $hasConfig = ($hasName === false && $hasUri === false) ? false : true;
+        return $hasConfig;
+    }
+
+    /**
+     * @param string $infosClass
+     * @param string $infosFunction
+     * @return bool
+     */
+    private function hasMethod(string $infosClass, string $infosFunction): bool
+    {
+        $class = new $infosClass();
+        $hasMethod = method_exists($class, $infosFunction);
+        return $hasMethod;
+    }
+
+    /**
+     * @param string $name
+     * @param string $uri
+     * @param string $controller
+     * @return bool
+     */
     private function createRouteConfig(string $name, string $uri, string $controller): bool
     {
         $router = file_get_contents($_SERVER['APP']['ROUTER']);
@@ -120,6 +174,12 @@ class CreateRoute extends Command
         return $success;
     }
 
+    /**
+     * @param string $infosController
+     * @param string $infosFunction
+     * @param string $infosPath
+     * @return bool
+     */
     private function createRouteFunction(string $infosController, string $infosFunction, string $infosPath): bool
     {
         $content = '<?php
@@ -146,6 +206,11 @@ class ' . $infosController . ' extends Controller
         return $success;
     }
 
+    /**
+     * @param string $infosFunction
+     * @param string $infosPath
+     * @return bool
+     */
     private function updateRouteFunction(string $infosFunction, string $infosPath): bool
     {
         $content = file_get_contents($infosPath);
