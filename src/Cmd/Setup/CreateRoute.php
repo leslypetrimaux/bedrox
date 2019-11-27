@@ -86,7 +86,7 @@ class CreateRoute extends Command
                     }
                 } else {
                     $output->writeln('<fg=red;options=bold>No file found.</>');
-                    $output->writeln('No controller exists... <fg=cyan;options=bold>Process will creating the new file.</>');
+                    $output->writeln('No controller exists... <fg=cyan;options=bold>Process will create the new file.</>');
                     $output->write('Creating the Route\'s Controller and function... ');
                     $success = $this->createRouteFunction($infosController, $infosFunction, $infosPath);
                     if ($success) {
