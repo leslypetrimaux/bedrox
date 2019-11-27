@@ -36,7 +36,7 @@ class Console
             ConsoleRunner::addCommands($cli);
             $commands = array(
                 new ReconfigureSecurityStrategy(), // bedrox:configure:security - Configure the security strategy
-                new CreateRoute(), // bedrox:router:create - Create routes
+                new CreateRoute(), // bedrox:new:router - Create routes/controllers
             );
             $cli->addCommands($commands);
             $cli->addCommands(self::addCommands()); // Import user's custom commands

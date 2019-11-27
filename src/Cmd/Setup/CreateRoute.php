@@ -37,7 +37,7 @@ class CreateRoute extends Command
         $uri = $input->getArgument('uri');
         $controller = $input->getArgument('controller');
         $mode = $input->getArgument('mode');
-        $success = false;
+        $success = null;
         $output->writeln('Name : ' . $name . ' (' . $uri . ')');
         $output->writeln($controller);
         $output->writeln('====================================================================================================');
@@ -85,7 +85,15 @@ class CreateRoute extends Command
                         $output->writeln('<fg=red;options=bold>KO</>');
                     }
                 } else {
-                    $output->writeln('<fg=red;options=bold>The file "' . $infosPath . '" does not exists.</>');
+                    $output->writeln('<fg=red;options=bold>No file found.</>');
+                    $output->writeln('No controller exists... <fg=cyan;options=bold>Process will creating the new file.</>');
+                    $output->write('Creating the Route\'s Controller and function... ');
+                    $success = $this->createRouteFunction($infosController, $infosFunction, $infosPath);
+                    if ($success) {
+                        $output->writeln('<fg=green;options=bold>OK</>');
+                    } else {
+                        $output->writeln('<fg=red;options=bold>KO</>');
+                    }
                 }
                 break;
         }

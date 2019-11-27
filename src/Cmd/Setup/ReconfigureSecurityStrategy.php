@@ -13,6 +13,7 @@ class ReconfigureSecurityStrategy extends Command
     {
         $this
             ->setName('bedrox:configure:security')
+            ->setAliases(['bd:c:s', 'bedrox:config-secu'])
             ->setDescription('Reconfigure your Application security strategy.')
             ->setHelp('Reconfigure your application\'s encrypt algo and secret key.')
         ;
