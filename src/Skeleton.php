@@ -106,14 +106,6 @@ class Skeleton
         self::$response = $response;
         return $this;
     }
-
-    /**
-     * @return Request|null
-     */
-    protected static function getRequest(): ?Request
-    {
-        return self::getResponse()->request;
-    }
 }
 
 require_once __DIR__ . '/Core/Functions/Globals.php';

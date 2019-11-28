@@ -20,30 +20,30 @@ class Headers
     public const SEC_FETCH_SITE = 'Sec-Fetch-Site';
     public const SEC_FETCH_MODE = 'Sec-Fetch-Mode';
 
-    public $responseType;
-    public $requestMethod;
-    public $contentType;
-    public $userAgent;
-    public $accept;
-    public $cacheControl;
-    public $cookie;
-    public $connection;
-    public $host;
-    public $upgradeInsecureRequests;
-    public $acceptEncoding;
-    public $acceptLanguage;
-    public $fetchUser;
-    public $fetchSite;
-    public $fetchMode;
-    public $isGet;
-    public $isPost;
-    public $isPut;
-    public $isPatch;
-    public $isDelete;
-    public $isLink;
-    public $isUnlink;
-    public $isLock;
-    public $isUnlock;
+    private $responseType;
+    private $requestMethod;
+    private $contentType;
+    private $userAgent;
+    private $accept;
+    private $cacheControl;
+    private $cookie;
+    private $connection;
+    private $host;
+    private $upgradeInsecureRequests;
+    private $acceptEncoding;
+    private $acceptLanguage;
+    private $fetchUser;
+    private $fetchSite;
+    private $fetchMode;
+    private $isGet;
+    private $isPost;
+    private $isPut;
+    private $isPatch;
+    private $isDelete;
+    private $isLink;
+    private $isUnlink;
+    private $isLock;
+    private $isUnlock;
 
     public function __construct(array $headers)
     {

@@ -29,8 +29,8 @@ class Response extends Skeleton implements iResponse
     public const FORMAT_XLS = 'xls';
     public const FORMAT_XLSX = 'xlsx';
 
-    public $request;
-    public $route;
+    private $request;
+    private $route;
 
     /**
      * Render the view depending on the format
@@ -171,6 +171,11 @@ class Response extends Skeleton implements iResponse
             parent::setResponse($response);
             $controller = $route->getController();
             $class = new $controller();
+            // TODO: handle Controller's constructor for dependencies injections
+            $funConstructor = Controller::CONSTRUCTOR;
+            if (method_exists($class, $funConstructor)) {
+                $class->$funConstructor();
+            }
             $functionStr = $route->getFunction();
             $diParams = array();
             $uriParams = array();
@@ -249,5 +254,33 @@ class Response extends Skeleton implements iResponse
             'Your URI "' . $_SERVER['REQUEST_URI'] . '" does not exists or is not correctly configure. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".',
             404
         );
+    }
+
+    /**
+     * @param Route $route
+     * @return Response
+     */
+    public function setRoute(Route $route): self
+    {
+        $this->route = $route;
+        return $this;
+    }
+
+    /**
+     * @return Request|null
+     */
+    public function getRequest(): ?Request
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function setRequest(Request $request): self
+    {
+        $this->request = $request;
+        return $this;
     }
 }

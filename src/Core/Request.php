@@ -8,17 +8,15 @@ use Bedrox\Security\Base;
 use Bedrox\Skeleton;
 use Exception;
 
-/**
- * @property  route
- * @property Route|null route
- */
 class Request implements iRequest
 {
     /** @var Headers $headers */
-    public $headers;
-    public $files;
-    public $get;
-    public $post;
+    private $headers;
+    /** @var Route $route */
+    private $route;
+    private $files;
+    private $get;
+    private $post;
 
     /**
      * Create the Application request from PHP globals.
@@ -47,7 +45,7 @@ class Request implements iRequest
             }
             $request->headers = new Headers($headers);
             $urlRequested = empty($_SERVER['REDIRECT_URL']) ? empty($_SERVER['PATH_INFO']) ? Skeleton::BASE : $_SERVER['PATH_INFO'] : $_SERVER['REDIRECT_URL'];
-            $request->route = (new Router())->getCurrentRoute($urlRequested, $format);
+            $request->setRoute((new Router())->getCurrentRoute($urlRequested, $format));
         } catch (Exception $e) {
             BedroxException::render(
                 'ERR_GET_ROUTE',
@@ -92,11 +90,12 @@ class Request implements iRequest
     /**
      * Check if the response type asked is valid
      *
-     * @param string $format
+     * @param string|null $format
      * @return bool
      */
-    public function getResponseType(string $format): bool
+    public function getResponseType(?string $format = null): bool
     {
+        $format = $format === null ? $_SERVER['APP']['FORMAT'] : $format;
         return in_array($format, array(
             Response::FORMAT_JSON,
             Response::FORMAT_XML,
@@ -114,16 +113,16 @@ class Request implements iRequest
     {
         $response = new Response();
         if ($request !== null) {
-            $response->request = new self();
-            $response->request->get = !empty($request->get) ? $request->get : null;
-            $response->request->post = !empty($request->post) ? $request->post : null;
-            $response->request->files = !empty($request->files) ? $request->files : null;
+            $request->get = !empty($request->get) ? $request->get : null;
+            $request->post = !empty($request->post) ? $request->post : null;
+            $request->files = !empty($request->files) ? $request->files : null;
             /** @var Headers headers */
-            $response->request->headers = !empty($request->headers) ? $request->headers : null;
-            if (empty($response->request->headers->getResponseType())) {
-                $response->request->headers->setResponseType($request->route->getRender());
+            $request->headers = !empty($request->headers) ? $request->headers : null;
+            $response->setRoute($request->getRoute());
+            if (empty($request->headers->getResponseType())) {
+                $request->headers->setResponseType($request->route->getRender());
             }
-            $response->route = $request->route;
+            $response->setRequest($request);
         } else {
             BedroxException::render(
                 'ERR_REQUEST',
@@ -131,5 +130,55 @@ class Request implements iRequest
             );
         }
         return $response;
+    }
+
+    /**
+     * @return Headers
+     */
+    public function getHeaders(): Headers
+    {
+        return $this->headers;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGet()
+    {
+        return $this->get;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPost()
+    {
+        return $this->post;
+    }
+
+    /**
+     * @return Route|null
+     */
+    private function getRoute(): ?Route
+    {
+        return $this->route;
+    }
+
+    /**
+     * @param Route $route
+     * @return Request
+     */
+    private function setRoute(Route $route): Request
+    {
+        $this->route = $route;
+        return $this;
     }
 }

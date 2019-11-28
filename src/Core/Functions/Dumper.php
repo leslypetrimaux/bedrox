@@ -2,6 +2,7 @@
 
 namespace Bedrox\Core\Functions;
 
+use Bedrox\Core\Controller;
 use Bedrox\Core\Render;
 use Bedrox\Core\Response;
 use Bedrox\Skeleton;
@@ -24,7 +25,7 @@ class Dumper extends Skeleton
             $debugTrace = $d->getMethod();
             $d->setDumpResult(array(
                 'file' => $debugTrace[2]['file'],
-                'function' => $debugTrace[3]['function'],
+                'function' => $debugTrace[3]['function'] === Controller::CONSTRUCTOR ? Controller::PHP_CONSTRUCTOR : $debugTrace[3]['function'],
                 'line' => $debugTrace[2]['line'],
                 'outputs' => $dumps
             ));
