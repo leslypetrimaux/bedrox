@@ -68,4 +68,13 @@ class Controller extends Skeleton
     {
         return $this->request->getHeaders();
     }
+
+    /**
+     * @param array|null $render
+     * @return Render
+     */
+    public function render(?array $render = array()): Render
+    {
+        return new Render($render);
+    }
 }

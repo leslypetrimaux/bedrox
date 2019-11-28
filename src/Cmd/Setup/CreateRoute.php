@@ -248,9 +248,7 @@ class ' . $infosController . ' extends Controller
      */
     public function ' . $infosFunction . '(): Render
     {
-        return new Render([
-            \'this\' => $this
-        ]);
+        return $this->render();
     }';
     }
 
