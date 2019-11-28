@@ -17,6 +17,9 @@ class Router extends Skeleton implements iRouter
     protected $firewall;
     protected $routes;
 
+    public const ROUTE_PATH = 'path';
+    public const REQUIRE_ROUTER = 'require';
+
     public const ARG_STRING = '[string]';
     public const ARG_NUM = '[num]';
     public const ARG_DATE = '[date]';
@@ -32,9 +35,9 @@ class Router extends Skeleton implements iRouter
             parent::__construct();
             $this->firewall = new Firewall();
             if (file_exists($_SERVER['APP'][Env::ROUTER])) {
-                $content = YamlParser::YAMLLoad($_SERVER['APP'][Env::ROUTER]);
-                if (is_array($content)) {
-                    $this->routes = $content;
+                $router = YamlParser::YAMLLoad($_SERVER['APP'][Env::ROUTER]);
+                if (is_array($router)) {
+                    $this->routes = $this->parseRouter($router);
                 } else {
                     throw new RuntimeException('Unable to access your router. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".');
                 }
@@ -47,6 +50,35 @@ class Router extends Skeleton implements iRouter
                 $e->getMessage()
             );
         }
+    }
+
+    protected function parseRouter(array $router): ?array
+    {
+        foreach ($router as $route) {
+            $subPath = $route[self::ROUTE_PATH];
+            foreach ($route as $key => $value) {
+                if ($key === self::REQUIRE_ROUTER) {
+                    $valuePath = realpath(dirname($_SERVER['APP'][Env::ROUTER]) . DIRECTORY_SEPARATOR . $value);
+                    $subRouter = YamlParser::YAMLLoad($valuePath);
+                    foreach ($subRouter as $subKey => $subValue) {
+                        foreach ($subValue as $subRouteKey => $subRouteValue) {
+                            if ($subRouteKey === self::ROUTE_PATH) {
+                                $subValue[$subRouteKey] = $subPath . $subRouteValue;
+                            }
+                            if ($subRouteKey === self::REQUIRE_ROUTER) {
+                                // TODO: handle multiple imports
+                                BedroxException::render(
+                                    'ERR_IMPORT_ROUTER',
+                                    'Parsing recursivly router\'s files is not supported for more than 1 level for now.'
+                                );
+                            }
+                        }
+                        $router[$subKey] = $subValue;
+                    }
+                }
+            }
+        }
+        return $router;
     }
 
     /**
