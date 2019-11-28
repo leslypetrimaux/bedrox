@@ -150,7 +150,7 @@ class CreateRoute extends Command
     {
         $content = file_get_contents($_SERVER['APP']['ROUTER']);
         $hasName = preg_match('/' . $name . '/i', $content);
-        $uri = str_replace('/', '\/', $uri);
+        $uri = strtr($uri, '/', '\/');
         $hasUri = preg_match('/' . $uri . '/i', $content);
         $hasConfig = ($hasName === 0 && $hasUri === 0) ? false : true;
         return $hasConfig;

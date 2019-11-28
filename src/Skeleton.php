@@ -11,7 +11,7 @@ class Skeleton
 {
     public const BASE = '/';
 
-    protected static $response;
+    public static $response;
     public static $entityManager;
 
     protected $session;
@@ -94,7 +94,7 @@ class Skeleton
      */
     protected static function getResponse(): ?Response
     {
-        return self::$response;
+        return (self::$response instanceof Response) ? self::$response : new Response();
     }
 
     /**
@@ -112,8 +112,7 @@ class Skeleton
      */
     protected static function getRequest(): ?Request
     {
-        $response = self::getResponse();
-        return $response->request;
+        return self::getResponse()->request;
     }
 }
 

@@ -168,62 +168,69 @@ class Response extends Skeleton implements iResponse
         $route = $response->getRoute();
         $render = empty($route->getRender()) ? $this->session->get('APP_FORMAT') : $route->getRender();
         if ( !empty($route) && !empty($route->getUrl()) && !empty($route->getController()) && !empty($route->getFunction()) && !empty($render) ) {
-            $this->setResponse($response);
+            parent::setResponse($response);
             $controller = $route->getController();
             $class = new $controller();
             $functionStr = $route->getFunction();
             $diParams = array();
             $uriParams = array();
             try {
-                $method = (new ReflectionClass($class))->getMethod($functionStr);
-                $refParams = $method->getParameters();
-                try {
-                    foreach ($refParams as $refParam) {
-                        $type = false;
-                        if ($refParam->getClass() != null) {
-                            $refClass = $refParam->getClass()->getName();
-                            $tmpClass = new $refClass();
-                        } else {
-                            $refClass = $refParam->getName();
-                            $tmpClass = gettype($refClass);
-                        }
-                        $usefull = !empty($tmpClass->_em);
-                        if ($route->getParamsCount() > 0) {
-                            if (!empty($route->getParams())) {
-                                foreach ($route->getParams() as $paramKey => $paramValue) {
-                                    if (empty($paramValue)) {
-                                        BedroxException::render(
-                                            'ERR_URI_NOTFOUND_PARAMS',
-                                            'The parameter does not exists. Please check your URI and/or "' . $route->getName() . '".',
-                                            404
-                                        );
-                                    }
-                                }
-                                foreach ($route->getParams() as $tmpParam) {
-                                    $entity = $tmpClass instanceof $tmpParam;
-                                    $type = gettype($tmpClass) === gettype($tmpParam);
-                                    if (($entity && $type) || ($type && !$entity)) {
-                                        if (empty($tmpClass->_em)) {
-                                            array_push($uriParams, $tmpParam);
+                if (method_exists($class, $functionStr)) {
+                    $method = (new ReflectionClass($class))->getMethod($functionStr);
+                    $refParams = $method->getParameters();
+                    try {
+                        foreach ($refParams as $refParam) {
+                            $type = false;
+                            if ($refParam->getClass() != null) {
+                                $refClass = $refParam->getClass()->getName();
+                                $tmpClass = new $refClass();
+                            } else {
+                                $refClass = $refParam->getName();
+                                $tmpClass = gettype($refClass);
+                            }
+                            $usefull = !empty($tmpClass->_em);
+                            if (!empty($route->getParamsCount())) {
+                                if (!empty($route->getParams())) {
+                                    foreach ($route->getParams() as $paramKey => $paramValue) {
+                                        if (empty($paramValue)) {
+                                            BedroxException::render(
+                                                'ERR_URI_NOTFOUND_PARAMS',
+                                                'The parameter does not exists. Please check your URI and/or "' . $route->getName() . '".',
+                                                404
+                                            );
                                         }
                                     }
+                                    foreach ($route->getParams() as $tmpParam) {
+                                        $entity = $tmpClass instanceof $tmpParam;
+                                        $type = gettype($tmpClass) === gettype($tmpParam);
+                                        if (($entity && $type) || ($type && !$entity)) {
+                                            if (empty($tmpClass->_em)) {
+                                                array_push($uriParams, $tmpParam);
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    BedroxException::render(
+                                        'ERR_URI_NOTFOUND_PARAMS',
+                                        'The controller need a parameter that was not send. Please check your URI and/or "' . $route->getName() . '".',
+                                        404
+                                    );
                                 }
-                            } else {
-                                BedroxException::render(
-                                    'ERR_URI_NOTFOUND_PARAMS',
-                                    'The controller need a parameter that was not send. Please check your URI and/or "' . $route->getName() . '".',
-                                    404
-                                );
+                            }
+                            if (!$type && $usefull) {
+                                array_push($diParams, $tmpClass);
                             }
                         }
-                        if (!$type && $usefull) {
-                            array_push($diParams, $tmpClass);
-                        }
+                    } catch (TypeError $e) {
+                        BedroxException::render(
+                            'ERR_URI_TYPE',
+                            $e->getMessage()
+                        );
                     }
-                } catch (TypeError $e) {
+                } else {
                     BedroxException::render(
-                        'ERR_URI_TYPE',
-                        $e->getMessage()
+                        'ERR_CONTROLLER_METHOD',
+                        'The requested method "' . $functionStr . '" does not exists in your Controller "' . $controller . '".'
                     );
                 }
             } catch (ReflectionException $e) {

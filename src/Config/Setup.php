@@ -84,7 +84,7 @@ class Setup
                             }
                             break;
                     }
-                    $content = str_replace($type, $replace, $content);
+                    $content = strtr($content, $type, $replace);
                     if (file_put_contents($file, $content)) {
                         self::print(' OK.');
                         $res = true;

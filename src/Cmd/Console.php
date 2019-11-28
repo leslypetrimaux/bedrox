@@ -4,6 +4,7 @@ namespace Bedrox\Cmd;
 
 use App\Kernel;
 use Bedrox\Cmd\Setup\CreateRoute;
+use Bedrox\Cmd\Setup\DevServer;
 use Bedrox\Cmd\Setup\ReconfigureSecurityStrategy;
 use Bedrox\Core\Controller;
 use Bedrox\Core\Env;
@@ -38,6 +39,7 @@ class Console
             $cli->setHelperSet($helperSet);
             ConsoleRunner::addCommands($cli);
             $commands = array(
+                new DevServer(), // bedrox:server:dev - Development Server
                 new ReconfigureSecurityStrategy(), // bedrox:configure:security - Configure the security strategy
                 new CreateRoute(), // bedrox:new:router - Create routes/controllers
             );

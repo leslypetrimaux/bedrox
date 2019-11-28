@@ -17,10 +17,17 @@ mon_dossier:
     index.php
   src: # sources de l'application
     App:
+      Cli: # conteneur des commandes à ajouter au CLI
+        Commands: # contient mes commandes CLI personnalisées
+          CustomExample.php
+        Console.php
       Controllers: # contient les controllers des routes
         DefaultController.php
       Entity: # contient les entités pour les databases
         Users.php
+      Services: # contient les services à injecter dans les controlleurs
+        AppService.php
+        UsersService.php
       Kernel.php
   vendor: # comporte toutes les dépendances de composer
   composer.json
@@ -117,8 +124,14 @@ dd(...string: array|mixed[]);
 ```
 Vous pouvez retrouver le détails concernant ce fichier dans la documentation [DEBUG.md](./docs/DEBUG.md).
 
+## Command Line Interface
+Documentation en cours de rédaction.
+
 ## Controllers
 Documentation en cours de rédaction.
 
 ## Entités
+Documentation en cours de rédaction.
+
+## Services
 Documentation en cours de rédaction.

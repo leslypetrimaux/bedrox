@@ -23,8 +23,9 @@ class Dumper extends Skeleton
             $dumps = $d->getData($strings);
             $debugTrace = $d->getMethod();
             $d->setDumpResult(array(
-                'file' => $debugTrace['file'],
-                'line' => $debugTrace['line'],
+                'file' => $debugTrace[2]['file'],
+                'function' => $debugTrace[3]['function'],
+                'line' => $debugTrace[2]['line'],
                 'outputs' => $dumps
             ));
         } else {
@@ -63,8 +64,7 @@ class Dumper extends Skeleton
      */
     protected function getMethod(): ?array
     {
-        $debug = debug_backtrace();
-        return $debug[2];
+        return debug_backtrace();
     }
 
     /**

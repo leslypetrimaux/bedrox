@@ -15,7 +15,7 @@ class Token extends Base
     public function defineToken(array $firewall): void
     {
         if ((!empty($firewall[self::ENCODE]) || !empty($firewall[self::SECRET])) && in_array($firewall[self::ENCODE], hash_algos(), true)) {
-            $app = str_replace(' ', '', ucwords($this->session->get('APP_NAME')));
+            $app = strtr(ucwords($this->session->get('APP_NAME')), ' ', '');
             $token = $app . '-' . $firewall[self::SECRET];
             $this->session->set('APP_TOKEN', hash($firewall[self::ENCODE], $token));
         } else {

@@ -14,15 +14,7 @@ use Exception;
  */
 class Request implements iRequest
 {
-    protected const X_RESPONSE_TYPE = 'X-Response-Type';
-    protected const HTTP_REQUEST_METHOD = 'Request-Method';
-    protected const HTTP_CONTENT_TYPE = 'Content-Type';
-    protected const HTTP_USER_AGENT = 'User-Agent';
-    protected const HTTP_ACCEPT = 'Accept';
-    protected const HTTP_CACHE_CONTROL = 'Cache-Control';
-    protected const HTTP_COOKIE = 'Cookie';
-    protected const HTTP_CONNECTION = 'Connection';
-
+    /** @var Headers $headers */
     public $headers;
     public $files;
     public $get;
@@ -42,8 +34,8 @@ class Request implements iRequest
             $request->files = !empty($_FILES) ? self::xssFilter($_FILES) : null;
             /** @noinspection PhpComposerExtensionStubsInspection */
             $headers = getallheaders();
-            if (!empty($headers[self::X_RESPONSE_TYPE])) {
-                $format = $request->parseResponseType($headers[self::X_RESPONSE_TYPE]);
+            if (!empty($headers[Headers::X_RESPONSE_TYPE])) {
+                $format = $request->parseResponseType($headers[Headers::X_RESPONSE_TYPE]);
                 if (!empty($format) && !$request->getResponseType($format)) {
                     BedroxException::render(
                         'ERR_URI_FORMAT',
@@ -53,17 +45,9 @@ class Request implements iRequest
             } else {
                 $format = null;
             }
-            $request->headers = array(
-                self::HTTP_REQUEST_METHOD => !empty($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : null,
-                self::X_RESPONSE_TYPE => !empty($format) ? $format : null,
-                self::HTTP_CONTENT_TYPE => !empty($headers[self::HTTP_CONTENT_TYPE]) ? $headers[self::HTTP_CONTENT_TYPE] : null,
-                self::HTTP_USER_AGENT => !empty($headers[self::HTTP_USER_AGENT]) ? $headers[self::HTTP_USER_AGENT] : null,
-                self::HTTP_ACCEPT => !empty($headers[self::HTTP_ACCEPT]) ? $headers[self::HTTP_ACCEPT] : null,
-                self::HTTP_CACHE_CONTROL => !empty($headers[self::HTTP_CACHE_CONTROL]) ? $headers[self::HTTP_CACHE_CONTROL] : null,
-                self::HTTP_COOKIE => !empty($headers[self::HTTP_COOKIE]) ? $headers[self::HTTP_COOKIE] : null,
-                self::HTTP_CONNECTION => !empty($headers[self::HTTP_CONNECTION]) ? $headers[self::HTTP_CONNECTION] : null
-            );
-            $request->route = (new Router())->getCurrentRoute(!empty($_SERVER['REDIRECT_URL']) ? $_SERVER['REDIRECT_URL'] : Skeleton::BASE, $format);
+            $request->headers = new Headers($headers);
+            $urlRequested = empty($_SERVER['REDIRECT_URL']) ? empty($_SERVER['PATH_INFO']) ? Skeleton::BASE : $_SERVER['PATH_INFO'] : $_SERVER['REDIRECT_URL'];
+            $request->route = (new Router())->getCurrentRoute($urlRequested, $format);
         } catch (Exception $e) {
             BedroxException::render(
                 'ERR_GET_ROUTE',
@@ -74,7 +58,7 @@ class Request implements iRequest
     }
 
     /**
-     * Search for XSS vunerabilities
+     * Search for XSS vunerabilities (recursive)
      *
      * @param array $items
      * @return array
@@ -83,7 +67,7 @@ class Request implements iRequest
     {
         $results = array();
         foreach ($items as $key => $value) {
-            $results[htmlspecialchars($key, Base::REPLACE_FLAGS)] = htmlspecialchars($value, Base::REPLACE_FLAGS);
+            $results[htmlspecialchars($key, Base::REPLACE_FLAGS)] = is_array($value) ? self::xssFilter($value) : htmlspecialchars($value, Base::REPLACE_FLAGS);
         }
         return $results;
     }
@@ -134,9 +118,10 @@ class Request implements iRequest
             $response->request->get = !empty($request->get) ? $request->get : null;
             $response->request->post = !empty($request->post) ? $request->post : null;
             $response->request->files = !empty($request->files) ? $request->files : null;
+            /** @var Headers headers */
             $response->request->headers = !empty($request->headers) ? $request->headers : null;
-            if (empty($response->request->headers[self::X_RESPONSE_TYPE])) {
-                $response->request->headers[self::X_RESPONSE_TYPE] = $request->route->getRender();
+            if (empty($response->request->headers->getResponseType())) {
+                $response->request->headers->setResponseType($request->route->getRender());
             }
             $response->route = $request->route;
         } else {
