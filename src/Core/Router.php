@@ -58,7 +58,7 @@ class Router extends Skeleton implements iRouter
             $subPath = $route[self::ROUTE_PATH];
             foreach ($route as $key => $value) {
                 if ($key === self::REQUIRE_ROUTER) {
-                    $valuePath = realpath(dirname($_SERVER['APP'][Env::ROUTER]) . DIRECTORY_SEPARATOR . $value);
+                    $valuePath = realpath(dirname($_SERVER['APP'][Env::ROUTER]) . DIRECTORY_SEPARATOR . $value . '.yaml');
                     $subRouter = YamlParser::YAMLLoad($valuePath);
                     foreach ($subRouter as $subKey => $subValue) {
                         foreach ($subValue as $subRouteKey => $subRouteValue) {

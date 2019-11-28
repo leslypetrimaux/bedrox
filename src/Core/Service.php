@@ -36,7 +36,8 @@ class Service
      */
     public function getRequest(): ?Request
     {
+        /** @var Response $response */
         $response = Skeleton::$response;
-        return $response->request;
+        return $response->getRequest();
     }
 }
