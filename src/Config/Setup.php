@@ -101,6 +101,10 @@ class Setup
         return $res;
     }
 
+    /**
+     * @param string $text
+     * @param bool $eol
+     */
     public static function print(string $text = '', bool $eol = true): void
     {
         $newLine = $eol ? PHP_EOL : '';

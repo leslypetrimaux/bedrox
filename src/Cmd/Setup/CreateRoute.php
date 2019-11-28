@@ -152,8 +152,7 @@ class CreateRoute extends Command
         $hasName = preg_match('/' . $name . '/i', $content);
         $uri = strtr($uri, '/', '\/');
         $hasUri = preg_match('/' . $uri . '/i', $content);
-        $hasConfig = ($hasName === 0 && $hasUri === 0) ? false : true;
-        return $hasConfig;
+        return ($hasName === 0 && $hasUri === 0) ? false : true;
     }
 
     /**
@@ -166,8 +165,7 @@ class CreateRoute extends Command
     private function hasMethod(string $infosClass, string $infosFunction): bool
     {
         $class = new $infosClass();
-        $hasMethod = method_exists($class, $infosFunction);
-        return $hasMethod;
+        return method_exists($class, $infosFunction);
     }
 
     /**
@@ -186,8 +184,7 @@ class CreateRoute extends Command
   path: \'' . $uri . '\'
   controller: \'' . $controller . '\'
 ';
-        $success = file_put_contents($_SERVER['APP']['ROUTER'], $router);
-        return $success;
+        return file_put_contents($_SERVER['APP']['ROUTER'], $router);
     }
 
     /**
@@ -208,20 +205,10 @@ use Bedrox\Core\Controller;
 use Bedrox\Core\Render;
 
 class ' . $infosController . ' extends Controller
-{
-    /**
-     * @return Render
-     */
-    public function ' . $infosFunction . '(): Render
-    {
-        return new Render([
-            \'this\' => $this
-        ]);
-    }
+{' . $this->getMethodCode($infosFunction) . '
 }
 ';
-        $success = file_put_contents($infosPath, $content);
-        return $success;
+        return file_put_contents($infosPath, $content);
     }
 
     /**
@@ -236,7 +223,15 @@ class ' . $infosController . ' extends Controller
         $content = file_get_contents($infosPath);
         $position = strripos($content, '}');
         $contentM1 = substr($content, 0, $position);
-        $contentM1 .= '
+        $contentM1 .= $this->getMethodCode($infosFunction) . '
+}
+';
+        return file_put_contents($infosPath, $contentM1);
+    }
+
+    private function getMethodCode(string $infosFunction): string
+    {
+        return '
     /**
      * @return Render
      */
@@ -245,10 +240,7 @@ class ' . $infosController . ' extends Controller
         return new Render([
             \'this\' => $this
         ]);
-    }
-}';
-        $success = file_put_contents($infosPath, $contentM1);
-        return $success;
+    }';
     }
 }
 

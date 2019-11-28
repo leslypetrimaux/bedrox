@@ -137,6 +137,10 @@ class PhpParser
         return $columns;
     }
 
+    /**
+     * @param array|null $properties
+     * @return array|null
+     */
     public function getFKeysFromProperties(?array $properties): ?array
     {
         $columns = array();

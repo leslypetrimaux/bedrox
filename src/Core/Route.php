@@ -25,6 +25,9 @@ class Route
     /** @var string $render */
     public $render;
 
+    /**
+     * Route constructor.
+     */
     public function __construct()
     {
         $this->params = array();
