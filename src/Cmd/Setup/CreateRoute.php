@@ -5,12 +5,16 @@ namespace Bedrox\Cmd\Setup;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateRoute extends Command
 {
     private const MODE_CREATE = 'create';
     private const MODE_UPDATE = 'update';
+
+    private $routerFile;
+    private $routerDir;
 
     /**
      * CLI configuration
@@ -26,6 +30,7 @@ class CreateRoute extends Command
             ->addArgument('uri', InputArgument::REQUIRED, 'The URI of the new Route (ex: /my/custom/path).')
             ->addArgument('controller', InputArgument::REQUIRED, 'The Controller for the new Route (ex: Namespace\Class::function).')
             ->addArgument('mode', InputArgument::OPTIONAL, 'Define the write mode : Create the Controller (create), Update existing Controller (update).', self::MODE_UPDATE)
+            ->addOption('router', 'r', InputOption::VALUE_OPTIONAL, $description = 'Define the router file that must be overwritten.', null)
         ;
     }
 
@@ -47,11 +52,9 @@ class CreateRoute extends Command
         $uri = $input->getArgument('uri');
         $controller = $input->getArgument('controller');
         $mode = $input->getArgument('mode');
+        $this->setRouterFile($input->getOption('router'));
         $success = null;
         $exists = null;
-        $output->writeln('Name : ' . $name . ' (' . $uri . ')');
-        $output->writeln($controller);
-        $output->writeln('====================================================================================================');
         $infosRoute = explode('::', $controller);
         $infosClass = $infosRoute[0];
         $arrayClass = explode('\\', $infosClass);
@@ -59,6 +62,10 @@ class CreateRoute extends Command
         $infosFunction = $infosRoute[1];
         $infosPathRoot = realpath($_SERVER['APP']['ENTITY'] . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
         $infosPath = $infosPathRoot . DIRECTORY_SEPARATOR . $infosClass . '.php';
+        $output->writeln('Name (url)  : ' . $name . ' (' . $uri . ')');
+        $output->writeln('Controller  : ' . $controller);
+        $output->writeln('Router file : ' . $this->getRouterFile());
+        $output->writeln('====================================================================================================');
         $output->writeln('Looking for existing routes and methods... ');
         $output->write('Search for an existing method... ');
         $hasMethod = $this->hasMethod($infosClass, $infosFunction);
@@ -76,6 +83,7 @@ class CreateRoute extends Command
         }
         $exists = ($hasMethod === false && $hasConfig === false) ? false : true;
         if (!$exists) {
+            $this->createNewRouter($this->getRouterFile());
             switch ($mode) {
                 case self::MODE_CREATE:
                     $output->write('Search for an existing Controller... ');
@@ -148,10 +156,9 @@ class CreateRoute extends Command
      */
     private function hasConfig(string $name, string $uri): bool
     {
-        $content = file_get_contents($_SERVER['APP']['ROUTER']);
+        $content = file_exists($this->getRouterFile()) ? file_get_contents($this->getRouterFile()) : '';
         $hasName = preg_match('/' . $name . '/i', $content);
-        $uri = strtr($uri, '/', '\/');
-        $hasUri = preg_match('/' . $uri . '/i', $content);
+        $hasUri = preg_match('/' . strtr($uri, '/', '\/') . '/i', $content);
         return ($hasName === 0 && $hasUri === 0) ? false : true;
     }
 
@@ -178,13 +185,13 @@ class CreateRoute extends Command
      */
     private function createRouteConfig(string $name, string $uri, string $controller): bool
     {
-        $router = file_get_contents($_SERVER['APP']['ROUTER']);
+        $router = file_get_contents($this->getRouterFile());
         $router .= '
 ' . $name . ':
   path: \'' . $uri . '\'
   controller: \'' . $controller . '\'
 ';
-        return file_put_contents($_SERVER['APP']['ROUTER'], $router);
+        return file_put_contents($this->getRouterFile(), $router);
     }
 
     /**
@@ -229,6 +236,10 @@ class ' . $infosController . ' extends Controller
         return file_put_contents($infosPath, $contentM1);
     }
 
+    /**
+     * @param string $infosFunction
+     * @return string
+     */
     private function getMethodCode(string $infosFunction): string
     {
         return '
@@ -241,6 +252,47 @@ class ' . $infosController . ' extends Controller
             \'this\' => $this
         ]);
     }';
+    }
+
+    /**
+     * @return string
+     */
+    private function getRouterFile(): string
+    {
+        return $this->routerFile;
+    }
+
+    /**
+     * @param string|null $routerFile
+     * @return CreateRoute
+     */
+    private function setRouterFile(?string $routerFile): self
+    {
+        $this->routerDir = dirname($_SERVER['APP']['ROUTER']);
+        if (!empty($routerFile)) {
+            $this->routerFile = $this->routerDir . DIRECTORY_SEPARATOR . $routerFile;
+            $routerInfos = pathinfo($this->routerFile);
+            $this->routerDir = $routerInfos['dirname'];
+        } else {
+            $this->routerFile = $_SERVER['APP']['ROUTER'];
+        }
+        return $this;
+    }
+
+    /**
+     * @param string $routerFile
+     */
+    private function createNewRouter(string $routerFile): void
+    {
+        $routerInfos = pathinfo($routerFile);
+        $this->routerDir = $routerInfos['dirname'];
+        if (!file_exists($this->routerDir)) {
+            if (mkdir($this->routerDir)) {
+                if (!file_exists($routerInfos['basename'])) {
+                    file_put_contents($routerFile, '');
+                }
+            }
+        }
     }
 }
 
