@@ -165,17 +165,14 @@ class Response extends Skeleton implements iResponse
      */
     public function terminate(Response $response): void
     {
+        $funConstructor = Controller::CONSTRUCTOR;
         $route = $response->getRoute();
         $render = empty($route->getRender()) ? $this->session->get('APP_FORMAT') : $route->getRender();
         if ( !empty($route) && !empty($route->getUrl()) && !empty($route->getController()) && !empty($route->getFunction()) && !empty($render) ) {
             parent::setResponse($response);
             $controller = $route->getController();
-            $class = new $controller();
-            // TODO: handle Controller's constructor for dependencies injections
-            $funConstructor = Controller::CONSTRUCTOR;
-            if (method_exists($class, $funConstructor)) {
-                $class->$funConstructor();
-            }
+            $class = new $controller;
+            $this->handleDepencies($class, $funConstructor);
             $functionStr = $route->getFunction();
             $diParams = array();
             $uriParams = array();
@@ -223,6 +220,12 @@ class Response extends Skeleton implements iResponse
                                 }
                             }
                             if (!$type && $usefull) {
+                                /** @var Service $tmpClass */
+                                $service = $tmpClass->getSelf();
+                                $isService = (!empty($service) && $service === 'Bedrox\\Core\\Service') ? true : false;
+                                if ($isService) {
+                                    $this->handleDepencies($tmpClass, $funConstructor);
+                                }
                                 array_push($diParams, $tmpClass);
                             }
                         }
@@ -282,5 +285,46 @@ class Response extends Skeleton implements iResponse
     {
         $this->request = $request;
         return $this;
+    }
+
+    /**
+     * @param $class
+     * @param string $funConstructor
+     */
+    private function handleDepencies($class, string $funConstructor): void
+    {
+        // TODO: handle dependencies injections
+        if (method_exists($class, $funConstructor)) {
+            try {
+                $method = (new ReflectionClass($class))->getMethod($funConstructor);
+                $refParams = $method->getParameters();
+                try {
+                    $params = array();
+                    foreach ($refParams as $refParam) {
+                        if ($refParam->getClass() != null) {
+                            $refClass = $refParam->getClass()->getName();
+                        } else {
+                            $refClass = $refParam->getName();
+                        }
+                        $refClass = new $refClass;
+                        $parent = get_parent_class($refClass);
+                        $refClass = ($parent !== false) ? $refClass : new $parent;
+                        $this->handleDepencies($refClass, $funConstructor);
+                        array_push($params, $refClass);
+                    }
+                    call_user_func_array(array($class, $funConstructor), $params);
+                } catch (TypeError $e) {
+                    BedroxException::render(
+                        'ERR_DEPENDENCY_INJECTION_PARAMETERS',
+                        $e->getMessage()
+                    );
+                }
+            } catch (ReflectionException $e) {
+                BedroxException::render(
+                    'ERR_DEPENDENCY_INJECTION_CONSTRUCTOR',
+                    $e->getMessage()
+                );
+            }
+        }
     }
 }

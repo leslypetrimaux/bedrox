@@ -10,11 +10,14 @@ class Service
     public $_em;
     public $_req;
 
+    private $self;
+
     /**
      * Service constructor.
      */
     public function __construct()
     {
+        $this->self = get_class();
         $this->_em = $this->getDoctrine();
         $this->_req = $this->getRequest();
     }
@@ -39,5 +42,13 @@ class Service
         /** @var Response $response */
         $response = Skeleton::$response;
         return $response->getRequest();
+    }
+
+    /**
+     * @return string
+     */
+    public function getSelf(): string
+    {
+        return $this->self;
     }
 }
