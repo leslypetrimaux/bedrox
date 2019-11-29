@@ -307,10 +307,10 @@ class Response extends Skeleton implements iResponse
                             $refClass = $refParam->getName();
                         }
                         $refClass = new $refClass;
-                        $parent = get_parent_class($refClass);
-                        $refClass = ($parent !== false) ? $refClass : new $parent;
-                        $this->handleDepencies($refClass, $funConstructor);
                         array_push($params, $refClass);
+                        $parent = get_parent_class($refClass);
+                        $refClass = ($parent !== false) ? new $parent : $refClass;
+                        $this->handleDepencies($refClass, $funConstructor);
                     }
                     call_user_func_array(array($class, $funConstructor), $params);
                 } catch (TypeError $e) {
