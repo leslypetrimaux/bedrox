@@ -5,7 +5,7 @@ namespace Bedrox\Core;
 
 class Render
 {
-    public $data;
+    private $data;
 
     /**
      * Render constructor.

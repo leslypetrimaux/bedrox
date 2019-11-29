@@ -26,11 +26,11 @@ class Skeleton
      */
     public function __construct(bool $cmd = false)
     {
-        $this->session = new Session();
-        $this->parsing = new Parsing();
+        $this->session = new Session;
+        $this->parsing = new Parsing;
         if ($cmd) {
             $this->cmd = $cmd;
-            self::setResponse(new Response());
+            self::setResponse(new Response);
         }
     }
 

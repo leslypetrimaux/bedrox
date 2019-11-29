@@ -185,7 +185,7 @@ class Response extends Skeleton implements iResponse
                             $type = false;
                             if ($refParam->getClass() != null) {
                                 $refClass = $refParam->getClass()->getName();
-                                $tmpClass = new $refClass();
+                                $tmpClass = new $refClass;
                             } else {
                                 $refClass = $refParam->getName();
                                 $tmpClass = gettype($refClass);

@@ -40,7 +40,7 @@ class Firewall extends Base
             switch ($firewall[self::TYPE]) {
                 case self::NOAUTH:
                 case self::TOKEN:
-                    (new Token())->defineToken($firewall);
+                    (new Token)->defineToken($firewall);
                     break;
                 case self::ENTITY:
                     BedroxException::render(

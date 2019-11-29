@@ -93,7 +93,8 @@ class Router extends Skeleton implements iRouter
     {
         $class = null;
         $cRoute = explode('.', $current);
-        if (empty($format) && !empty(end($cRoute)) && (new Request())->getResponseType(end($cRoute))) {
+        $tmpRequest = new Request;
+        if (empty($format) && !empty(end($cRoute)) && $tmpRequest->getResponseType(end($cRoute))) {
             $format = end($cRoute);
             $current = str_replace(
                 array(
@@ -105,13 +106,13 @@ class Router extends Skeleton implements iRouter
             );
             $this->session->set('URI_FORMAT', $format);
         }
-        if (!empty($format) && !(new Request())->getResponseType($format)) {
+        if (!empty($format) && !$tmpRequest->getResponseType($format)) {
             BedroxException::render(
                 'ERR_URI_FORMAT',
                 'Error while trying to retrieve your page format. Please check your configuration.'
             );
         }
-        $route = new Route();
+        $route = new Route;
         $firewall = $this->firewall->getFirewall();
         foreach ($this->routes as $name => $routes) {
             $path = $routes['path'];
@@ -192,7 +193,7 @@ class Router extends Skeleton implements iRouter
                                         $criteria = str_replace('}', '', $criteria);
                                         if ($repo === $keyValue) {
                                             $class = '\\App\\Entity\\' . ucfirst($repo);
-                                            $em = (new Controller())->getDoctrine();
+                                            $em = (new Controller)->getDoctrine();
                                             if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
                                                 if ($em->getRepository($class) !== null) {
                                                     $route->setParams($em->getRepository($class)->findOneBy(array(
@@ -205,8 +206,9 @@ class Router extends Skeleton implements iRouter
                                                     );
                                                 }
                                             } else {
-                                                if ((new EntityManager())->getRepo($repo) !== null) {
-                                                    $route->setParams((new EntityManager())->getRepo($repo)->find($aCurrent[$key]));
+                                                $entityManager = new EntityManager;
+                                                if ($entityManager->getRepo($repo) !== null) {
+                                                    $route->setParams($entityManager->getRepo($repo)->find($aCurrent[$key]));
                                                 } else {
                                                     BedroxException::render(
                                                         'ERR_EDR_PARAMS',

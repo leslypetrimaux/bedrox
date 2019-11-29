@@ -109,7 +109,7 @@ class Env extends Skeleton
      *
      * @param string $app
      */
-    public function defineApp(string $app): void
+    private function defineApp(string $app): void
     {
         $_SERVER['APP']['NAME'] = $app;
         $this->session->set('APP_NAME', $app);
@@ -121,7 +121,7 @@ class Env extends Skeleton
      *
      * @param string $env
      */
-    public function defineEnv(string $env): void
+    private function defineEnv(string $env): void
     {
         $_SERVER['APP']['ENV'] = $env;
         $_SERVER['APP']['DEBUG'] = $env !== 'prod';
@@ -134,7 +134,7 @@ class Env extends Skeleton
      *
      * @param string $version
      */
-    public function defineVersion(string $version): void
+    private function defineVersion(string $version): void
     {
         $_SERVER['APP']['VERSION'] = $version;
         $this->session->set('APP_VERSION', $version);
@@ -146,7 +146,7 @@ class Env extends Skeleton
      * @param string $type
      * @param string $file
      */
-    public function defineFile(string $type, string $file): void
+    private function defineFile(string $type, string $file): void
     {
         if (!empty($type) && !empty($file)) {
             $_SERVER['APP'][$type] = realpath($_SERVER['DOCUMENT_ROOT'] . $file);
@@ -164,7 +164,7 @@ class Env extends Skeleton
     /**
      * @param string|null $location
      */
-    public function defineEntityLocation(?string $location): void
+    private function defineEntityLocation(?string $location): void
     {
         $realpath = !empty($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] . '/../' . $location : $location;
         $path = realpath($realpath);
@@ -186,7 +186,7 @@ class Env extends Skeleton
      * @param string $format
      * @param string $encode
      */
-    public function outputFormat(string $format, string $encode): void
+    private function outputFormat(string $format, string $encode): void
     {
         $_SERVER['APP']['ENCODAGE'] = $encode;
         $_SERVER['APP']['FORMAT'] = $format;
@@ -199,7 +199,7 @@ class Env extends Skeleton
      *
      * @param array $database
      */
-    public function defineSGBD(array $database): void
+    private function defineSGBD(array $database): void
     {
         try {
             if (!empty($database) && is_array($database)) {

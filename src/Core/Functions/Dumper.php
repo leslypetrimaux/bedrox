@@ -49,7 +49,7 @@ class Dumper extends Skeleton
                 $format = $_SESSION['APP_FORMAT'];
             }
         }
-        exit((new Response())->renderView($format, new Render(), null));
+        exit((new Response)->renderView($format, new Render(), null));
     }
 
     /**

@@ -12,7 +12,7 @@ class BedroxException extends Exception
     {
         $format = !empty($format) ? $format : $_SERVER['APP']['FORMAT'];
         http_response_code($responseCode);
-        exit((new Response())->renderView($format, new Render(), array(
+        exit((new Response)->renderView($format, new Render(), array(
             'code' => $tag,
             'message' => $message
         )));

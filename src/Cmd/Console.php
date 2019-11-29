@@ -27,7 +27,7 @@ class Console
         (new Env(true))->load(Env::FILE_ENV_ROOT);
         // Loading Doctrine Console Application
         try {
-            $em = (new Controller())->getDoctrine();
+            $em = (new Controller)->getDoctrine();
             $con = $em->getConnection();
             $con->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
             $helperSet = new HelperSet(array(

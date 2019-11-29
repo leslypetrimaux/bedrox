@@ -25,7 +25,7 @@ class Request implements iRequest
      */
     public static function createFromGlobals(): self
     {
-        $request = new self();
+        $request = new self;
         try {
             $request->get = !empty($_GET) ? self::xssFilter($_GET) : null;
             $request->post = !empty($_POST) ? self::xssFilter($_POST) : null;
@@ -117,7 +117,7 @@ class Request implements iRequest
             $request->post = !empty($request->post) ? $request->post : null;
             $request->files = !empty($request->files) ? $request->files : null;
             /** @var Headers headers */
-            $request->headers = !empty($request->headers) ? $request->headers : null;
+            $request->headers = !empty($request->getHeaders()) ? $request->getHeaders() : null;
             $response->setRoute($request->getRoute());
             if (empty($request->headers->getResponseType())) {
                 $request->headers->setResponseType($request->route->getRender());

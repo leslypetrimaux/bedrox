@@ -31,7 +31,7 @@ class Controller extends Skeleton
      */
     public function getEntityManager(): EDR
     {
-        return new EDR();
+        return new EDR;
     }
 
     /**

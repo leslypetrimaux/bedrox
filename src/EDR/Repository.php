@@ -19,7 +19,7 @@ class Repository implements iRepository
      */
     public function __construct(string $table)
     {
-        $this->con = (new EDR())->setDriver(!empty($_SERVER['APP']['SGBD']['DRIVER']) ? $_SERVER['APP']['SGBD']['DRIVER'] : null);
+        $this->con = (new EDR)->setDriver(!empty($_SERVER['APP']['SGBD']['DRIVER']) ? $_SERVER['APP']['SGBD']['DRIVER'] : null);
         $this->table = $table;
     }
 
