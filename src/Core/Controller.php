@@ -70,11 +70,13 @@ class Controller extends Skeleton
     }
 
     /**
-     * @param array|null $render
+     * @param array|null $data
+     * @param string|null $format
+     * @param bool $force
      * @return Render
      */
-    public function render(?array $render = array()): Render
+    public function render(?array $data = array(), ?string $format = null, bool $force = false): Render
     {
-        return new Render($render);
+        return new Render($data, $format, $force);
     }
 }

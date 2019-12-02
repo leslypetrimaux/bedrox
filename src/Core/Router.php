@@ -52,29 +52,35 @@ class Router extends Skeleton implements iRouter
         }
     }
 
+    /**
+     * @param array $router
+     * @return array|null
+     */
     protected function parseRouter(array $router): ?array
     {
         foreach ($router as $route) {
             $subPath = $route[self::ROUTE_PATH];
             foreach ($route as $key => $value) {
                 if ($key === self::REQUIRE_ROUTER) {
-                    $valuePath = realpath(dirname($_SERVER['APP'][Env::ROUTER]) . DIRECTORY_SEPARATOR . $value . '.yaml');
-                    $subRouter = YamlParser::YAMLLoad($valuePath);
-                    foreach ($subRouter as $subKey => $subValue) {
-                        foreach ($subValue as $subRouteKey => $subRouteValue) {
-                            if ($subRouteKey === self::ROUTE_PATH) {
-                                $subValue[$subRouteKey] = $subPath . $subRouteValue;
-                            }
-                            if ($subRouteKey === self::REQUIRE_ROUTER) {
-                                // TODO: handle multiple imports
-                                BedroxException::render(
-                                    'ERR_IMPORT_ROUTER',
-                                    'Parsing recursivly router\'s files is not supported for more than 1 level for now.'
-                                );
-                            }
-                        }
-                        $router[$subKey] = $subValue;
-                    }
+                    $router = $this->parseRecursiveRouter($router, $subPath, $value);
+                }
+            }
+        }
+        return $router;
+    }
+
+    protected function parseRecursiveRouter(array $router, string $subPath, string $value): ?array
+    {
+        $valuePath = realpath(dirname($_SERVER['APP'][Env::ROUTER]) . DIRECTORY_SEPARATOR . $value . '.yaml');
+        $subRouter = YamlParser::YAMLLoad($valuePath);
+        foreach ($subRouter as $subKey => $subValue) {
+            foreach ($subValue as $subRouteKey => $subRouteValue) {
+                if ($subRouteKey === self::ROUTE_PATH) {
+                    $subValue[$subRouteKey] = $subPath . $subRouteValue;
+                }
+                $router[$subKey] = $subValue;
+                if ($subRouteKey === self::REQUIRE_ROUTER) {
+                    $router = $this->parseRecursiveRouter($router, $subValue[self::ROUTE_PATH], $subRouteValue);
                 }
             }
         }
@@ -115,7 +121,7 @@ class Router extends Skeleton implements iRouter
         $route = new Route;
         $firewall = $this->firewall->getFirewall();
         foreach ($this->routes as $name => $routes) {
-            $path = $routes['path'];
+            $path = $routes[self::ROUTE_PATH];
             $keys = array();
             if ((!empty($routes['params']) && is_array($routes['params'])) || (!empty($routes['entity']) && is_array($routes['entity']))) {
                 $aCurrent = explode('/', $current);

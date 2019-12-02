@@ -9,6 +9,8 @@ Les dossiers d'un projet se présentent de la manière suivante :
 ```yaml
 mon_dossier:
   config: # configurations de l'application
+    routes:
+      users.yaml
     env.yaml
     routes.yaml
     security.yaml

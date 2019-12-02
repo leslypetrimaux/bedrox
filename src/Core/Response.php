@@ -42,6 +42,9 @@ class Response extends Skeleton implements iResponse
      */
     public function renderView(string $format, Render $data, ?array $error): ?string
     {
+        $renderFormat = $data->getFormat();
+        $renderForce = $data->getForce();
+        $format = (($format !== $renderFormat) && ($renderForce !== false)) ? $renderFormat : $format;
         switch ($format) {
             case self::FORMAT_JSON:
                 return $this->renderJSON($data, $error);
@@ -172,7 +175,7 @@ class Response extends Skeleton implements iResponse
             parent::setResponse($response);
             $controller = $route->getController();
             $class = new $controller;
-            $this->handleDepencies($class, $funConstructor);
+            $this->handleDependencies($class, $funConstructor);
             $functionStr = $route->getFunction();
             $diParams = array();
             $uriParams = array();
@@ -224,7 +227,7 @@ class Response extends Skeleton implements iResponse
                                 $service = $tmpClass->getSelf();
                                 $isService = (!empty($service) && $service === 'Bedrox\\Core\\Service') ? true : false;
                                 if ($isService) {
-                                    $this->handleDepencies($tmpClass, $funConstructor);
+                                    $this->handleDependencies($tmpClass, $funConstructor);
                                 }
                                 array_push($diParams, $tmpClass);
                             }
@@ -291,7 +294,7 @@ class Response extends Skeleton implements iResponse
      * @param $class
      * @param string $funConstructor
      */
-    private function handleDepencies($class, string $funConstructor): void
+    private function handleDependencies($class, string $funConstructor): void
     {
         // TODO: handle dependencies injections
         if (method_exists($class, $funConstructor)) {
@@ -300,6 +303,7 @@ class Response extends Skeleton implements iResponse
                 $refParams = $method->getParameters();
                 try {
                     $params = array();
+                    $refClass = null;
                     foreach ($refParams as $refParam) {
                         if ($refParam->getClass() != null) {
                             $refClass = $refParam->getClass()->getName();
@@ -309,8 +313,11 @@ class Response extends Skeleton implements iResponse
                         $refClass = new $refClass;
                         array_push($params, $refClass);
                         $parent = get_parent_class($refClass);
-                        $refClass = ($parent !== false) ? new $parent : $refClass;
-                        $this->handleDepencies($refClass, $funConstructor);
+                        if ($parent !== false) {
+                            $refParent = new $parent;
+                            $this->handleDependencies($refParent, $funConstructor);
+                        }
+                        $this->handleDependencies($refClass, $funConstructor);
                     }
                     call_user_func_array(array($class, $funConstructor), $params);
                 } catch (TypeError $e) {
