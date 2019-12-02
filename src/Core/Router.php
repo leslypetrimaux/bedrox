@@ -118,141 +118,177 @@ class Router extends Skeleton implements iRouter
                 'Error while trying to retrieve your page format. Please check your configuration.'
             );
         }
-        $route = new Route;
-        $firewall = $this->firewall->getFirewall();
-        foreach ($this->routes as $name => $routes) {
-            $path = $routes[self::ROUTE_PATH];
-            $keys = array();
-            if ((!empty($routes['params']) && is_array($routes['params'])) || (!empty($routes['entity']) && is_array($routes['entity']))) {
-                $aCurrent = explode('/', $current);
-                $aPath = explode('/', $path);
-                if (!empty($routes['entity'])) {
-                    foreach ($routes['entity'] as $param) {
+        $route = $this->getRouteFromUri($current);
+        $route->setRender(!empty($format) ? $format : $_SERVER['APP']['FORMAT']);
+        return $route;
+    }
+
+    /**
+     * @param string $name
+     * @param array $data
+     * @param Route $route
+     * @return Route|null
+     */
+    private function setCurrentRoute(string $name, array $data, Route $route): ?Route
+    {
+        $controller = explode('::', $data['controller']);
+        $route->setName($name);
+        $route->setUrl($data['path']);
+        $route->setController($controller[0]);
+        $route->setFunction($controller[1]);
+        if ($this->firewall->isNotAuthorized($route->getName(), $this->firewall->getFirewall())) {
+            BedroxException::render(
+                'ERR_URI_DENIED_ACCESS',
+                'You don\'t have access to this section. Please check your token or URI.',
+                403
+            );
+        }
+        return $route;
+    }
+
+    /**
+     * @param string $current
+     * @return Route|null
+     * @throws Exception
+     */
+    private function getRouteFromUri(string $current): ?Route
+    {
+        $obj = new Route;
+        foreach ($this->routes as $name => $route) {
+            $uriFullPath = $current === $route['path'];
+            $uriParams = !empty($route['params']) ? true : false;
+            $uriController = !empty($route['controller']) ? true : false;
+            if ( $uriFullPath && !$uriParams && $uriController ) {
+                $obj = $this->setCurrentRoute($name, $route, $obj);
+            } else {
+                $currentArray = explode('/', $current);
+                $currentCount = count($currentArray);
+                $pathArray = explode('/', $route['path']);
+                $pathCount = count($pathArray);
+                $keys = array();
+                if (!empty($route['entity'])) {
+                    foreach ($route['entity'] as $param) {
                         $keys[] = $param;
                     }
                 }
-                if (!empty($routes['params'])) {
-                    foreach ($routes['params'] as $param) {
+                if (!empty($route['params'])) {
+                    foreach ($route['params'] as $param) {
                         $keys[] = $param;
                     }
                 }
-                if (!empty($keys) && count($aCurrent)===count($aPath)) {
-                    foreach ($aCurrent as $key => $value) {
-                        if ($aCurrent[$key]!==$aPath[$key]) {
-                            foreach ($keys as $keyKey => $keyValue) {
-                                switch ($aPath[$key]) {
-                                    // PARAMS: string
-                                    case (preg_match(self::ARG_STRING, $aPath[$key]) ? true : false):
-                                        if (is_string($aCurrent[$key])) {
-                                            $route->setParams(strval($aCurrent[$key]));
-                                        } else {
-                                            BedroxException::render(
-                                                'ERR_URI_PARAM_STRING',
-                                                'The send parameter is not a string. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
-                                            );
-                                        }
-                                        break;
-                                    // PARAMS: int
-                                    case (preg_match(self::ARG_NUM, $aPath[$key]) ? true : false):
-                                        if (is_int(intval($aCurrent[$key]))) {
-                                            $route->setParams(intval($aCurrent[$key]));
-                                        } else {
-                                            BedroxException::render(
-                                                'ERR_URI_PARAM_INT',
-                                                'The send parameter is not a number. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
-                                            );
-                                        }
-                                        break;
-                                    // PARAMS: date
-                                    case (preg_match(self::ARG_DATE, $aPath[$key]) ? true : false):
-                                        if (strtotime($aCurrent[$key])) {
-                                            $route->setParams(new DateTime($aCurrent[$key]));
-                                        } else {
-                                            BedroxException::render(
-                                                'ERR_URI_PARAM_DATE',
-                                                'The send parameter is not a date. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
-                                            );
-                                        }
-                                        break;
-                                    // PARAMS: bool
-                                    case (preg_match(self::ARG_BOOL, $aPath[$key]) ? true : false):
-                                        switch ($aCurrent[$key]) {
-                                            case 'true':
-                                            case '1':
-                                                $route->setParams(true);
-                                                break;
-                                            case 'false':
-                                            case '0':
-                                                $route->setParams(false);
-                                                break;
-                                            default:
-                                                BedroxException::render(
-                                                    'ERR_URI_PARAM_BOOL',
-                                                    'The send parameter is not a boolean. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
-                                                );
-                                        }
-                                        break;
-                                    // PARAMS: entity
-                                    case (preg_match('/{(.*)*}$/', $aPath[$key]) ? true : false):
-                                        $repo = preg_replace('/{' . $keyValue . '(.*)?$/', $keyValue, $aPath[$key]);
-                                        $criteria = str_replace('{' . $keyValue . '.', '', $aPath[$key]);
-                                        $criteria = str_replace('}', '', $criteria);
-                                        if ($repo === $keyValue) {
-                                            $class = '\\App\\Entity\\' . ucfirst($repo);
-                                            $em = (new Controller)->getDoctrine();
-                                            if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
-                                                if ($em->getRepository($class) !== null) {
-                                                    $route->setParams($em->getRepository($class)->findOneBy(array(
-                                                        $criteria => $aCurrent[$key]
-                                                    )));
-                                                } else {
-                                                    BedroxException::render(
-                                                        'ERR_ORM_PARAMS',
-                                                        'Error while trying to access the entity. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
-                                                    );
-                                                }
-                                            } else {
-                                                $entityManager = new EntityManager;
-                                                if ($entityManager->getRepo($repo) !== null) {
-                                                    $route->setParams($entityManager->getRepo($repo)->find($aCurrent[$key]));
-                                                } else {
-                                                    BedroxException::render(
-                                                        'ERR_EDR_PARAMS',
-                                                        'Error while trying to access the entity. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
-                                                    );
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    default:
-                                        if ($aCurrent[$key] !== $aPath[$key]) {
-                                            BedroxException::render(
-                                                'ERR_URI_PARAMS',
-                                                'The URI parameters contains error. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
-                                            );
-                                        }
-                                        break;
-                                }
-                            }
-                            $current = str_replace($aCurrent[$key], $aPath[$key], $current);
-                        }
-                    }
+                if (!empty($keys) && $currentCount===$pathCount) {
+                    $obj = $this->getRouteFromParams($current, $currentArray, $pathArray, $keys, $obj);
+                    $obj = $this->setCurrentRoute($name, $route, $obj);
                 }
             }
-            if ( $current === $path && !empty($routes['controller']) ) {
-                $controller = explode('::', $routes['controller']);
-                $route->setName($name);
-                $route->setUrl($path);
-                $route->setController($controller[0]);
-                $route->setFunction($controller[1]);
-                $route->setRender(!empty($format) ? $format : $_SERVER['APP']['FORMAT']);
-                if ($this->firewall->isNotAuthorized($route->getName(), $firewall)) {
-                    BedroxException::render(
-                        'ERR_URI_DENIED_ACCESS',
-                        'You don\'t have access to this section. Please check your token or URI.',
-                        403
-                    );
+        }
+        return $obj;
+    }
+
+    /**
+     * @param string $current
+     * @param array $aCurrent
+     * @param array $aPath
+     * @param array $keys
+     * @param Route $route
+     * @return Route|null
+     * @throws Exception
+     */
+    private function getRouteFromParams(string $current, array $aCurrent, array $aPath, array $keys, Route $route): ?Route
+    {
+        foreach ($aCurrent as $key => $value) {
+            if ($aCurrent[$key]!==$aPath[$key]) {
+                foreach ($keys as $keyKey => $keyValue) {
+                    switch ($aPath[$key]) {
+                        // PARAMS: string
+                        case (preg_match(self::ARG_STRING, $aPath[$key]) ? true : false):
+                            if (is_string($aCurrent[$key])) {
+                                $route->setParams(strval($aCurrent[$key]));
+                            } else {
+                                BedroxException::render(
+                                    'ERR_URI_PARAM_STRING',
+                                    'The send parameter is not a string. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                );
+                            }
+                            break;
+                        // PARAMS: int
+                        case (preg_match(self::ARG_NUM, $aPath[$key]) ? true : false):
+                            if (is_int(intval($aCurrent[$key]))) {
+                                $route->setParams(intval($aCurrent[$key]));
+                            } else {
+                                BedroxException::render(
+                                    'ERR_URI_PARAM_INT',
+                                    'The send parameter is not a number. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                );
+                            }
+                            break;
+                        // PARAMS: date
+                        case (preg_match(self::ARG_DATE, $aPath[$key]) ? true : false):
+                            if (strtotime($aCurrent[$key])) {
+                                $route->setParams(new DateTime($aCurrent[$key]));
+                            } else {
+                                BedroxException::render(
+                                    'ERR_URI_PARAM_DATE',
+                                    'The send parameter is not a date. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                );
+                            }
+                            break;
+                        // PARAMS: bool
+                        case (preg_match(self::ARG_BOOL, $aPath[$key]) ? true : false):
+                            switch ($aCurrent[$key]) {
+                                case 'true':
+                                case '1':
+                                    $route->setParams(true);
+                                    break;
+                                case 'false':
+                                case '0':
+                                    $route->setParams(false);
+                                    break;
+                                default:
+                                    BedroxException::render(
+                                        'ERR_URI_PARAM_BOOL',
+                                        'The send parameter is not a boolean. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                    );
+                            }
+                            break;
+                        // PARAMS: entity
+                        case (preg_match('/{(.*)*}$/', $aPath[$key]) ? true : false):
+                            $repo = preg_replace('/{' . $keyValue . '(.*)?$/', $keyValue, $aPath[$key]);
+                            $criteria = str_replace('{' . $keyValue . '.', '', $aPath[$key]);
+                            $criteria = str_replace('}', '', $criteria);
+                            if ($repo === $keyValue) {
+                                $class = '\\App\\Entity\\' . ucfirst($repo);
+                                $em = (new Controller)->getDoctrine();
+                                if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
+                                    if ($em->getRepository($class) !== null) {
+                                        $route->setParams($em->getRepository($class)->findOneBy(array(
+                                            $criteria => $aCurrent[$key]
+                                        )));
+                                    } else {
+                                        BedroxException::render(
+                                            'ERR_ORM_PARAMS',
+                                            'Error while trying to access the entity. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                        );
+                                    }
+                                } else {
+                                    $entityManager = new EntityManager;
+                                    if ($entityManager->getRepo($repo) !== null) {
+                                        $route->setParams($entityManager->getRepo($repo)->find($aCurrent[$key]));
+                                    } else {
+                                        BedroxException::render(
+                                            'ERR_EDR_PARAMS',
+                                            'Error while trying to access the entity. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                        );
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            // TODO: handle unexpected parameters
+                            break;
+                    }
                 }
+                $current = str_replace($aCurrent[$key], $aPath[$key], $current);
             }
         }
         return $route;
