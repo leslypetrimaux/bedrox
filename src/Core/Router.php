@@ -18,6 +18,7 @@ class Router extends Skeleton implements iRouter
     protected $routes;
 
     public const ROUTE_PATH = 'path';
+    public const ROUTE_CONTROLLER = 'controller';
     public const REQUIRE_ROUTER = 'require';
 
     public const ARG_STRING = '[string]';
@@ -58,15 +59,19 @@ class Router extends Skeleton implements iRouter
      */
     protected function parseRouter(array $router): ?array
     {
+        $routes = array();
         foreach ($router as $route) {
             $subPath = $route[self::ROUTE_PATH];
             foreach ($route as $key => $value) {
                 if ($key === self::REQUIRE_ROUTER) {
-                    $router = $this->parseRecursiveRouter($router, $subPath, $value);
+                    $routes = $this->parseRecursiveRouter($routes, $subPath, $value);
+                }
+                if ($key === self::ROUTE_CONTROLLER) {
+                    array_push($routes, $route);
                 }
             }
         }
-        return $router;
+        return $routes;
     }
 
     protected function parseRecursiveRouter(array $router, string $subPath, string $value): ?array
@@ -78,7 +83,9 @@ class Router extends Skeleton implements iRouter
                 if ($subRouteKey === self::ROUTE_PATH) {
                     $subValue[$subRouteKey] = $subPath . $subRouteValue;
                 }
-                $router[$subKey] = $subValue;
+                if ($subRouteKey === self::ROUTE_CONTROLLER) {
+                    $router[$subKey] = $subValue;
+                }
                 if ($subRouteKey === self::REQUIRE_ROUTER) {
                     $router = $this->parseRecursiveRouter($router, $subValue[self::ROUTE_PATH], $subRouteValue);
                 }
