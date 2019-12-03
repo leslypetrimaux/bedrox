@@ -18,6 +18,8 @@ class Router extends Skeleton implements iRouter
     protected $routes;
 
     public const ROUTE_PATH = 'path';
+    public const ROUTE_PARAMS = 'params';
+    public const ROUTE_ENTITY = 'entity';
     public const ROUTE_CONTROLLER = 'controller';
     public const REQUIRE_ROUTER = 'require';
 
@@ -74,6 +76,12 @@ class Router extends Skeleton implements iRouter
         return $routes;
     }
 
+    /**
+     * @param array $router
+     * @param string $subPath
+     * @param string $value
+     * @return array|null
+     */
     protected function parseRecursiveRouter(array $router, string $subPath, string $value): ?array
     {
         $valuePath = realpath(dirname($_SERVER['APP'][Env::ROUTER]) . DIRECTORY_SEPARATOR . $value . '.yaml');
@@ -100,33 +108,40 @@ class Router extends Skeleton implements iRouter
      * @param string $current
      * @param string|null $format
      * @return Route|null
-     * @throws Exception
      */
     public function getCurrentRoute(string $current, ?string $format = null): ?Route
     {
+        $route = null;
         $class = null;
         $cRoute = explode('.', $current);
         $tmpRequest = new Request;
-        if (empty($format) && !empty(end($cRoute)) && $tmpRequest->getResponseType(end($cRoute))) {
-            $format = end($cRoute);
-            $current = str_replace(
-                array(
-                    '.' . Response::FORMAT_XML,
-                    '.' . Response::FORMAT_JSON
-                ),
-                '',
-                $current
-            );
-            $this->session->set('URI_FORMAT', $format);
-        }
-        if (!empty($format) && !$tmpRequest->getResponseType($format)) {
+        try {
+            if (empty($format) && !empty(end($cRoute)) && $tmpRequest->getResponseType(end($cRoute))) {
+                $format = end($cRoute);
+                $current = str_replace(
+                    array(
+                        '.' . Response::FORMAT_XML,
+                        '.' . Response::FORMAT_JSON
+                    ),
+                    '',
+                    $current
+                );
+                $this->session->set('URI_FORMAT', $format);
+            }
+            if (!empty($format) && !$tmpRequest->getResponseType($format)) {
+                BedroxException::render(
+                    'ERR_URI_FORMAT',
+                    'Error while trying to retrieve your page format. Please check your configuration.'
+                );
+            }
+            $route = $this->getRouteFromUri($current);
+            $route->setRender(!empty($format) ? $format : $_SERVER['APP']['FORMAT']);
+        } catch (Exception $e) {
             BedroxException::render(
-                'ERR_URI_FORMAT',
-                'Error while trying to retrieve your page format. Please check your configuration.'
+                'ERR_ROUTER_PARSING_URI',
+                $e->getMessage()
             );
         }
-        $route = $this->getRouteFromUri($current);
-        $route->setRender(!empty($format) ? $format : $_SERVER['APP']['FORMAT']);
         return $route;
     }
 
@@ -138,9 +153,9 @@ class Router extends Skeleton implements iRouter
      */
     private function setCurrentRoute(string $name, array $data, Route $route): ?Route
     {
-        $controller = explode('::', $data['controller']);
+        $controller = explode('::', $data[self::ROUTE_CONTROLLER]);
         $route->setName($name);
-        $route->setUrl($data['path']);
+        $route->setUrl($data[self::ROUTE_PATH]);
         $route->setController($controller[0]);
         $route->setFunction($controller[1]);
         if ($this->firewall->isNotAuthorized($route->getName(), $this->firewall->getFirewall())) {
@@ -162,24 +177,24 @@ class Router extends Skeleton implements iRouter
     {
         $obj = new Route;
         foreach ($this->routes as $name => $route) {
-            $uriFullPath = $current === $route['path'];
-            $uriParams = !empty($route['params']) ? true : false;
-            $uriController = !empty($route['controller']) ? true : false;
+            $uriFullPath = $current === $route[self::ROUTE_PATH];
+            $uriParams = !empty($route[self::ROUTE_PARAMS]) ? true : false;
+            $uriController = !empty($route[self::ROUTE_CONTROLLER]) ? true : false;
             if ( $uriFullPath && !$uriParams && $uriController ) {
                 $obj = $this->setCurrentRoute($name, $route, $obj);
             } else {
                 $currentArray = explode('/', $current);
                 $currentCount = count($currentArray);
-                $pathArray = explode('/', $route['path']);
+                $pathArray = explode('/', $route[self::ROUTE_PATH]);
                 $pathCount = count($pathArray);
                 $keys = array();
-                if (!empty($route['entity'])) {
-                    foreach ($route['entity'] as $param) {
+                if (!empty($route[self::ROUTE_ENTITY])) {
+                    foreach ($route[self::ROUTE_ENTITY] as $param) {
                         $keys[] = $param;
                     }
                 }
-                if (!empty($route['params'])) {
-                    foreach ($route['params'] as $param) {
+                if (!empty($route[self::ROUTE_PARAMS])) {
+                    foreach ($route[self::ROUTE_PARAMS] as $param) {
                         $keys[] = $param;
                     }
                 }
@@ -199,7 +214,6 @@ class Router extends Skeleton implements iRouter
      * @param array $keys
      * @param Route $route
      * @return Route|null
-     * @throws Exception
      */
     private function getRouteFromParams(string $current, array $aCurrent, array $aPath, array $keys, Route $route): ?Route
     {
@@ -232,7 +246,14 @@ class Router extends Skeleton implements iRouter
                         // PARAMS: date
                         case (preg_match(self::ARG_DATE, $aPath[$key]) ? true : false):
                             if (strtotime($aCurrent[$key])) {
-                                $route->setParams(new DateTime($aCurrent[$key]));
+                                try {
+                                    $route->setParams(new DateTime($aCurrent[$key]));
+                                } catch (Exception $e) {
+                                    BedroxException::render(
+                                        'ERR_URI_DEFINING_DATE',
+                                        $e->getMessage()
+                                    );
+                                }
                             } else {
                                 BedroxException::render(
                                     'ERR_URI_PARAM_DATE',
