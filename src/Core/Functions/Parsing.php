@@ -3,6 +3,7 @@
 namespace Bedrox\Core\Functions;
 
 use App\Kernel;
+use Bedrox\Core\Env;
 use Bedrox\Core\Exceptions\BedroxException;
 use RuntimeException;
 use SimpleXMLElement;
@@ -118,7 +119,7 @@ class Parsing
      */
     public function parseAppFormat(): ?string
     {
-        return $_SERVER['APP']['FORMAT'] ?? Kernel::DEFAULT_FORMAT;
+        return $_SERVER[Env::APP][Env::FORMAT] ?? Kernel::DEFAULT_FORMAT;
     }
 
     /**
@@ -126,6 +127,6 @@ class Parsing
      */
     public function parseAppEncode(): ?string
     {
-        return $_SERVER['APP']['ENCODAGE'] ?? Kernel::DEFAULT_ENCODE;
+        return $_SERVER[Env::APP][Env::ENCODE] ?? Kernel::DEFAULT_ENCODE;
     }
 }

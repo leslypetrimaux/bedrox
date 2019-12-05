@@ -21,7 +21,7 @@ class Token extends Base
         } else {
             BedroxException::render(
                 'ERR_TOKEN_GEN',
-                'Unable to generate your application token. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".'
+                'Unable to generate your application token. Please check "' . $_SERVER[Env::APP][Env::SECURITY] . '".'
             );
         }
     }

@@ -37,15 +37,15 @@ class Router extends Skeleton implements iRouter
         try {
             parent::__construct();
             $this->firewall = new Firewall();
-            if (file_exists($_SERVER['APP'][Env::ROUTER])) {
-                $router = YamlParser::YAMLLoad($_SERVER['APP'][Env::ROUTER]);
+            if (file_exists($_SERVER[Env::APP][Env::ROUTER])) {
+                $router = YamlParser::YAMLLoad($_SERVER[Env::APP][Env::ROUTER]);
                 if (is_array($router)) {
                     $this->routes = $this->parseRouter($router);
                 } else {
-                    throw new RuntimeException('Unable to access your router. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".');
+                    throw new RuntimeException('Unable to access your router. Please check "' . $_SERVER[Env::APP][Env::ROUTER] . '".');
                 }
             } else {
-                throw new RuntimeException('An error occurs while opening your router. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".');
+                throw new RuntimeException('An error occurs while opening your router. Please check "' . $_SERVER[Env::APP][Env::ROUTER] . '".');
             }
         } catch (RuntimeException $e) {
             BedroxException::render(
@@ -84,7 +84,7 @@ class Router extends Skeleton implements iRouter
      */
     protected function parseRecursiveRouter(array $router, string $subPath, string $value): ?array
     {
-        $valuePath = realpath(dirname($_SERVER['APP'][Env::ROUTER]) . DIRECTORY_SEPARATOR . $value . '.yaml');
+        $valuePath = realpath(dirname($_SERVER[Env::APP][Env::ROUTER]) . DIRECTORY_SEPARATOR . $value . '.yaml');
         $subRouter = YamlParser::YAMLLoad($valuePath);
         foreach ($subRouter as $subKey => $subValue) {
             foreach ($subValue as $subRouteKey => $subRouteValue) {
@@ -135,7 +135,7 @@ class Router extends Skeleton implements iRouter
                 );
             }
             $route = $this->getRouteFromUri($current);
-            $route->setRender(!empty($format) ? $format : $_SERVER['APP']['FORMAT']);
+            $route->setRender(!empty($format) ? $format : $_SERVER[Env::APP][Env::FORMAT]);
         } catch (Exception $e) {
             BedroxException::render(
                 'ERR_ROUTER_PARSING_URI',
@@ -228,7 +228,7 @@ class Router extends Skeleton implements iRouter
                             } else {
                                 BedroxException::render(
                                     'ERR_URI_PARAM_STRING',
-                                    'The send parameter is not a string. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                    'The send parameter is not a string. Please check "' . $_SERVER[Env::APP][Env::ROUTER] . '".'
                                 );
                             }
                             break;
@@ -239,7 +239,7 @@ class Router extends Skeleton implements iRouter
                             } else {
                                 BedroxException::render(
                                     'ERR_URI_PARAM_INT',
-                                    'The send parameter is not a number. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                    'The send parameter is not a number. Please check "' . $_SERVER[Env::APP][Env::ROUTER] . '".'
                                 );
                             }
                             break;
@@ -257,7 +257,7 @@ class Router extends Skeleton implements iRouter
                             } else {
                                 BedroxException::render(
                                     'ERR_URI_PARAM_DATE',
-                                    'The send parameter is not a date. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                    'The send parameter is not a date. Please check "' . $_SERVER[Env::APP][Env::ROUTER] . '".'
                                 );
                             }
                             break;
@@ -275,7 +275,7 @@ class Router extends Skeleton implements iRouter
                                 default:
                                     BedroxException::render(
                                         'ERR_URI_PARAM_BOOL',
-                                        'The send parameter is not a boolean. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                        'The send parameter is not a boolean. Please check "' . $_SERVER[Env::APP][Env::ROUTER] . '".'
                                     );
                             }
                             break;
@@ -287,7 +287,7 @@ class Router extends Skeleton implements iRouter
                             if ($repo === $keyValue) {
                                 $class = '\\App\\Entity\\' . ucfirst($repo);
                                 $em = (new Controller)->getDoctrine();
-                                if ( !empty($_SERVER['APP']['SGBD']['type']) && $_SERVER['APP']['SGBD']['type'] === Env::DB_DOCTRINE ) {
+                                if ( !empty($_SERVER[Env::APP][Env::SGBD]['type']) && $_SERVER[Env::APP][Env::SGBD]['type'] === Env::DB_DOCTRINE ) {
                                     if ($em->getRepository($class) !== null) {
                                         $route->setParams($em->getRepository($class)->findOneBy(array(
                                             $criteria => $aCurrent[$key]
@@ -295,7 +295,7 @@ class Router extends Skeleton implements iRouter
                                     } else {
                                         BedroxException::render(
                                             'ERR_ORM_PARAMS',
-                                            'Error while trying to access the entity. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                            'Error while trying to access the entity. Please check "' . $_SERVER[Env::APP][Env::ROUTER] . '".'
                                         );
                                     }
                                 } else {
@@ -305,7 +305,7 @@ class Router extends Skeleton implements iRouter
                                     } else {
                                         BedroxException::render(
                                             'ERR_EDR_PARAMS',
-                                            'Error while trying to access the entity. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".'
+                                            'Error while trying to access the entity. Please check "' . $_SERVER[Env::APP][Env::ROUTER] . '".'
                                         );
                                     }
                                 }

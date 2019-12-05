@@ -41,13 +41,13 @@ class Base extends Skeleton
     {
         try {
             parent::__construct();
-            if (file_exists($_SERVER['APP'][Env::SECURITY])) {
-                $content = YamlParser::YAMLLoad($_SERVER['APP'][Env::SECURITY]);
+            if (file_exists($_SERVER[Env::APP][Env::SECURITY])) {
+                $content = YamlParser::YAMLLoad($_SERVER[Env::APP][Env::SECURITY]);
                 $this->security = $content['security'];
             } else {
                 BedroxException::render(
                     'ERR_FILE_SECURITY:',
-                    'Error while trying to access your security file. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".',
+                    'Error while trying to access your security file. Please check "' . $_SERVER[Env::APP][Env::SECURITY] . '".',
                     500,
                     $this->parsing->parseAppFormat()
                 );

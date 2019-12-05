@@ -95,7 +95,7 @@ class Request implements iRequest
      */
     public function getResponseType(?string $format = null): bool
     {
-        $format = $format === null ? $_SERVER['APP']['FORMAT'] : $format;
+        $format = $format === null ? $_SERVER[Env::APP][Env::FORMAT] : $format;
         return in_array($format, array(
             Response::FORMAT_JSON,
             Response::FORMAT_XML,

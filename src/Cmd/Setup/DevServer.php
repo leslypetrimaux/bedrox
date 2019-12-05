@@ -2,6 +2,7 @@
 
 namespace Bedrox\Cmd\Setup;
 
+use Bedrox\Core\Env;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -36,7 +37,7 @@ class DevServer extends Command
             '=================================================='
         ));
         $output->writeln('Starting PHP ' . phpversion() . ' Development Server...');
-        $infosPathRoot = realpath($_SERVER['APP']['ENTITY'] . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'public');
+        $infosPathRoot = realpath($_SERVER[Env::APP][Env::ENTITY] . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'public');
         if (!empty($infosPathRoot)) {
             $output->writeln('Listening on http://localhost:8000');
             $output->writeln('Document root is ' . $infosPathRoot);

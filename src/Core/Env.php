@@ -7,6 +7,7 @@ use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\EDR\EDR;
 use Bedrox\Skeleton;
 use Bedrox\Yaml\YamlParser;
+use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Setup;
@@ -21,9 +22,44 @@ class Env extends Skeleton
     public const FILE_SECURITY_ROOT = 'config/security.yaml';
     public const FILE_SECURITY = '/../' . self::FILE_SECURITY_ROOT;
 
+    public const APP = 'APP';
+    public const NAME = 'NAME';
+    public const ENV = 'ENV';
+    public const DEBUG = 'DEBUG';
+    public const VERSION = 'VERSION';
+    public const ENCODE = 'ENCODAGE';
+    public const FORMAT = 'FORMAT';
     public const ROUTER = 'ROUTER';
     public const SECURITY = 'SECURITY';
     public const ENTITY = 'ENTITY';
+    public const SGBD = 'SGBD';
+
+    public const EDR_DRIVER = 'DRIVER';
+    public const EDR_HOST = 'HOST';
+    public const EDR_APIKEY = 'API_KEY';
+    public const EDR_CLIENTID = 'CLIENT_ID';
+    public const EDR_OAUTHTOKEN = 'OAUTH_TOKEN';
+    public const EDR_ENCODE = 'ENCODE';
+    public const EDR_PORT = 'PORT';
+    public const EDR_USER = 'USER';
+    public const EDR_PWD = 'PWD';
+    public const EDR_SCHEMA = 'SCHEMA';
+
+    public const ORM_TYPE = 'type';
+    public const ORM_DRIVER = 'driver';
+    public const ORM_HOST = 'host';
+    public const ORM_PORT = 'port';
+    public const ORM_USER = 'user';
+    public const ORM_PASSWORD = 'password';
+    public const ORM_SCHEMA = 'schema';
+    public const ORM_DBNAME = 'dbname';
+    public const ORM_FB_APIKEY = 'apiKey';
+    public const ORM_FB_CLIENTID = 'clientId';
+    public const ORM_FB_OAUTHTOKEN = 'oAuthToken';
+    public const ORM_ENCODE = 'encode';
+    public const ORM_CHARSET = 'charset';
+    public const ORM_OPTIONS = 'options';
+    public const ORM_OPT_DEPENDENCIES = 'dependencies';
 
     public const DB_NATIVE = 'native';
     public const DB_DOCTRINE = 'doctrine';
@@ -65,6 +101,7 @@ class Env extends Skeleton
                     $this->parsing->parseAppFormat()
                 );
             }
+
             if (
                 is_array($this->content['app']) &&
                 !empty($this->content['app']['name']) &&
@@ -86,7 +123,7 @@ class Env extends Skeleton
                     'Error while reading your configuration. Please check "config/env.yaml".'
                 );
             }
-            if (!is_array($_SERVER['APP'])) {
+            if (!is_array($_SERVER[self::APP])) {
                 BedroxException::render(
                     'ERR_VAR_APP',
                     'The configuration varaibles are not correctly defined. Please check "config/env.yaml".',
@@ -111,7 +148,7 @@ class Env extends Skeleton
      */
     private function defineApp(string $app): void
     {
-        $_SERVER['APP']['NAME'] = $app;
+        $_SERVER[self::APP][self::NAME] = $app;
         $this->session->set('APP_NAME', $app);
         $this->session->set('APP_TOKEN', null);
     }
@@ -123,8 +160,8 @@ class Env extends Skeleton
      */
     private function defineEnv(string $env): void
     {
-        $_SERVER['APP']['ENV'] = $env;
-        $_SERVER['APP']['DEBUG'] = $env !== 'prod';
+        $_SERVER[self::APP][self::ENV] = $env;
+        $_SERVER[self::APP][self::DEBUG] = $env !== 'prod';
         $this->session->set('APP_ENV', $env);
         $this->session->set('APP_DEBUG', $env !== 'prod');
     }
@@ -136,7 +173,7 @@ class Env extends Skeleton
      */
     private function defineVersion(string $version): void
     {
-        $_SERVER['APP']['VERSION'] = $version;
+        $_SERVER[self::APP][self::VERSION] = $version;
         $this->session->set('APP_VERSION', $version);
     }
 
@@ -149,9 +186,9 @@ class Env extends Skeleton
     private function defineFile(string $type, string $file): void
     {
         if (!empty($type) && !empty($file)) {
-            $_SERVER['APP'][$type] = realpath($_SERVER['DOCUMENT_ROOT'] . $file);
+            $_SERVER[self::APP][$type] = realpath($_SERVER['DOCUMENT_ROOT'] . $file);
         }
-        if (!file_exists($_SERVER['APP'][$type])) {
+        if (!file_exists($_SERVER[self::APP][$type])) {
             BedroxException::render(
                 'ERR_FILE_ENV',
                 'Error while reading "' . $file . '".',
@@ -176,7 +213,7 @@ class Env extends Skeleton
                 $this->parsing->parseAppFormat()
             );
         }
-        $_SERVER['APP'][self::ENTITY] = $path;
+        $_SERVER[self::APP][self::ENTITY] = $path;
         $this->session->set(self::ENTITY, $path);
     }
 
@@ -188,8 +225,8 @@ class Env extends Skeleton
      */
     private function outputFormat(string $format, string $encode): void
     {
-        $_SERVER['APP']['ENCODAGE'] = $encode;
-        $_SERVER['APP']['FORMAT'] = $format;
+        $_SERVER[self::APP][self::ENCODE] = $encode;
+        $_SERVER[self::APP][self::FORMAT] = $format;
         $this->session->set('APP_ENCODAGE', $encode);
         $this->session->set('APP_FORMAT', $format);
     }
@@ -203,45 +240,56 @@ class Env extends Skeleton
     {
         try {
             if (!empty($database) && is_array($database)) {
-                if (!empty($database['type'])) {
-                    switch ($database['type']) {
+                if (!empty($database[self::ORM_TYPE])) {
+                    switch ($database[self::ORM_TYPE]) {
                         case self::DB_DOCTRINE:
-                            if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) ) {
+                            if ( !empty($database[self::ORM_SCHEMA]) && !empty($database[self::ORM_PASSWORD]) && !empty($database[self::ORM_USER]) && !empty($database[self::ORM_HOST]) ) {
                                 try {
                                     // database configuration parameters
-                                    $_SERVER['APP']['SGBD'] = array(
-                                        'type' => $database['type'],
-                                        'driver' => $database['driver'],
-                                        'host' => $database['host'],
-                                        'port ' => $database['port'],
-                                        'user' => $database['user'],
-                                        'password' => $database['password'],
-                                        'dbname' => $database['schema'],
-                                        'charset' => !empty($database['encode']) ? $database['encode'] : self::DOCTRINE_CHARSET,
+                                    $_SERVER[self::APP][self::SGBD] = array(
+                                        self::ORM_TYPE => $database[self::ORM_TYPE],
+                                        self::ORM_DRIVER => $database[self::ORM_DRIVER],
+                                        self::ORM_HOST => $database[self::ORM_HOST],
+                                        self::ORM_PORT => $database[self::ORM_PORT],
+                                        self::ORM_USER => $database[self::ORM_USER],
+                                        self::ORM_PASSWORD => $database[self::ORM_PASSWORD],
+                                        self::ORM_DBNAME => $database[self::ORM_SCHEMA],
+                                        self::ORM_CHARSET => !empty($database[self::ORM_ENCODE]) ? $database[self::ORM_ENCODE] : self::DOCTRINE_CHARSET,
                                     );
-                                    $entityPath = $this->cmd ? realpath($_SERVER['APP'][self::ENTITY]) : $_SERVER['APP'][self::ENTITY];
+                                    $srvEntity = $_SERVER[self::APP][self::ENTITY];
+                                    $rpEntity = realpath($srvEntity);
                                     // obtaining the entity manager
-                                    $config = Setup::createAnnotationMetadataConfiguration(array($entityPath), $this->content['app']['env'] !== 'prod');
-                                    Skeleton::$entityManager = EntityManager::create($_SERVER['APP']['SGBD'], $config);
+                                    $config = Setup::createAnnotationMetadataConfiguration(
+                                        $this->cmd ? array($rpEntity) : array($srvEntity),
+                                        $this->content['app']['env'] !== 'prod',
+                                        null,
+                                        null,
+                                        false
+                                    );
+                                    $config->setSQLLogger(new DebugStack);
+                                    Skeleton::$entityManager = EntityManager::create($_SERVER[self::APP][self::SGBD], $config);
                                 } catch (ORMException $e) {
-                                    throw new RuntimeException($e->getMessage());
+                                    throw new RuntimeException(
+                                        $e->getMessage(),
+                                        $e->getCode()
+                                    );
                                 }
                             } else {
                                 throw new RuntimeException('Error while reading doctrine informations. Please check "config/env.yaml".');
                             }
                             break;
                         case self::DB_NATIVE:
-                            if (!empty($database['driver'])) {
-                                switch ($database['driver']) {
+                            if (!empty($database[self::ORM_DRIVER])) {
+                                switch ($database[self::ORM_DRIVER]) {
                                     case EDR::FIRESTORE:
                                     case EDR::FIREBASE:
-                                        if ( !empty($database['host']) && !empty($database['apiKey']) && !empty($database['clientId']) && !empty($database['oAuthToken']) ) {
-                                            $_SERVER['APP']['SGBD'] = array(
-                                                'DRIVER' => $database['driver'],
-                                                'HOST' => $database['host'],
-                                                'API_KEY' => $database['apiKey'],
-                                                'CLIENT_ID' => $database['clientId'],
-                                                'OAUTH_TOKEN' => $database['oAuthToken']
+                                        if ( !empty($database[self::ORM_HOST]) && !empty($database[self::ORM_FB_APIKEY]) && !empty($database[self::ORM_FB_CLIENTID]) && !empty($database[self::ORM_FB_OAUTHTOKEN]) ) {
+                                            $_SERVER[self::APP][self::SGBD] = array(
+                                                self::EDR_DRIVER => $database[self::ORM_DRIVER],
+                                                self::EDR_HOST => $database[self::ORM_HOST],
+                                                self::EDR_APIKEY => $database[self::ORM_FB_APIKEY],
+                                                self::EDR_CLIENTID => $database[self::ORM_FB_CLIENTID],
+                                                self::EDR_OAUTHTOKEN => $database[self::ORM_FB_OAUTHTOKEN]
                                             );
                                         } else {
                                             throw new RuntimeException('Error while reading Firebase informations. Please check "config/env.yaml".');
@@ -251,15 +299,15 @@ class Env extends Skeleton
                                     case EDR::MYSQL:
                                     case EDR::MARIADB:
                                     default:
-                                        if ( !empty($database['schema']) && !empty($database['password']) && !empty($database['user']) && !empty($database['host']) ) {
-                                            $_SERVER['APP']['SGBD'] = array(
-                                                'ENCODE' => !empty($database['encode']) ? $database['encode'] : Kernel::DEFAULT_ENCODE,
-                                                'DRIVER' => $database['driver'],
-                                                'HOST' => $database['host'],
-                                                'PORT' => $database['port'],
-                                                'USER' => $database['user'],
-                                                'PWD' => $database['password'],
-                                                'SCHEMA' => $database['schema']
+                                        if ( !empty($database[self::ORM_SCHEMA]) && !empty($database[self::ORM_PASSWORD]) && !empty($database[self::ORM_USER]) && !empty($database[self::ORM_HOST]) ) {
+                                            $_SERVER[self::APP][self::SGBD] = array(
+                                                self::EDR_ENCODE => !empty($database[self::ORM_ENCODE]) ? $database[self::ORM_ENCODE] : Kernel::DEFAULT_ENCODE,
+                                                self::EDR_DRIVER => $database[self::ORM_DRIVER],
+                                                self::EDR_HOST => $database[self::ORM_HOST],
+                                                self::EDR_PORT => $database[self::ORM_PORT],
+                                                self::EDR_USER => $database[self::ORM_USER],
+                                                self::EDR_PWD => $database[self::ORM_PASSWORD],
+                                                self::EDR_SCHEMA => $database[self::ORM_SCHEMA]
                                             );
                                         } else {
                                             throw new RuntimeException('Error while reading EDR informations. Please check "config/env.yaml".');

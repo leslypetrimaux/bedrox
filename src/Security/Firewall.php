@@ -34,7 +34,7 @@ class Firewall extends Base
             } else {
                 BedroxException::render(
                     'ERR_FIREWALL_ANONYMOUS',
-                    'Your must declare at least one public route. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".'
+                    'Your must declare at least one public route. Please check "' . $_SERVER[Env::APP][Env::SECURITY] . '".'
                 );
             }
             switch ($firewall[self::TYPE]) {
@@ -45,20 +45,20 @@ class Firewall extends Base
                 case self::ENTITY:
                     BedroxException::render(
                         'ERR_FIREWALL_ENTITY',
-                        'Entity authentication is not available yet. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".'
+                        'Entity authentication is not available yet. Please check "' . $_SERVER[Env::APP][Env::SECURITY] . '".'
                     );
                     break;
                 default:
                     BedroxException::render(
                         'ERR_FIREWALL_PARSING',
-                        'Unable to configure your firewall application. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".'
+                        'Unable to configure your firewall application. Please check "' . $_SERVER[Env::APP][Env::SECURITY] . '".'
                     );
                     break;
             }
         } else {
             BedroxException::render(
                 'ERR_FIREWALL_TYPE',
-                'Unable to configure your firewall application. Please check "' . $_SERVER['APP'][Env::SECURITY] . '".'
+                'Unable to configure your firewall application. Please check "' . $_SERVER[Env::APP][Env::SECURITY] . '".'
             );
         }
         if (empty($_SESSION['APP_TOKEN'])) {

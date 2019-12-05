@@ -2,6 +2,7 @@
 
 namespace Bedrox\EDR;
 
+use Bedrox\Core\Env;
 use Bedrox\EDR\Interfaces\iRepository;
 
 class Repository implements iRepository
@@ -19,7 +20,7 @@ class Repository implements iRepository
      */
     public function __construct(string $table)
     {
-        $this->con = (new EDR)->setDriver(!empty($_SERVER['APP']['SGBD']['DRIVER']) ? $_SERVER['APP']['SGBD']['DRIVER'] : null);
+        $this->con = (new EDR)->setDriver(!empty($_SERVER[Env::APP][Env::SGBD]['DRIVER']) ? $_SERVER[Env::APP][Env::SGBD]['DRIVER'] : null);
         $this->table = $table;
     }
 

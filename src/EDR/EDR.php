@@ -2,6 +2,7 @@
 
 namespace Bedrox\EDR;
 
+use Bedrox\Core\Env;
 use Bedrox\EDR\Databases\FirebaseDatabase;
 use Bedrox\EDR\Databases\Firestore;
 use Bedrox\EDR\Databases\MySQL;
@@ -34,26 +35,26 @@ class EDR
      */
     public function __construct()
     {
-        if (!empty($_SERVER['APP']['SGBD']['DRIVER'])) {
-            switch ($_SERVER['APP']['SGBD']['DRIVER']) {
+        if (!empty($_SERVER[Env::APP][Env::SGBD]['DRIVER'])) {
+            switch ($_SERVER[Env::APP][Env::SGBD]['DRIVER']) {
                 case self::FIRESTORE:
                 case self::FIREBASE:
-                    $this->host = $_SERVER['APP']['SGBD']['HOST'];
-                    $this->apiKey = $_SERVER['APP']['SGBD']['API_KEY'];
-                    $this->clientId = $_SERVER['APP']['SGBD']['CLIENT_ID'];
-                    $this->oAuthToken = $_SERVER['APP']['SGBD']['OAUTH_TOKEN'];
-                    $this->type = $_SERVER['APP']['SGBD']['TYPE'];
+                    $this->host = $_SERVER[Env::APP][Env::SGBD]['HOST'];
+                    $this->apiKey = $_SERVER[Env::APP][Env::SGBD]['API_KEY'];
+                    $this->clientId = $_SERVER[Env::APP][Env::SGBD]['CLIENT_ID'];
+                    $this->oAuthToken = $_SERVER[Env::APP][Env::SGBD]['OAUTH_TOKEN'];
+                    $this->type = $_SERVER[Env::APP][Env::SGBD]['TYPE'];
                     break;
                 case self::ORACLE:
                     // TODO: handle Oracle SGBD (with options)
                 case self::MYSQL:
                 case self::MARIADB:
                 default:
-                    $this->host = $_SERVER['APP']['SGBD']['HOST'];
-                    $this->port = $_SERVER['APP']['SGBD']['PORT'];
-                    $this->user = $_SERVER['APP']['SGBD']['USER'];
-                    $this->pwd = $_SERVER['APP']['SGBD']['PWD'];
-                    $this->schema = $_SERVER['APP']['SGBD']['SCHEMA'];
+                    $this->host = $_SERVER[Env::APP][Env::SGBD]['HOST'];
+                    $this->port = $_SERVER[Env::APP][Env::SGBD]['PORT'];
+                    $this->user = $_SERVER[Env::APP][Env::SGBD]['USER'];
+                    $this->pwd = $_SERVER[Env::APP][Env::SGBD]['PWD'];
+                    $this->schema = $_SERVER[Env::APP][Env::SGBD]['SCHEMA'];
                     break;
             }
         } else {

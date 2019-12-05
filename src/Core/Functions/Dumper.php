@@ -3,6 +3,7 @@
 namespace Bedrox\Core\Functions;
 
 use Bedrox\Core\Controller;
+use Bedrox\Core\Env;
 use Bedrox\Core\Render;
 use Bedrox\Core\Response;
 use Bedrox\Skeleton;
@@ -43,8 +44,8 @@ class Dumper extends Skeleton
         if (!empty($_SESSION['URI_FORMAT'])) {
             $format = $_SESSION['URI_FORMAT'];
         } else {
-            if (!empty($_SERVER['APP']['FORMAT'])) {
-                $format = $_SERVER['APP']['FORMAT'];
+            if (!empty($_SERVER[Env::APP][Env::FORMAT])) {
+                $format = $_SERVER[Env::APP][Env::FORMAT];
             } else {
                 $format = $_SESSION['APP_FORMAT'];
             }

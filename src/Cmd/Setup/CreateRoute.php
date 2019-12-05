@@ -2,6 +2,7 @@
 
 namespace Bedrox\Cmd\Setup;
 
+use Bedrox\Core\Env;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -60,7 +61,7 @@ class CreateRoute extends Command
         $arrayClass = explode('\\', $infosClass);
         $infosController = end($arrayClass);
         $infosFunction = $infosRoute[1];
-        $infosPathRoot = realpath($_SERVER['APP']['ENTITY'] . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
+        $infosPathRoot = realpath($_SERVER[Env::APP][Env::ENTITY] . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
         $infosPath = $infosPathRoot . DIRECTORY_SEPARATOR . $infosClass . '.php';
         $output->writeln('Name (url)  : ' . $name . ' (' . $uri . ')');
         $output->writeln('Controller  : ' . $controller);
@@ -266,13 +267,13 @@ class ' . $infosController . ' extends Controller
      */
     private function setRouterFile(?string $routerFile): self
     {
-        $this->routerDir = dirname($_SERVER['APP']['ROUTER']);
+        $this->routerDir = dirname($_SERVER[Env::APP][Env::ROUTER]);
         if (!empty($routerFile)) {
             $this->routerFile = $this->routerDir . DIRECTORY_SEPARATOR . $routerFile;
             $routerInfos = pathinfo($this->routerFile);
             $this->routerDir = $routerInfos['dirname'];
         } else {
-            $this->routerFile = $_SERVER['APP']['ROUTER'];
+            $this->routerFile = $_SERVER[Env::APP][Env::ROUTER];
         }
         return $this;
     }

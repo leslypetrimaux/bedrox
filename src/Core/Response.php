@@ -5,6 +5,7 @@ namespace Bedrox\Core;
 use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iResponse;
 use Bedrox\Skeleton;
+use Doctrine\ORM\EntityManager;
 use DOMDocument;
 use ReflectionClass;
 use ReflectionException;
@@ -108,8 +109,7 @@ class Response extends Skeleton implements iResponse
     {
         $result = $this->renderResult($data, $error);
         $result = $this->parsing->parseRecursiveToArray($result);
-        $csv = $this->parsing->parseArrayToCsv($result);
-        return $csv;
+        return $this->parsing->parseArrayToCsv($result);
     }
 
     /**
@@ -126,15 +126,23 @@ class Response extends Skeleton implements iResponse
             'statusCode' => http_response_code(),
             'execTime' => round((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2)
         );
-        if ($this->getDumps()) {
-            $result['dumps'] = $this->getDumps();
-            $result['error'] = array(
-                'code' => 'WARN_DUMPS',
-                'message' => 'Dumps are still in your code !'
-            );
-        }
         if ($render instanceof Render) {
             $result['data'] = $render->getData();
+        }
+        if ($_SERVER[Env::APP][Env::DEBUG]) {
+            if ($this->getDumps()) {
+                $result['dumps'] = $this->getDumps();
+                $result['error'] = array(
+                    'code' => 'WARN_DUMPS',
+                    'message' => 'Dumps are still in your code !'
+                );
+            }
+            /** @var EntityManager $em */
+            $em = Skeleton::$entityManager;
+            if ($em !== null) {
+                $logger = $em->getConfiguration()->getSQLLogger();
+                $result['doctrine'] = $logger;
+            }
         }
         if ($error) {
             $result['error'] = $error;
@@ -257,7 +265,7 @@ class Response extends Skeleton implements iResponse
         }
         BedroxException::render(
             'ERR_URI_NOTFOUND',
-            'Your URI "' . $_SERVER['REQUEST_URI'] . '" does not exists or is not correctly configure. Please check "' . $_SERVER['APP'][Env::ROUTER] . '".',
+            'Your URI "' . $_SERVER['REQUEST_URI'] . '" does not exists or is not correctly configure. Please check "' . $_SERVER[Env::APP][Env::ROUTER] . '".',
             404
         );
     }
