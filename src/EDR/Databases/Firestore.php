@@ -67,7 +67,7 @@ class Firestore extends CloudFirestore implements iSgbd
         $content = $this->get($path);
         $entity = $this->em->getEntity($table);
         $columns = $this->em->getColumns($entity);
-        if ($content !== null) {
+        if (!is_null($content)) {
             foreach ($content as $key => $value) {
                 $var = array_search($key, $columns, true);
                 $entity->$var = $value;
@@ -115,7 +115,7 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function persist(Entity $entity): bool
     {
-        return $entity->getId() !== null ? $this->update($entity) : $this->insert($entity);
+        return !is_null($entity->getId()) ? $this->update($entity) : $this->insert($entity);
     }
 
     /**
@@ -149,7 +149,7 @@ class Firestore extends CloudFirestore implements iSgbd
      */
     public function delete(Entity $entity): bool
     {
-        if ($entity->getId() !== null) {
+        if (!is_null($entity->getId())) {
             $table = $this->em->getTable($entity);
             $path = $table . '/' . $entity->getId();
             return !empty($this->unset($path)) ? true : false;

@@ -187,7 +187,7 @@ class Env extends Skeleton
     private function defineFile(string $type, string $file): void
     {
         if (!empty($type) && !empty($file)) {
-            $_SERVER[self::APP][$type] = realpath($_SERVER['DOCUMENT_ROOT'] . $file);
+            $_SERVER[self::APP][$type] = realpath($_SERVER[Headers::SRV_DOCUMENT_ROOT] . $file);
         }
         if (!file_exists($_SERVER[self::APP][$type])) {
             BedroxException::render(
@@ -204,7 +204,7 @@ class Env extends Skeleton
      */
     private function defineEntityLocation(?string $location): void
     {
-        $realpath = !empty($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] . '/../' . $location : $location;
+        $realpath = !empty($_SERVER[Headers::SRV_DOCUMENT_ROOT]) ? $_SERVER[Headers::SRV_DOCUMENT_ROOT] . '/../' . $location : $location;
         $path = realpath($realpath);
         if (!$path) {
             BedroxException::render(

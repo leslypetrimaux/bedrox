@@ -5,8 +5,10 @@ namespace Bedrox\Core;
 use Bedrox\Core\Exceptions\BedroxException;
 use Bedrox\Core\Interfaces\iResponse;
 use Bedrox\Skeleton;
+use DateTime;
 use Doctrine\ORM\EntityManager;
 use DOMDocument;
+use Exception;
 use ReflectionClass;
 use ReflectionException;
 use SimpleXMLElement;
@@ -113,6 +115,44 @@ class Response extends Skeleton implements iResponse
     }
 
     /**
+     * @return array|null
+     */
+    private function getExecInfos(): ?array
+    {
+        try {
+            $execStart = $_SERVER[Headers::SRV_REQUEST_TIME_FLOAT];
+            $execEnd = microtime(true);
+            $execSec = $execEnd - $execStart;
+            $execMin = $execSec / 60;
+            $execMs = $execSec * 1000;
+            $durationArray = array(
+                'min' => $execMin,
+                'sec' => $execSec,
+                'ms' => $execMs
+            );
+            $dateStart = DateTime::createFromFormat('U.u', $execStart);
+            $dateEnd = DateTime::createFromFormat('U.u', $execEnd);
+            return array(
+                'duration' => $durationArray,
+                'timestamp' => array(
+                    'start' => $execStart,
+                    'end' => $execEnd,
+                ),
+                'datetime' => array(
+                    'start' => $dateStart,
+                    'end' => $dateEnd
+                ),
+            );
+        } catch (Exception $e) {
+            BedroxException::render(
+                'ERR_EXEC_INFOS',
+                $e->getMessage()
+            );
+        }
+        return null;
+    }
+
+    /**
      * Render result Array.
      *
      * @param Render $render
@@ -123,11 +163,14 @@ class Response extends Skeleton implements iResponse
     {
         $result = array(
             'status' => !is_array($error) ? 'success' : 'error',
-            'statusCode' => http_response_code(),
-            'execTime' => round((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2)
+            'statusCode' => http_response_code()
         );
         if ($render instanceof Render) {
             $result['data'] = $render->getData();
+        }
+        $execInfos = $this->getExecInfos();
+        if (!is_null($execInfos)) {
+            $result['exec'] = $execInfos;
         }
         if ($_SERVER[Env::APP][Env::DEBUG]) {
             if ($this->getDumps()) {
@@ -139,7 +182,7 @@ class Response extends Skeleton implements iResponse
             }
             /** @var EntityManager $em */
             $em = Skeleton::$entityManager;
-            if ($em !== null) {
+            if (!is_null($em)) {
                 $logger = $em->getConfiguration()->getSQLLogger();
                 $result['doctrine'] = $logger;
             }
@@ -194,7 +237,7 @@ class Response extends Skeleton implements iResponse
                     try {
                         foreach ($refParams as $refParam) {
                             $type = false;
-                            if ($refParam->getClass() != null) {
+                            if (!is_null($refParam->getClass())) {
                                 $refClass = $refParam->getClass()->getName();
                                 $tmpClass = new $refClass;
                             } else {
@@ -265,7 +308,7 @@ class Response extends Skeleton implements iResponse
         }
         BedroxException::render(
             'ERR_URI_NOTFOUND',
-            'Your URI "' . $_SERVER['REQUEST_URI'] . '" does not exists or is not correctly configure. Please check "' . $_SERVER[Env::APP][Env::ROUTER] . '".',
+            'Your URI "' . $_SERVER[Headers::SRV_REQUEST_URI] . '" does not exists or is not correctly configure. Please check "' . $_SERVER[Env::APP][Env::ROUTER] . '".',
             404
         );
     }
@@ -313,7 +356,7 @@ class Response extends Skeleton implements iResponse
                     $params = array();
                     $refClass = null;
                     foreach ($refParams as $refParam) {
-                        if ($refParam->getClass() != null) {
+                        if (!is_null($refParam->getClass())) {
                             $refClass = $refParam->getClass()->getName();
                         } else {
                             $refClass = $refParam->getName();

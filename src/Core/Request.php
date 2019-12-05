@@ -44,7 +44,7 @@ class Request implements iRequest
                 $format = null;
             }
             $request->headers = new Headers($headers);
-            $urlRequested = empty($_SERVER['REDIRECT_URL']) ? empty($_SERVER['PATH_INFO']) ? Skeleton::BASE : $_SERVER['PATH_INFO'] : $_SERVER['REDIRECT_URL'];
+            $urlRequested = empty($_SERVER[Headers::SRV_REDIRECT_URL]) ? empty($_SERVER[Headers::SRV_PATH_INFO]) ? Skeleton::BASE : $_SERVER[Headers::SRV_PATH_INFO] : $_SERVER[Headers::SRV_REDIRECT_URL];
             $request->setRoute((new Router())->getCurrentRoute($urlRequested, $format));
         } catch (Exception $e) {
             BedroxException::render(
@@ -95,7 +95,7 @@ class Request implements iRequest
      */
     public function getResponseType(?string $format = null): bool
     {
-        $format = $format === null ? $_SERVER[Env::APP][Env::FORMAT] : $format;
+        $format = is_null($format) ? $_SERVER[Env::APP][Env::FORMAT] : $format;
         return in_array($format, array(
             Response::FORMAT_JSON,
             Response::FORMAT_XML,
@@ -112,7 +112,7 @@ class Request implements iRequest
     public function handle(Request $request): Response
     {
         $response = new Response();
-        if ($request !== null) {
+        if (!is_null($request)) {
             $request->get = !empty($request->get) ? $request->get : null;
             $request->post = !empty($request->post) ? $request->post : null;
             $request->files = !empty($request->files) ? $request->files : null;

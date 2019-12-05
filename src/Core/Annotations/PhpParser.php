@@ -65,7 +65,7 @@ class PhpParser
     {
         $document = null;
         try {
-            if ($properties !== null) {
+            if (!is_null($properties)) {
                 $document = $properties->getDocComment();
             } else {
                 throw new ReflectionException(
@@ -92,7 +92,7 @@ class PhpParser
     {
         $columns = array();
         try {
-            if ($properties !== null) {
+            if (!is_null($properties)) {
                 foreach ($properties as $property) {
                     $document = $this->propertiesComment($property);
                     $matches = $this->matchesAnnotations($document);
@@ -145,7 +145,7 @@ class PhpParser
     {
         $columns = array();
         try {
-            if ($properties !== null) {
+            if (!is_null($properties)) {
                 foreach ($properties as $property) {
                     $document = $this->propertiesComment($property);
                     $matches = $this->matchesAnnotations($document);
@@ -185,7 +185,7 @@ class PhpParser
     {
         $columns = array();
         try {
-            if ($properties !== null) {
+            if (!is_null($properties)) {
                 foreach ($properties as $property) {
                     $document = $this->propertiesComment($property);
                     $matches = $this->matchesAnnotations($document);
@@ -235,7 +235,7 @@ class PhpParser
     public function getAnnotationValue(?string $annotation, ?array $annotations): ?string
     {
         $value = null;
-        if (is_array($annotations) && $annotation !== null) {
+        if (is_array($annotations) && !is_null($annotation)) {
             foreach ($annotations as $line) {
                 if (strpos($line, $annotation) !== false) {
                     $value = str_replace('@', '', trim($line));

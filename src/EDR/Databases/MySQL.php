@@ -267,7 +267,7 @@ class MySQL extends PDO implements iSgbd
      */
     public function persist(Entity $entity): bool
     {
-        return $entity->getId() !== null ? $this->update($entity) : $this->insert($entity);
+        return !is_null($entity->getId()) ? $this->update($entity) : $this->insert($entity);
     }
 
     /**

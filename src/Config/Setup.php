@@ -3,6 +3,7 @@
 namespace Bedrox\Config;
 
 use Bedrox\Core\Env;
+use Bedrox\Core\Headers;
 
 class Setup
 {
@@ -57,7 +58,7 @@ class Setup
     public static function generateToken(string $type = self::SECRET_KEY, int $length = 48): bool
     {
         $res = false;
-        $file = $_SERVER['DOCUMENT_ROOT'] . Env::FILE_SECURITY_ROOT;
+        $file = $_SERVER[Headers::SRV_DOCUMENT_ROOT] . Env::FILE_SECURITY_ROOT;
         $real = realpath($file);
         if (file_exists($real)) {
             $content = file_get_contents($file);

@@ -288,7 +288,7 @@ class Router extends Skeleton implements iRouter
                                 $class = '\\App\\Entity\\' . ucfirst($repo);
                                 $em = (new Controller)->getDoctrine();
                                 if ( !empty($_SERVER[Env::APP][Env::SGBD][Env::ORM_TYPE]) && $_SERVER[Env::APP][Env::SGBD][Env::ORM_TYPE] === Env::DB_DOCTRINE ) {
-                                    if ($em->getRepository($class) !== null) {
+                                    if (!is_null($em->getRepository($class))) {
                                         $route->setParams($em->getRepository($class)->findOneBy(array(
                                             $criteria => $aCurrent[$key]
                                         )));
@@ -300,7 +300,7 @@ class Router extends Skeleton implements iRouter
                                     }
                                 } else {
                                     $entityManager = new EntityManager;
-                                    if ($entityManager->getRepo($repo) !== null) {
+                                    if (!is_null($entityManager->getRepo($repo))) {
                                         $route->setParams($entityManager->getRepo($repo)->find($aCurrent[$key]));
                                     } else {
                                         BedroxException::render(

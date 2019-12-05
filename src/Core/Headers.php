@@ -20,6 +20,30 @@ class Headers
     public const SEC_FETCH_SITE = 'Sec-Fetch-Site';
     public const SEC_FETCH_MODE = 'Sec-Fetch-Mode';
 
+    public const SRV_HTTP_HOST = 'HTTP_HOST';
+    public const SRV_HTTP_UPGRADE_INSECURE_REQUESTS = 'HTTP_UPGRADE_INSECURE_REQUESTS';
+    public const SRV_HTTP_CACHE_CONTROL = 'HTTP_CACHE_CONTROL';
+    public const SRV_HTTP_ACCEPT = 'HTTP_ACCEPT';
+    public const SRV_HTTP_ACCEPT_ENCODING = 'HTTP_ACCEPT_ENCODING';
+    public const SRV_HTTP_ACCEPT_LANGUAGE = 'HTTP_ACCEPT_LANGUAGE';
+    public const SRV_HTTP_USER_AGENT = 'HTTP_USER_AGENT';
+    public const SRV_REQUEST_METHOD = 'REQUEST_METHOD';
+    public const SRV_DOCUMENT_ROOT = 'DOCUMENT_ROOT';
+    public const SRV_REDIRECT_URL = 'REDIRECT_URL';
+    public const SRV_PATH_INFO = 'PATH_INFO';
+    public const SRV_REQUEST_TIME_FLOAT = 'REQUEST_TIME_FLOAT';
+    public const SRV_REQUEST_URI = 'REQUEST_URI';
+
+    public const REQ_GET = 'GET';
+    public const REQ_POST = 'POST';
+    public const REQ_PUT = 'PUT';
+    public const REQ_PATCH = 'PATCH';
+    public const REQ_DELETE = 'DELETE';
+    public const REQ_LINK = 'LINK';
+    public const REQ_UNLINK = 'UNLINK';
+    public const REQ_LOCK = 'LOCK';
+    public const REQ_UNLOCK = 'UNLOCK';
+
     private $responseType;
     private $requestMethod;
     private $contentType;
@@ -47,30 +71,30 @@ class Headers
 
     public function __construct(array $headers)
     {
-        $this->host = !empty($headers[self::HTTP_HOST]) ? $headers[self::HTTP_HOST] : !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null;
+        $this->host = !empty($headers[self::HTTP_HOST]) ? $headers[self::HTTP_HOST] : !empty($_SERVER[self::SRV_HTTP_HOST]) ? $_SERVER[self::SRV_HTTP_HOST] : null;
         $this->connection = !empty($headers[self::HTTP_CONNECTION]) ? $headers[self::HTTP_CONNECTION] : null;
-        $this->upgradeInsecureRequests = !empty($headers[self::HTTP_UPGRADE_INSECURE_REQUESTS]) ? $headers[self::HTTP_UPGRADE_INSECURE_REQUESTS] : !empty($_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS']) ? $_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS'] : null;
-        $this->cacheControl = !empty($headers[self::HTTP_CACHE_CONTROL]) ? $headers[self::HTTP_CACHE_CONTROL] : !empty($_SERVER['HTTP_CACHE_CONTROL']) ? $_SERVER['HTTP_CACHE_CONTROL'] : null;
-        $this->accept = !empty($headers[self::HTTP_ACCEPT]) ? $headers[self::HTTP_ACCEPT] : !empty($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : null;
-        $this->acceptEncoding = !empty($headers[self::HTTP_ACCEPT_ENCODING]) ? $headers[self::HTTP_ACCEPT_ENCODING] : !empty($_SERVER['HTTP_ACCEPT_ENCODING']) ? $_SERVER['HTTP_ACCEPT_ENCODING'] : null;
-        $this->acceptLanguage = !empty($headers[self::HTTP_ACCEPT_LANGUAGE]) ? $headers[self::HTTP_ACCEPT_LANGUAGE] : !empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : null;
-        $this->requestMethod = !empty($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : null;
+        $this->upgradeInsecureRequests = !empty($headers[self::HTTP_UPGRADE_INSECURE_REQUESTS]) ? $headers[self::HTTP_UPGRADE_INSECURE_REQUESTS] : !empty($_SERVER[self::SRV_HTTP_UPGRADE_INSECURE_REQUESTS]) ? $_SERVER[self::SRV_HTTP_UPGRADE_INSECURE_REQUESTS] : null;
+        $this->cacheControl = !empty($headers[self::HTTP_CACHE_CONTROL]) ? $headers[self::HTTP_CACHE_CONTROL] : !empty($_SERVER[self::SRV_HTTP_CACHE_CONTROL]) ? $_SERVER[self::SRV_HTTP_CACHE_CONTROL] : null;
+        $this->accept = !empty($headers[self::HTTP_ACCEPT]) ? $headers[self::HTTP_ACCEPT] : !empty($_SERVER[self::SRV_HTTP_ACCEPT]) ? $_SERVER[self::SRV_HTTP_ACCEPT] : null;
+        $this->acceptEncoding = !empty($headers[self::HTTP_ACCEPT_ENCODING]) ? $headers[self::HTTP_ACCEPT_ENCODING] : !empty($_SERVER[self::SRV_HTTP_ACCEPT_ENCODING]) ? $_SERVER[self::SRV_HTTP_ACCEPT_ENCODING] : null;
+        $this->acceptLanguage = !empty($headers[self::HTTP_ACCEPT_LANGUAGE]) ? $headers[self::HTTP_ACCEPT_LANGUAGE] : !empty($_SERVER[self::SRV_HTTP_ACCEPT_LANGUAGE]) ? $_SERVER[self::SRV_HTTP_ACCEPT_LANGUAGE] : null;
+        $this->requestMethod = !empty($_SERVER[self::SRV_REQUEST_METHOD]) ? $_SERVER[self::SRV_REQUEST_METHOD] : null;
         $this->responseType = !empty($format) ? $format : null;
         $this->contentType = !empty($headers[self::HTTP_CONTENT_TYPE]) ? $headers[self::HTTP_CONTENT_TYPE] : null;
-        $this->userAgent = !empty($headers[self::HTTP_USER_AGENT]) ? $headers[self::HTTP_USER_AGENT] : !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
+        $this->userAgent = !empty($headers[self::HTTP_USER_AGENT]) ? $headers[self::HTTP_USER_AGENT] : !empty($_SERVER[self::SRV_HTTP_USER_AGENT]) ? $_SERVER[self::SRV_HTTP_USER_AGENT] : null;
         $this->cookie = !empty($headers[self::HTTP_COOKIE]) ? $headers[self::HTTP_COOKIE] : null;
         $this->fetchUser = !empty($headers[self::SEC_FETCH_USER]) ? $headers[self::SEC_FETCH_USER] : null;
         $this->fetchSite = !empty($headers[self::SEC_FETCH_SITE]) ? $headers[self::SEC_FETCH_SITE] : null;
         $this->fetchMode = !empty($headers[self::SEC_FETCH_MODE]) ? $headers[self::SEC_FETCH_MODE] : null;
-        $this->isGet = ($_SERVER['REQUEST_METHOD'] === 'GET') ? true : false;
-        $this->isPost = ($_SERVER['REQUEST_METHOD'] === 'POST') ? true : false;
-        $this->isPut = ($_SERVER['REQUEST_METHOD'] === 'PUT') ? true : false;
-        $this->isPatch = ($_SERVER['REQUEST_METHOD'] === 'PATCH') ? true : false;
-        $this->isDelete = ($_SERVER['REQUEST_METHOD'] === 'DELETE') ? true : false;
-        $this->isLink = ($_SERVER['REQUEST_METHOD'] === 'LINK') ? true : false;
-        $this->isUnlink = ($_SERVER['REQUEST_METHOD'] === 'UNLINK') ? true : false;
-        $this->isLock = ($_SERVER['REQUEST_METHOD'] === 'LOCK') ? true : false;
-        $this->isUnlock = ($_SERVER['REQUEST_METHOD'] === 'UNLOCK') ? true : false;
+        $this->isGet = ($_SERVER[self::SRV_REQUEST_METHOD] === self::REQ_GET) ? true : false;
+        $this->isPost = ($_SERVER[self::SRV_REQUEST_METHOD] === self::REQ_POST) ? true : false;
+        $this->isPut = ($_SERVER[self::SRV_REQUEST_METHOD] === self::REQ_PUT) ? true : false;
+        $this->isPatch = ($_SERVER[self::SRV_REQUEST_METHOD] === self::REQ_PATCH) ? true : false;
+        $this->isDelete = ($_SERVER[self::SRV_REQUEST_METHOD] === self::REQ_DELETE) ? true : false;
+        $this->isLink = ($_SERVER[self::SRV_REQUEST_METHOD] === self::REQ_LINK) ? true : false;
+        $this->isUnlink = ($_SERVER[self::SRV_REQUEST_METHOD] === self::REQ_UNLINK) ? true : false;
+        $this->isLock = ($_SERVER[self::SRV_REQUEST_METHOD] === self::REQ_LOCK) ? true : false;
+        $this->isUnlock = ($_SERVER[self::SRV_REQUEST_METHOD] === self::REQ_UNLOCK) ? true : false;
     }
 
     /**

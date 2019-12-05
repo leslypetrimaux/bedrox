@@ -40,7 +40,7 @@ class AnnotationsTypes
      */
     public function __construct(?string $type)
     {
-        if ($type !== null) {
+        if (!is_null($type)) {
             if ($type === self::LABEL_DB) {
                 $this->dbTable = self::DB_TABLE;
                 $this->dbPrimaryKey = self::DB_PRIMARY_KEY;
@@ -64,7 +64,7 @@ class AnnotationsTypes
     public function get(?string $type): ?string
     {
         $annotation = null;
-        if ($type !== null) {
+        if (!is_null($type)) {
             switch ($type) {
                 case self::LABEL_DB_TABLE:
                     $annotation = $this->dbTable;
