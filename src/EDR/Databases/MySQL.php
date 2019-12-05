@@ -45,7 +45,7 @@ class MySQL extends PDO implements iSgbd
     public function __construct(string $driver, string $host, int $port, string $user, string $pwd, string $schema)
     {
         try {
-            $opt = $driver === EDR::MYSQL ? array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER[Env::APP][Env::SGBD]['ENCODE'])) : null;
+            $opt = $driver === EDR::MYSQL ? array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER[Env::APP][Env::SGBD][Env::EDR_ENCODE])) : null;
             $this->driver = $driver;
             parent::__construct(
                 EDR::MYSQL . ':dbname=' . $schema . ';port=' . $port . ';host=' . $host,

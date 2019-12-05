@@ -44,6 +44,7 @@ class Env extends Skeleton
     public const EDR_USER = 'USER';
     public const EDR_PWD = 'PWD';
     public const EDR_SCHEMA = 'SCHEMA';
+    public const EDR_TYPE = 'TYPE';
 
     public const ORM_TYPE = 'type';
     public const ORM_DRIVER = 'driver';

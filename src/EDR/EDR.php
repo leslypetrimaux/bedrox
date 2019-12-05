@@ -35,26 +35,26 @@ class EDR
      */
     public function __construct()
     {
-        if (!empty($_SERVER[Env::APP][Env::SGBD]['DRIVER'])) {
-            switch ($_SERVER[Env::APP][Env::SGBD]['DRIVER']) {
+        if (!empty($_SERVER[Env::APP][Env::SGBD][Env::EDR_DRIVER])) {
+            switch ($_SERVER[Env::APP][Env::SGBD][Env::EDR_DRIVER]) {
                 case self::FIRESTORE:
                 case self::FIREBASE:
-                    $this->host = $_SERVER[Env::APP][Env::SGBD]['HOST'];
-                    $this->apiKey = $_SERVER[Env::APP][Env::SGBD]['API_KEY'];
-                    $this->clientId = $_SERVER[Env::APP][Env::SGBD]['CLIENT_ID'];
-                    $this->oAuthToken = $_SERVER[Env::APP][Env::SGBD]['OAUTH_TOKEN'];
-                    $this->type = $_SERVER[Env::APP][Env::SGBD]['TYPE'];
+                    $this->host = $_SERVER[Env::APP][Env::SGBD][Env::EDR_HOST];
+                    $this->apiKey = $_SERVER[Env::APP][Env::SGBD][Env::EDR_APIKEY];
+                    $this->clientId = $_SERVER[Env::APP][Env::SGBD][Env::EDR_CLIENTID];
+                    $this->oAuthToken = $_SERVER[Env::APP][Env::SGBD][Env::EDR_OAUTHTOKEN];
+                    $this->type = $_SERVER[Env::APP][Env::SGBD][Env::EDR_TYPE];
                     break;
                 case self::ORACLE:
                     // TODO: handle Oracle SGBD (with options)
                 case self::MYSQL:
                 case self::MARIADB:
                 default:
-                    $this->host = $_SERVER[Env::APP][Env::SGBD]['HOST'];
-                    $this->port = $_SERVER[Env::APP][Env::SGBD]['PORT'];
-                    $this->user = $_SERVER[Env::APP][Env::SGBD]['USER'];
-                    $this->pwd = $_SERVER[Env::APP][Env::SGBD]['PWD'];
-                    $this->schema = $_SERVER[Env::APP][Env::SGBD]['SCHEMA'];
+                    $this->host = $_SERVER[Env::APP][Env::SGBD][Env::EDR_HOST];
+                    $this->port = $_SERVER[Env::APP][Env::SGBD][Env::EDR_PORT];
+                    $this->user = $_SERVER[Env::APP][Env::SGBD][Env::EDR_USER];
+                    $this->pwd = $_SERVER[Env::APP][Env::SGBD][Env::EDR_PWD];
+                    $this->schema = $_SERVER[Env::APP][Env::SGBD][Env::EDR_SCHEMA];
                     break;
             }
         } else {
