@@ -1,8 +1,8 @@
 <?php
 
-namespace Bedrox\Core\Interfaces;
+namespace Bedrox\EDR\Interfaces;
 
-use Bedrox\Core\Entity;
+use Bedrox\EDR\Entity;
 
 interface iRepository
 {

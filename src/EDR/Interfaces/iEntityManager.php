@@ -1,9 +1,9 @@
 <?php
 
-namespace Bedrox\Core\Interfaces;
+namespace Bedrox\EDR\Interfaces;
 
-use Bedrox\Core\Entity;
-use Bedrox\Core\Repository;
+use Bedrox\EDR\Entity;
+use Bedrox\EDR\Repository;
 
 interface iEntityManager
 {

@@ -7,8 +7,9 @@ Retrouvez ici la liste des valeurs possibles pour le fichier de sécurité.
 
 ```bash
 # app_auth()
-auth
-no-auth
+public
+token
+entity
 ```
 </details>
 <details>
@@ -76,11 +77,10 @@ haval256,5
 ```yaml
 security:
   firewall:
-    type: 'no-auth'
+    type: 'token'
     token:
-      encode: 'sha256'
+      encode: 'encodeAlgo'
       secret: 'secretKey'
     anonymous:
-      home
-      users_list
+      page1
 ```

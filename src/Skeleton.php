@@ -11,22 +11,27 @@ class Skeleton
 {
     public const BASE = '/';
 
-    public $request;
+    public static $response;
     public static $entityManager;
-    public $auth;
 
     protected $session;
     protected $parsing;
+    protected $cmd;
 
     /**
      * Skeleton constructor.
      * Used by the Application Kernel. Is currently the Framework Kernel.
      * Handle every actions on the Application.
+     * @param bool $cmd
      */
-    public function __construct()
+    public function __construct(bool $cmd = false)
     {
-        $this->session = new Session();
-        $this->parsing = new Parsing();
+        $this->session = new Session;
+        $this->parsing = new Parsing;
+        if ($cmd) {
+            $this->cmd = $cmd;
+            self::setResponse(new Response);
+        }
     }
 
     public function __debugInfo()
@@ -41,7 +46,7 @@ class Skeleton
      * @param Request $request
      * @return Response
      */
-    public function handle(Request $request): Response
+    protected function handle(Request $request): Response
     {
         return $request->handle($request);
     }
@@ -49,7 +54,7 @@ class Skeleton
     /**
      * @param Response $response
      */
-    public function terminate(Response $response): void
+    protected function terminate(Response $response): void
     {
         $response->terminate($response);
     }
@@ -57,23 +62,21 @@ class Skeleton
     /**
      * Return the current user.
      *
-     * @return bool
+     * @return bool|null
      */
-    public function getAuth(): bool
+    protected function getAuth(): ?bool
     {
-        return $this->auth;
+        return $this->session->get('APP_AUTH') ?? false;
     }
 
     /**
-     * Set the current authentication.
+     * Return the Application's Token
      *
-     * @param bool|null $auth
-     * @return Skeleton
+     * @return string
      */
-    public function setAuth(?bool $auth): self
+    public function getToken(): string
     {
-        $this->auth = $auth ?: false;
-        return $this;
+        return $this->session->get('APP_TOKEN');
     }
 
     /**
@@ -81,9 +84,27 @@ class Skeleton
      *
      * @return array|null
      */
-    public function getDumps(): ?array
+    protected function getDumps(): ?array
     {
         return $this->session->get('DUMPS') ?? null;
+    }
+
+    /**
+     * @return Response|null
+     */
+    protected static function getResponse(): ?Response
+    {
+        return (self::$response instanceof Response) ? self::$response : new Response();
+    }
+
+    /**
+     * @param Response $response
+     * @return Skeleton
+     */
+    protected function setResponse(Response $response): ?self
+    {
+        self::$response = $response;
+        return $this;
     }
 }
 

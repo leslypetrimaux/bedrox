@@ -40,7 +40,7 @@ class AnnotationsTypes
      */
     public function __construct(?string $type)
     {
-        if ($type !== null) {
+        if (!is_null($type)) {
             if ($type === self::LABEL_DB) {
                 $this->dbTable = self::DB_TABLE;
                 $this->dbPrimaryKey = self::DB_PRIMARY_KEY;
@@ -50,7 +50,7 @@ class AnnotationsTypes
         } else {
             BedroxException::render(
                 'ERR_ANNOTATIONS_TYPE',
-                'Impossible d\'écrire les types d\'annotations disponibles pour cette Application.'
+                'Unable to access annotations type for your application.'
             );
         }
     }
@@ -64,7 +64,7 @@ class AnnotationsTypes
     public function get(?string $type): ?string
     {
         $annotation = null;
-        if ($type !== null) {
+        if (!is_null($type)) {
             switch ($type) {
                 case self::LABEL_DB_TABLE:
                     $annotation = $this->dbTable;
@@ -82,7 +82,7 @@ class AnnotationsTypes
         } else {
             BedroxException::render(
                 'ERR_ANNOTATIONS_TYPE',
-                'Impossible de lire les types d\'annotations disponibles pour cette Application.'
+                'Unable to read annotations type for your application.'
             );
         }
         return $annotation;

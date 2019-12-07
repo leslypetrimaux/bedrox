@@ -1,10 +1,11 @@
 <?php
 
-namespace Bedrox\Core;
+namespace Bedrox\EDR;
 
-use Bedrox\Core\Databases\FirebaseDatabase;
-use Bedrox\Core\Databases\Firestore;
-use Bedrox\Core\Databases\MySQL;
+use Bedrox\Core\Env;
+use Bedrox\EDR\Databases\FirebaseDatabase;
+use Bedrox\EDR\Databases\Firestore;
+use Bedrox\EDR\Databases\MySQL;
 use Bedrox\Core\Exceptions\BedroxException;
 
 class EDR
@@ -34,32 +35,32 @@ class EDR
      */
     public function __construct()
     {
-        if (!empty($_SERVER['APP']['SGBD']['DRIVER'])) {
-            switch ($_SERVER['APP']['SGBD']['DRIVER']) {
+        if (!empty($_SERVER[Env::APP][Env::SGBD][Env::EDR_DRIVER])) {
+            switch ($_SERVER[Env::APP][Env::SGBD][Env::EDR_DRIVER]) {
                 case self::FIRESTORE:
                 case self::FIREBASE:
-                    $this->host = $_SERVER['APP']['SGBD']['HOST'];
-                    $this->apiKey = $_SERVER['APP']['SGBD']['API_KEY'];
-                    $this->clientId = $_SERVER['APP']['SGBD']['CLIENT_ID'];
-                    $this->oAuthToken = $_SERVER['APP']['SGBD']['OAUTH_TOKEN'];
-                    $this->type = $_SERVER['APP']['SGBD']['TYPE'];
+                    $this->host = $_SERVER[Env::APP][Env::SGBD][Env::EDR_HOST];
+                    $this->apiKey = $_SERVER[Env::APP][Env::SGBD][Env::EDR_APIKEY];
+                    $this->clientId = $_SERVER[Env::APP][Env::SGBD][Env::EDR_CLIENTID];
+                    $this->oAuthToken = $_SERVER[Env::APP][Env::SGBD][Env::EDR_OAUTHTOKEN];
+                    $this->type = $_SERVER[Env::APP][Env::SGBD][Env::EDR_TYPE];
                     break;
                 case self::ORACLE:
                     // TODO: handle Oracle SGBD (with options)
                 case self::MYSQL:
                 case self::MARIADB:
                 default:
-                    $this->host = $_SERVER['APP']['SGBD']['HOST'];
-                    $this->port = $_SERVER['APP']['SGBD']['PORT'];
-                    $this->user = $_SERVER['APP']['SGBD']['USER'];
-                    $this->pwd = $_SERVER['APP']['SGBD']['PWD'];
-                    $this->schema = $_SERVER['APP']['SGBD']['SCHEMA'];
+                    $this->host = $_SERVER[Env::APP][Env::SGBD][Env::EDR_HOST];
+                    $this->port = $_SERVER[Env::APP][Env::SGBD][Env::EDR_PORT];
+                    $this->user = $_SERVER[Env::APP][Env::SGBD][Env::EDR_USER];
+                    $this->pwd = $_SERVER[Env::APP][Env::SGBD][Env::EDR_PWD];
+                    $this->schema = $_SERVER[Env::APP][Env::SGBD][Env::EDR_SCHEMA];
                     break;
             }
         } else {
             BedroxException::render(
                 'ERR_DB_CONSTRUCT',
-                'Echec lors de création de la connexion à la base de données. Veuillez vérifier votre fichier "./config/env.yaml".'
+                'An error occurs while trying to access your database. Please check "config/env.yaml".'
             );
         }
     }
@@ -103,7 +104,7 @@ class EDR
         if (empty($this->con)) {
             BedroxException::render(
                 'ERR_DB_CONNECT',
-                'Impossible de créer une connexion "' . $driver . '".'
+                'Unable to create a "' . $driver . '" connexion.'
             );
         }
         return $this->con;

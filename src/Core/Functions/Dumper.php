@@ -2,6 +2,9 @@
 
 namespace Bedrox\Core\Functions;
 
+use Bedrox\Core\Controller;
+use Bedrox\Core\Env;
+use Bedrox\Core\Render;
 use Bedrox\Core\Response;
 use Bedrox\Skeleton;
 
@@ -22,8 +25,9 @@ class Dumper extends Skeleton
             $dumps = $d->getData($strings);
             $debugTrace = $d->getMethod();
             $d->setDumpResult(array(
-                'file' => $debugTrace['file'],
-                'line' => $debugTrace['line'],
+                'file' => $debugTrace[2]['file'],
+                'function' => $debugTrace[3]['function'] === Controller::CONSTRUCTOR ? Controller::PHP_CONSTRUCTOR : $debugTrace[3]['function'],
+                'line' => $debugTrace[2]['line'],
                 'outputs' => $dumps
             ));
         } else {
@@ -40,13 +44,13 @@ class Dumper extends Skeleton
         if (!empty($_SESSION['URI_FORMAT'])) {
             $format = $_SESSION['URI_FORMAT'];
         } else {
-            if (!empty($_SERVER['APP']['FORMAT'])) {
-                $format = $_SERVER['APP']['FORMAT'];
+            if (!empty($_SERVER[Env::APP][Env::FORMAT])) {
+                $format = $_SERVER[Env::APP][Env::FORMAT];
             } else {
                 $format = $_SESSION['APP_FORMAT'];
             }
         }
-        exit((new Response())->renderView($format, null, null));
+        exit((new Response)->renderView($format, new Render(), null));
     }
 
     /**
@@ -62,8 +66,7 @@ class Dumper extends Skeleton
      */
     protected function getMethod(): ?array
     {
-        $debug = debug_backtrace();
-        return $debug[2];
+        return debug_backtrace();
     }
 
     /**

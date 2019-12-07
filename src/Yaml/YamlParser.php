@@ -277,7 +277,7 @@ class YamlParser
         if (is_bool($value)) {
             $value = $value ? 'true' : 'false';
         }
-        if ($value === null) {
+        if (is_null($value)) {
             $value = 'null';
         }
         if ($value === "'" . self::REMPTY . "'") {

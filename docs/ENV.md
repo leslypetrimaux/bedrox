@@ -41,7 +41,7 @@ xml
 ```yaml
 app:
   name: 'Mon Application'
-  version: '0.4'
+  version: '0.6'
   env: 'dev'
   database:
     type: 'native'
@@ -53,8 +53,6 @@ app:
     schema: 'framework'
   encodage: 'utf-8'
   format: 'json'
-  router: './routes.yaml'
-  security: './security.yaml'
 ```
 
 > Configuration Doctrine avec MySQL ou MariaDB :
@@ -74,8 +72,6 @@ app:
     encode: 'utf8mb4'
   encodage: 'utf-8'
   format: 'json'
-  router: './routes.yaml'
-  security: './security.yaml'
 ```
 
 > Configuration avec Firebase Realtime Database ou Cloud Firestore :
@@ -93,8 +89,6 @@ app:
     type: 'public'
   encodage: 'utf-8'
   format: 'xml'
-  router: './routes.yaml'
-  security: './security.yaml'
 ```
 
 ---

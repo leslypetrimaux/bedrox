@@ -1,6 +1,6 @@
 <?php
 
-namespace Bedrox\Core;
+namespace Bedrox\EDR;
 
 class Entity
 {

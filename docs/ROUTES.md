@@ -18,7 +18,7 @@ users_get:
     users
 
 set_data:
-  path: '/users/string/route_data()'
+  path: '/set/string/route_data()'
   controller: 'App\Controllers\DefaultController::data'
 ```
 

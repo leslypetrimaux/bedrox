@@ -1,12 +1,13 @@
 <?php
 
-namespace Bedrox\Core\Databases;
+namespace Bedrox\EDR\Databases;
 
-use Bedrox\Core\EDR;
-use Bedrox\Core\Entity;
-use Bedrox\Core\EntityManager;
+use Bedrox\Core\Env;
+use Bedrox\EDR\EDR;
+use Bedrox\EDR\Entity;
+use Bedrox\EDR\EntityManager;
 use Bedrox\Core\Exceptions\BedroxException;
-use Bedrox\Core\Interfaces\iSgbd;
+use Bedrox\EDR\Interfaces\iSgbd;
 use Bedrox\EDR\Column;
 use Exception;
 use PDO;
@@ -44,7 +45,7 @@ class MySQL extends PDO implements iSgbd
     public function __construct(string $driver, string $host, int $port, string $user, string $pwd, string $schema)
     {
         try {
-            $opt = $driver === EDR::MYSQL ? array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER['APP']['SGBD']['ENCODE'])) : null;
+            $opt = $driver === EDR::MYSQL ? array(PDO::MYSQL_ATTR_INIT_COMMAND => $this->getEncodage($_SERVER[Env::APP][Env::SGBD][Env::EDR_ENCODE])) : null;
             $this->driver = $driver;
             parent::__construct(
                 EDR::MYSQL . ':dbname=' . $schema . ';port=' . $port . ';host=' . $host,
@@ -127,7 +128,7 @@ class MySQL extends PDO implements iSgbd
             $req->execute();
             $result = $req->fetch(PDO::FETCH_ASSOC);
             $e = $req->errorInfo();
-            if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
+            if (!empty($e[1]) && $_SERVER[Env::APP][Env::DEBUG]) {
                 throw new RuntimeException($e[2], $e[1]);
             }
             if ($result) {
@@ -162,7 +163,7 @@ class MySQL extends PDO implements iSgbd
     public function findOneBy(string $table, array $criteria): ?Entity
     {
         if (empty($criteria)) {
-            throw new RuntimeException('Aucun critère n\'a été trouvé dans votre requête. Vérifiez votre fonction.');
+            throw new RuntimeException('You must send an array $criteria. Please check your function.');
         }
         $vars = array();
         $entity = $this->em->getEntity($table);
@@ -178,13 +179,13 @@ class MySQL extends PDO implements iSgbd
             $vars[$column->getName()] = $key;
         }
         if (empty($clauses)) {
-            throw new RuntimeException('Aucun critère n\'a été trouvé dans votre requête. Vérifiez votre fonction.');
+            throw new RuntimeException('Your $criteria array is empty. Please check your function.');
         }
         try {
             $req = $this->query('SELECT ' . $cols . ' FROM ' . $table . ' WHERE ' . $clauses);
             $result = $req->fetch(PDO::FETCH_ASSOC);
             $e = $req->errorInfo();
-            if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
+            if (!empty($e[1]) && $_SERVER[Env::APP][Env::DEBUG]) {
                 throw new RuntimeException($e[2], $e[1]);
             }
             if ($result) {
@@ -231,7 +232,7 @@ class MySQL extends PDO implements iSgbd
             $req = $this->query('SELECT ' . $cols . ' FROM ' . $table . ';');
             $results = $req->fetchAll(PDO::FETCH_ASSOC);
             $e = $req->errorInfo();
-            if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
+            if (!empty($e[1]) && $_SERVER[Env::APP][Env::DEBUG]) {
                 throw new RuntimeException($e[2], $e[1]);
             }
             if ($results) {
@@ -266,7 +267,7 @@ class MySQL extends PDO implements iSgbd
      */
     public function persist(Entity $entity): bool
     {
-        return $entity->getId() !== null ? $this->update($entity) : $this->insert($entity);
+        return !is_null($entity->getId()) ? $this->update($entity) : $this->insert($entity);
     }
 
     /**
@@ -326,7 +327,7 @@ class MySQL extends PDO implements iSgbd
             }
             $result = $req->execute();
             $e = $req->errorInfo();
-            if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
+            if (!empty($e[1]) && $_SERVER[Env::APP][Env::DEBUG]) {
                 throw new RuntimeException($e[2], $e[1]);
             }
             $this->con = $this->commit();
@@ -384,7 +385,7 @@ class MySQL extends PDO implements iSgbd
             }
             $result = $req->execute();
             $e = $req->errorInfo();
-            if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
+            if (!empty($e[1]) && $_SERVER[Env::APP][Env::DEBUG]) {
                 throw new RuntimeException($e[2], $e[1]);
             }
             $this->con = $this->commit();
@@ -422,7 +423,7 @@ class MySQL extends PDO implements iSgbd
             $req = $this->prepare('DELETE FROM ' . $table . ' WHERE ' . $pColumn . ' = ' . $pValue . ';');
             $result = $req->execute();
             $e = $req->errorInfo();
-            if (!empty($e[1]) && $_SERVER['APP']['DEBUG']) {
+            if (!empty($e[1]) && $_SERVER[Env::APP][Env::DEBUG]) {
                 throw new RuntimeException($e[2], $e[1]);
             }
             $this->con = $this->commit();

@@ -25,6 +25,9 @@ class Route
     /** @var string $render */
     public $render;
 
+    /**
+     * Route constructor.
+     */
     public function __construct()
     {
         $this->params = array();
@@ -117,8 +120,10 @@ class Route
      */
     public function setParams($params): self
     {
-        array_push($this->params, $params);
-        $this->addParamsCount();
+        if (!in_array($params, $this->params)) {
+            array_push($this->params, $params);
+            $this->addParamsCount();
+        }
         return $this;
     }
 

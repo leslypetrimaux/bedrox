@@ -17,4 +17,9 @@ interface iKernel
      * @param Response $response
      */
     public function terminate(Response $response): void;
+
+    /**
+     * @return array
+     */
+    public static function getCustomCmd(): array;
 }

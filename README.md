@@ -9,6 +9,8 @@ Les dossiers d'un projet se présentent de la manière suivante :
 ```yaml
 mon_dossier:
   config: # configurations de l'application
+    routes:
+      users.yaml
     env.yaml
     routes.yaml
     security.yaml
@@ -17,10 +19,17 @@ mon_dossier:
     index.php
   src: # sources de l'application
     App:
+      Cli: # conteneur des commandes à ajouter au CLI
+        Commands: # contient mes commandes CLI personnalisées
+          CustomExample.php
+        Console.php
       Controllers: # contient les controllers des routes
         DefaultController.php
       Entity: # contient les entités pour les databases
         Users.php
+      Services: # contient les services à injecter dans les controlleurs
+        AppService.php
+        UsersService.php
       Kernel.php
   vendor: # comporte toutes les dépendances de composer
   composer.json
@@ -57,7 +66,7 @@ app:
 Vous pouvez retrouver le détails concernant ce fichier dans la documentation [ENV.md](./docs/ENV.md).
 
 ## Routes
-Vous pouvez déclarer autant de route et de controller que vous le souhaitez. Afin de configurer une route, référencez le fichier `./config/routes.yaml` dans le fichier d'__environnement__. Vous pouvez le remplir de la manière suivante :
+Vous pouvez déclarer autant de route et de controller que vous le souhaitez. Afin de configurer une route, créez le fichier `./config/routes.yaml`. Vous pouvez le remplir de la manière suivante :
 
 ```yaml
 %ROUTE_NAME1%:
@@ -77,7 +86,7 @@ set_string:
 Vous pouvez retrouver le détails concernant ce fichier dans la documentation [ROUTES.md](./docs/ROUTES.md).
 
 ## Sécurité
-Afin de configurer le firewall, il faut référencer le fichier `./config/security.yaml` dans le fichier d'__environnement__ et le remplir de la manière suivante :
+Afin de configurer le firewall, il faut créer le fichier `./config/security.yaml`  et le remplir de la manière suivante :
 
 ```yaml
 security:
@@ -117,8 +126,14 @@ dd(...string: array|mixed[]);
 ```
 Vous pouvez retrouver le détails concernant ce fichier dans la documentation [DEBUG.md](./docs/DEBUG.md).
 
+## Command Line Interface
+Documentation en cours de rédaction.
+
 ## Controllers
 Documentation en cours de rédaction.
 
 ## Entités
+Documentation en cours de rédaction.
+
+## Services
 Documentation en cours de rédaction.
