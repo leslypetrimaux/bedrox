@@ -2,7 +2,7 @@
 
 namespace Bedrox\Core\Annotations;
 
-use Bedrox\Core\Entity;
+use Bedrox\EDR\Entity;
 use Bedrox\Core\Exceptions\BedroxException;
 use ReflectionClass;
 use ReflectionException;
@@ -65,11 +65,11 @@ class PhpParser
     {
         $document = null;
         try {
-            if ($properties !== null) {
+            if (!is_null($properties)) {
                 $document = $properties->getDocComment();
             } else {
                 throw new ReflectionException(
-                    'Impossible de charger les propriétés de la classe.',
+                    'Unable to load class properties.',
                     'REFLECTION_PROPERTIES'
                 );
             }
@@ -92,7 +92,7 @@ class PhpParser
     {
         $columns = array();
         try {
-            if ($properties !== null) {
+            if (!is_null($properties)) {
                 foreach ($properties as $property) {
                     $document = $this->propertiesComment($property);
                     $matches = $this->matchesAnnotations($document);
@@ -118,13 +118,13 @@ class PhpParser
                 }
                 if (empty($columns)) {
                     throw new ReflectionException(
-                        'Impossible de charger les colonnes de la classe. Merci de vérifier votre Entité.',
+                        'Unable to load the class columns. Please check your entities.',
                         'REFLECTION_COLUMNS'
                     );
                 }
             } else {
                 throw new ReflectionException(
-                    'Impossible de charger les propriétés des colonnes de la classe. Merci de vérifier votre Entité.',
+                    'Unable to load the class columns properties. Please check your entities.',
                     'REFLECTION_PROPERTIES'
                 );
             }
@@ -137,11 +137,15 @@ class PhpParser
         return $columns;
     }
 
+    /**
+     * @param array|null $properties
+     * @return array|null
+     */
     public function getFKeysFromProperties(?array $properties): ?array
     {
         $columns = array();
         try {
-            if ($properties !== null) {
+            if (!is_null($properties)) {
                 foreach ($properties as $property) {
                     $document = $this->propertiesComment($property);
                     $matches = $this->matchesAnnotations($document);
@@ -152,13 +156,13 @@ class PhpParser
                 }
                 if (empty($columns)) {
                     throw new ReflectionException(
-                        'Impossible de charger les colonnes de la classe. Merci de vérifier votre Entité.',
+                        'Unable to load the class columns. Please check your entities.',
                         'REFLECTION_COLUMNS'
                     );
                 }
             } else {
                 throw new ReflectionException(
-                    'Impossible de charger les propriétés des colonnes de la classe. Merci de vérifier votre Entité.',
+                    'Unable to load the class columns properties. Please check your entities.',
                     'REFLECTION_PROPERTIES'
                 );
             }
@@ -181,7 +185,7 @@ class PhpParser
     {
         $columns = array();
         try {
-            if ($properties !== null) {
+            if (!is_null($properties)) {
                 foreach ($properties as $property) {
                     $document = $this->propertiesComment($property);
                     $matches = $this->matchesAnnotations($document);
@@ -190,13 +194,13 @@ class PhpParser
                 }
                 if (empty($columns)) {
                     throw new ReflectionException(
-                        'Impossible de charger les colonnes de la classe.',
+                        'Unable to load the class columns.',
                         'REFLECTION_COLUMNS'
                     );
                 }
             } else {
                 throw new ReflectionException(
-                    'Impossible de charger les propriétés des colonnes de la classe.',
+                    'Unable to load the class columns properties.',
                     'REFLECTION_PROPERTIES'
                 );
             }
@@ -231,7 +235,7 @@ class PhpParser
     public function getAnnotationValue(?string $annotation, ?array $annotations): ?string
     {
         $value = null;
-        if (is_array($annotations) && $annotation !== null) {
+        if (is_array($annotations) && !is_null($annotation)) {
             foreach ($annotations as $line) {
                 if (strpos($line, $annotation) !== false) {
                     $value = str_replace('@', '', trim($line));
@@ -240,7 +244,7 @@ class PhpParser
         } else {
             BedroxException::render(
                 'ERR_ANNOTATIONS_VALUE',
-                'Impossible de récupérer la value pour l\'annotation de type "' . $annotation . '".'
+                'Unable to retrieve the value of annotation type "' . $annotation . '".'
             );
         }
         return $value;

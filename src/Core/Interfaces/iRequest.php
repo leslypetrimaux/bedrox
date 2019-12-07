@@ -13,6 +13,24 @@ interface iRequest
     public static function createFromGlobals(): Request;
 
     /**
+     * @param array $items
+     * @return array
+     */
+    public static function xssFilter(array $items): array;
+
+    /**
+     * @param string $format
+     * @return string|null
+     */
+    public function parseResponseType(string $format): ?string;
+
+    /**
+     * @param string $format
+     * @return bool
+     */
+    public function getResponseType(string $format): bool;
+
+    /**
      * @param Request $request
      * @return Response
      */

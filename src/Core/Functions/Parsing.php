@@ -3,6 +3,7 @@
 namespace Bedrox\Core\Functions;
 
 use App\Kernel;
+use Bedrox\Core\Env;
 use Bedrox\Core\Exceptions\BedroxException;
 use RuntimeException;
 use SimpleXMLElement;
@@ -92,7 +93,7 @@ class Parsing
         } catch (RuntimeException $e) {
             BedroxException::render(
                 'ERR_XML_FILE',
-                'La classe "libXMLError" ressort l\'erreur n° ' . $e['code'] . '. Echec lors de la lecture du fichier XML "' . $file . '". Veuillez vérifier la configuration de l\'application.',
+                'The class "libXMLError" send the error number ' . $e['code'] . '. Error while reading your XML file "' . $file . '". Please check your application configuration.',
                 500,
                 $this->parseAppFormat()
             );
@@ -118,7 +119,7 @@ class Parsing
      */
     public function parseAppFormat(): ?string
     {
-        return $_SERVER['APP']['FORMAT'] ?? Kernel::DEFAULT_FORMAT;
+        return $_SERVER[Env::APP][Env::FORMAT] ?? Kernel::DEFAULT_FORMAT;
     }
 
     /**
@@ -126,6 +127,6 @@ class Parsing
      */
     public function parseAppEncode(): ?string
     {
-        return $_SERVER['APP']['ENCODAGE'] ?? Kernel::DEFAULT_ENCODE;
+        return $_SERVER[Env::APP][Env::ENCODE] ?? Kernel::DEFAULT_ENCODE;
     }
 }

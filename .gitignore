@@ -3,7 +3,8 @@
 /config/
 /public/
 /new/
-/console/
+/bin/
+/composer.lock
 ###</ Dev live testing ###
 
 ###< Default phpStorm ###

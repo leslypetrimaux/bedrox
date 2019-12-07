@@ -2,7 +2,7 @@
   "name": "bedrox/bedrox",
   "license": "PHP-3.01",
   "description": "Framework indépendant développer pour une utilisation en tant qu'API. Le projet pourra renvoyer des retours dans différents langages : JSON, XML, HTML, etc...",
-  "version": "0.5",
+  "version": "0.6",
   "type": "library",
   "authors": [
     {
@@ -25,7 +25,6 @@
   "autoload": {
     "exclude-from-classmap": ["/docs/", "/tests/"],
     "psr-4": {
-      "App\\": "new/App/",
       "Bedrox\\": "src/"
     }
   }

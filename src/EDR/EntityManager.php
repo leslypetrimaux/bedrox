@@ -1,11 +1,11 @@
 <?php
 
-namespace Bedrox\Core;
+namespace Bedrox\EDR;
 
 use Bedrox\Core\Annotations\AnnotationsTypes;
 use Bedrox\Core\Annotations\PhpParser;
 use Bedrox\Core\Exceptions\BedroxException;
-use Bedrox\Core\Interfaces\iEntityManager;
+use Bedrox\EDR\Interfaces\iEntityManager;
 use Bedrox\EDR;
 
 class EntityManager implements iEntityManager
@@ -33,7 +33,7 @@ class EntityManager implements iEntityManager
         if (!$entity) {
             BedroxException::render(
                 'ERR_EM_REPO',
-                'Impossible de récupérer un Repository de l\'Application.'
+                'Unable to retrieve a repository.'
             );
         }
         $table = $this->getTable($this->getEntity($entity));
@@ -52,7 +52,7 @@ class EntityManager implements iEntityManager
         if (!class_exists($entity)) {
             BedroxException::render(
                 'ERR_EM_ENTITY',
-                'La classe "' . $entity . '" n\'existe pas.'
+                'The class "' . $entity . '" does not exists.'
             );
         }
         return new $entity();

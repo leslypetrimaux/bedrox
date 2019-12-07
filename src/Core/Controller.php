@@ -3,43 +3,80 @@
 namespace Bedrox\Core;
 
 use Bedrox\Skeleton;
+use Bedrox\EDR\EntityManager as EDR;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
 
 class Controller extends Skeleton
 {
-    public $request;
-    public $_em;
+    public const PHP_CONSTRUCTOR = '__construct';
+    public const CONSTRUCTOR = '__self';
+
+    private $request;
 
     /**
      * Controller constructor.
      * Return objects for the Application Controllers.
-     *
-     * @param Response $response
      */
-    public function __construct(Response $response)
+    public function __construct()
     {
         parent::__construct();
-        $this->request = $response->request;
-        $this->setAuth($this->session->get('APP_AUTH'));
-        $this->_em = $this->getDoctrine();
+        $this->request = parent::getResponse()->getRequest();
     }
 
     /**
      * Return EntityManager to be usable in the current controller.
      *
-     * @return EntityManager
+     * @return EDR
      */
-    public function getEntityManager(): EntityManager
+    public function getEntityManager(): EDR
     {
-        return new EntityManager();
+        return new EDR;
     }
 
     /**
      * Return Doctrine EntityManager to be usable in the current controller.
      *
-     * @return \Doctrine\ORM\EntityManager|null
+     * @return EntityManager|null
      */
-    public function getDoctrine(): ?\Doctrine\ORM\EntityManager
+    public function getDoctrine(): ?EntityManager
     {
         return Skeleton::$entityManager;
+    }
+
+    /**
+     * @param $class
+     * @return EntityRepository|null
+     */
+    public function getRepo($class): ?EntityRepository
+    {
+        return $this->getDoctrine()->getRepository($class);
+    }
+
+    /**
+     * @return Request|null
+     */
+    public function getRequest(): ?Request
+    {
+        return $this->request;
+    }
+
+    /**
+     * @return Headers|null
+     */
+    public function getHeaders(): ?Headers
+    {
+        return $this->request->getHeaders();
+    }
+
+    /**
+     * @param array|null $data
+     * @param string|null $format
+     * @param bool $force
+     * @return Render
+     */
+    public function render(?array $data = array(), ?string $format = null, bool $force = false): Render
+    {
+        return new Render($data, $format, $force);
     }
 }
